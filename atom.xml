@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Bear Metal]]></title>
+  <link href="http://bear-metal.github.io/bear-metal/atom.xml" rel="self"/>
+  <link href="http://bear-metal.github.io/bear-metal/"/>
+  <updated>2013-04-19T17:22:28+03:00</updated>
+  <id>http://bear-metal.github.io/bear-metal/</id>
+  <author>
+    <name><![CDATA[Bear Metal OÜ]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+</feed>

@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://bear-metal.github.io/bear-metal/sitemap.xml 

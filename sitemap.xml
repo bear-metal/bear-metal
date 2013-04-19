@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>http://bear-metal.github.io/bear-metal/blog/archives/</loc>
+        <lastmod>2013-04-19T12:33:03+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bear-metal.github.io/bear-metal/blog/</loc>
+        <lastmod>2013-04-19T12:48:24+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bear-metal.github.io/bear-metal/</loc>
+        <lastmod>2013-04-19T17:20:40+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bear-metal.github.io/bear-metal/robots.txt</loc>
+        <lastmod>2013-04-19T12:33:03+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bear-metal.github.io/bear-metal/team/</loc>
+        <lastmod>2013-04-19T16:12:17+03:00</lastmod>
+    </url>
+</urlset>
