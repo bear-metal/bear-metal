@@ -1,3 +1,4 @@
+require 'zurb-foundation'
 require 'sass-globbing'
 
 # Require any additional compass plugins here.

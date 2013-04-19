@@ -1,0 +1,97 @@
+@import "compass";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
+@include global-reset;
+@include reset-html5;
+
+@import "app-foundation";
+
+body > header {
+  h1 {
+    text-transform: uppercase;
+    text-align: center;
+    color: #999;
+    line-height: 1.5;
+    margin-top: 0.5em;
+    margin-bottom: 0.3em;
+    font-size: 2.5em;
+
+    img {
+      height: 0.75em;
+      @include transition(all 1s ease-in-out);
+    }
+
+    i {
+      display: inline-block;
+      width: 1em;
+    }
+  }
+}
+
+@media only screen and (max-width: 48em) {
+  body > header {
+    h1 {
+
+      img {
+        height: 0.6em;
+        padding-right: 0.25em;
+        box-sizing: border-box;
+        @include transform( rotate(90deg) );
+      }
+    }
+  }
+
+  #lead {
+    p, h1 {
+      @include grid-column(12);
+    }
+  }
+}
+
+@media only screen and (max-width: 64em) {
+  #pitch {
+    ol {
+      margin-left: 20px;
+    }
+  }
+}
+
+#lead {
+  background-color: rgb(43, 56, 68);
+  color: #eee;
+  padding: 1em 0;
+  margin-bottom: 1em;
+
+  header, #blurb {
+    @include grid-row();
+  }
+
+  p, h1 {
+    @include grid-column(12);
+  }
+
+  #blurb p {
+    font-size: 125%;
+  }
+
+  h1 {
+    color: rgb(250, 239, 222);
+    font-size: 2em;
+    text-align: center;
+    font-weight: 700;
+  }
+}
+
+#pitch {
+  ol {
+    list-style: decimal;
+  }
+}
+
+//@import "custom/colors";
+//@import "custom/fonts";
+//@import "custom/layout";
+//@import "base";
+//@import "partials";
+//@import "plugins/**/*";
+//@import "custom/styles";
