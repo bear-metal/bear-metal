@@ -88,6 +88,42 @@ body > header {
   }
 }
 
+#consultation-form {
+  background: {
+    color: rgb(250, 239, 222);
+  }
+
+  padding-top: 2em;
+  margin-bottom: 1em;
+
+  #emblem {
+    @include grid-column(3);
+  }
+
+  form {
+    margin-top: 1em;
+  }
+}
+
+footer {
+  background-color: rgb(43, 56, 68);
+  color: #eee;
+  padding: 2em 0;
+  overflow: hidden;
+  
+  > div {
+    @include grid-row();
+  }
+
+  h3 {
+    color: #eee;
+  }
+
+  #contact {
+    @include grid-column(3);
+  }
+}
+
 //@import "custom/colors";
 //@import "custom/fonts";
 //@import "custom/layout";
