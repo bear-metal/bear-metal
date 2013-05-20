@@ -88,6 +88,47 @@ body > header {
   }
 }
 
+.testimonial {
+  font-style: italic;
+  position: relative;
+  background-color: #eee;
+  padding: 10px;
+  margin-bottom: 2em;
+  -webkit-border-radius: 10px;
+
+  blockquote {
+    font-weight: bold;
+    border-left-width: 0;
+    padding: 0;
+    color: #222;
+    font-size: 1.2em;
+  }
+}
+
+.testimonial:after {
+  content: "";
+  position: absolute;
+  bottom: -13px;
+  left: 47px;
+  border-width: 13px 13px 0;
+  border-style: solid;
+  border-color: #eee transparent;
+  display: block;
+  width: 0;
+}
+
+.quote {
+  margin: {
+    top: 2em;
+    left: 10px;
+    right: 10px;
+  }
+  text-align: right;
+  font-size: 90%;
+  font-style: italic;
+  font-weight: bold;
+}
+
 #consultation-form {
   background: {
     color: rgb(250, 239, 222);
