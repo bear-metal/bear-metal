@@ -2,15 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Bear Metal]]></title>
-  <link href="http://bear-metal.github.io/bear-metal/atom.xml" rel="self"/>
-  <link href="http://bear-metal.github.io/bear-metal/"/>
-  <updated>2013-04-23T15:05:26+03:00</updated>
-  <id>http://bear-metal.github.io/bear-metal/</id>
+  <link href="http://bearmetal.eu/atom.xml" rel="self"/>
+  <link href="http://bearmetal.eu/"/>
+  <updated>2013-05-20T16:05:18+03:00</updated>
+  <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
+    <link href="http://bearmetal.eutheden/2013/05/17/its-not-about-us-its-about-you/"/>
+    <updated>2013-05-17T18:51:00+03:00</updated>
+    <id>http://bearmetal.eutheden/2013/05/17/its-not-about-us-its-about-you</id>
+    <content type="html"><![CDATA[<p>One of the saddest stories in the recent web history was when Kathy Sierra receded from the public and stopped writing for Creating Passionate Users blog. While receiving death threats must have been a massive personal tragedy, its repercussions were a colossal loss to the web and software community in general.</p>
+
+<p>While it’s more than six years since Kathy’s last blog post (is it really that long?), there is no reason we should apply her teachings even in the online world we live in right now. Probably the most important lesson I learned from Kathy (and the main tenet of her blog) was that to gain passionate users you need to make <em>them</em> kick ass. Sure it’s nice if your UI boasts übercool 3D CSS animations but if it doesn’t help your users shine, no one (well, except for some web geeks) will give a flying fuck.</p>
+
+<p>Thus, in this hello world post we’d rather not talk that much about ourselves or the app we helped to build, but about you – your dreams, goals, and pains you’re experiencing while trying to reach them. And because we believe your success depends on how much you can make your users kick butt, we’d most rather talk about them.</p>
+
+<p>So hello. We’re Erkki, Jarkko, Lourens and Tarmo.</p>
+]]></content>
+  </entry>
   
 </feed>

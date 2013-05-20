@@ -1,23 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
-        <loc>http://bear-metal.github.io/bear-metal/blog/archives/</loc>
+        <loc>http://bearmetal.eutheden/2013/05/17/its-not-about-us-its-about-you/</loc>
+        <lastmod>2013-05-17T19:23:39+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bearmetal.eu/blog/archives/</loc>
+        <lastmod>2013-05-17T19:23:39+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bearmetal.eu/blog/</loc>
+        <lastmod>2013-05-17T19:23:39+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bearmetal.eu/</loc>
+        <lastmod>2013-05-20T16:00:16+03:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bearmetal.eu/robots.txt</loc>
         <lastmod>2013-04-19T12:33:03+03:00</lastmod>
     </url>
     <url>
-        <loc>http://bear-metal.github.io/bear-metal/blog/</loc>
-        <lastmod>2013-04-19T12:48:24+03:00</lastmod>
+        <loc>http://bearmetal.eu/team/</loc>
+        <lastmod>2013-05-07T11:39:24+03:00</lastmod>
     </url>
     <url>
-        <loc>http://bear-metal.github.io/bear-metal/</loc>
-        <lastmod>2013-04-23T15:03:47+03:00</lastmod>
+        <loc>http://bearmetal.eu/theden/archives/</loc>
+        <lastmod>2013-05-17T19:23:39+03:00</lastmod>
     </url>
     <url>
-        <loc>http://bear-metal.github.io/bear-metal/robots.txt</loc>
-        <lastmod>2013-04-19T12:33:03+03:00</lastmod>
-    </url>
-    <url>
-        <loc>http://bear-metal.github.io/bear-metal/team/</loc>
-        <lastmod>2013-04-23T15:03:47+03:00</lastmod>
+        <loc>http://bearmetal.eu/theden/</loc>
+        <lastmod>2013-05-17T19:23:39+03:00</lastmod>
     </url>
 </urlset>
