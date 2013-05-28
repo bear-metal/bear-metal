@@ -139,7 +139,7 @@ body > header {
 
 .quote {
   margin: {
-    top: 2em;
+    top: -1em;
     left: 10px;
     right: 10px;
     bottom: 2em;
@@ -151,7 +151,7 @@ body > header {
   overflow: hidden;
 
   figure {
-    margin: 5px;
+    margin: 8px;
     margin-left: 15px;
     float: left;
     width: 75px;
@@ -176,6 +176,14 @@ body > header {
   cite {
     display: block;
     margin-top: 1em;
+  }
+}
+
+#victoria-quote {
+  figure img {
+    width: 80px;
+    margin-left: -10px;
+    margin-top: -20px;
   }
 }
 
