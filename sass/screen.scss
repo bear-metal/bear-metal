@@ -96,6 +96,10 @@ body > header {
   margin-bottom: 2em;
   -webkit-border-radius: 10px;
 
+  -webkit-box-shadow: 2px -1px 3px rgba(50, 50, 50, 0.2);
+  -moz-box-shadow:    2px -1px 3px rgba(50, 50, 50, 0.2);
+  box-shadow:         2px -1px 3px rgba(50, 50, 50, 0.2);
+
   blockquote {
     font-weight: bold;
     border-left-width: 0;
@@ -117,16 +121,62 @@ body > header {
   width: 0;
 }
 
+.read-more {
+  text-align: right;
+  margin-top: -24px;
+  margin-bottom: 0;
+}
+
+.testimonial {
+  .the-rest {
+    display: none;
+
+    &.visible {
+      display: block;
+    }
+  }
+}
+
 .quote {
   margin: {
     top: 2em;
     left: 10px;
     right: 10px;
+    bottom: 2em;
   }
   text-align: right;
   font-size: 90%;
   font-style: italic;
   font-weight: bold;
+  overflow: hidden;
+
+  figure {
+    margin: 5px;
+    margin-left: 15px;
+    float: left;
+    width: 75px;
+    height: 75px;
+    overflow: hidden;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+
+    box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+    -moz-box-shadow: 0 0 8px rgba(0, 0, 0, .8);
+
+    img {
+      width: 150px;
+      max-width: 150px;
+      margin-left: -30px;
+      margin-top: -10px;
+    }
+  }
+
+  cite {
+    display: block;
+    margin-top: 1em;
+  }
 }
 
 #consultation-form {
