@@ -3,8 +3,8 @@
 <script type="text/javascript">
   jQuery(document).ready(function($) {
     $('a.expand').click(function(event) {
-      $(this).parents('.testimonial').find('.the-rest').addClass('visible');
-      $(this).hide();
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
       return false;
     });
   });
