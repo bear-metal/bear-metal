@@ -6,6 +6,7 @@ task :isolate, :filename do |t, args|
   else
     filename = get_stdin("Enter a post file name: ")
   end
+  full_stash_dir = Octopress.configuration[:stash_dir]
   FileUtils.mkdir(full_stash_dir) unless File.exist?(full_stash_dir)
   Dir.glob("#{Octopress.configuration[:source]}/#{Octopress.configuration[:posts_dir]}/*.*") do |post|
     FileUtils.mv post, full_stash_dir unless post.include?(filename)
