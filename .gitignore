@@ -8,7 +8,7 @@
 /_deploy
 /public
 /source/_stash
-/source/stylesheets/site.css
+/source/stylesheets
 /source/javascripts/build
 /source/images/icon-*.png
 /vendor

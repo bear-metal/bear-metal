@@ -30,15 +30,11 @@ root: /
 permalink: /blog/:year/:month/:day/:title/
 source: source
 destination: public
+css_dir: sass
 plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
 markdown: redcarpet
-rdiscount:
-  extensions:
-    - autolink
-    - footnotes
-    - smart
 pygments: false # default python pygments have been replaced by pygments.rb
 
 paginate: 10          # Posts per page on the blog index

@@ -9,8 +9,8 @@ task :generate do
     js_assets = Octopress::JSAssetsManager.new
     puts js_assets.compile
   end
-  if Dir.exists? "stylesheets"
-    system "compass compile --css-dir #{Octopress.configuration[:source]}/stylesheets" if Dir.exists? "stylesheets"
+  if Dir.exists? Octopress.configuration[:css_dir]
+    system "compass compile --css-dir #{Octopress.configuration[:source]}/stylesheets"
   end
   system "jekyll build #{"--drafts --trace" unless Octopress.env == 'production'}"
   unpublished = get_unpublished(Dir.glob("#{Octopress.configuration[:source]}/#{Octopress.configuration[:posts_dir]}/*.*"), {env: Octopress.env, message: "\nThese posts were not generated:"})
