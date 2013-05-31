@@ -1,5 +1,6 @@
 $:.unshift File.expand_path("../../../lib", File.dirname(__FILE__)) # For use/testing when no gem is installed
 require 'octopress'
+require "liquid"
 
 module Octopress
   class JavascriptAssetsTag < Liquid::Tag
