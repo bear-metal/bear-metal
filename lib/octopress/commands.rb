@@ -7,6 +7,7 @@ module Octopress
     autoload :BuildJavascripts, 'commands/build_javascripts'
     autoload :BuildStylesheets, 'commands/build_stylesheets'
     autoload :Install,          'commands/install'
+    autoload :New,              'commands/new'
     autoload :Scaffold,         'commands/scaffold'
     autoload :Serve,            'commands/serve'
   end
