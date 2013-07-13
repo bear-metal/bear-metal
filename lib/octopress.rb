@@ -14,13 +14,12 @@ require 'safe_yaml'
 SafeYAML::OPTIONS[:suppress_warnings] = true
 
 # octopress
+require "octopress/version"
 require "octopress/errors"
 require "octopress/core_ext"
 require "octopress/helpers/titlecase"
 
 module Octopress
-  VERSION = '3.0.0.beta1'
-
   autoload :Configuration,       'octopress/configuration'
   autoload :Ink,                 'octopress/ink'
   autoload :Formatters,          'octopress/formatters'
