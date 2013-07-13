@@ -10,6 +10,7 @@ require 'stringex'
 require 'time'
 require 'tzinfo'
 require 'safe_yaml'
+require 'erb'
 
 SafeYAML::OPTIONS[:suppress_warnings] = true
 

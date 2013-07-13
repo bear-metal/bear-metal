@@ -168,15 +168,6 @@ module Octopress
       #paginate_path: page/:num,       # default path for pagination, eg. page/2/
       paginate:       10,              # Posts per page on the blog index
 
-      # Templates - these can be overridden in site.yml and themes can ship with their own default templates.
-
-      templates: {
-        post: POST_TEMPLATE,
-        linkpost: LINK_POST_TEMPLATE,
-        page: PAGE_TEMPLATE,
-      },
-
-
       # Feed settings
 
       feed: {
