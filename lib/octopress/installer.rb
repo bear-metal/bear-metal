@@ -2,7 +2,7 @@ module Octopress
   class Installer
 
     OCTO_DIRS = {
-      "configs"  => "config",
+      "configs"  => "config/defaults",
       "javascripts/lib"     => "javascripts/lib",
       "javascripts/modules" => "javascripts/modules",
       "source"      => "source",
