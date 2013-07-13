@@ -8,7 +8,7 @@ module Octopress
         end
 
         def serve(args, options)
-          guardPid = Process.spawn("guard --guardfile #{Octopress.root}/lib/octopress/guardfile")
+          guardPid = Process.spawn("guard --guardfile #{Octopress.lib_root}/octopress/guardfile")
           puts "Starting Rack, serving to http://#{Octopress.configuration[:server_host]}:#{Octopress.configuration[:port]}"
           rackupPid = Process.spawn("rackup --host #{Octopress.configuration[:server_host]} --port #{Octopress.configuration[:port]}")
 
