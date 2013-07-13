@@ -17,9 +17,7 @@ require 'tzinfo'
 #
 require 'rspec/core/rake_task'
 desc "Run all examples"
-RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = "./spec{,/*/**}/*_spec.rb"
-end
+RSpec::Core::RakeTask.new(:spec)
 
 task :test do
   sh "bundle exec rake spec"
@@ -29,3 +27,8 @@ task :test do
   #sh "bundle exec rake generate"
 end
 
+desc "Open Octopress console"
+task :console do
+  prompt = `which pry`.strip.empty? ? "irb" : "pry"
+  sh "#{prompt} -r./lib/octopress.rb", verbose: false
+end
