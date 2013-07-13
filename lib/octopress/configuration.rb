@@ -113,30 +113,6 @@ module Octopress
       end
     end
 
-    POST_TEMPLATE = YAML.load <<-YAML
-      extension: markdown
-      layout: post
-      title: true
-      date: true
-      categories:
-    YAML
-
-    LINK_POST_TEMPLATE = YAML.load <<-YAML
-      extension: markdown
-      layout: post
-      title: true
-      date: true
-      external-url:
-      categories:
-    YAML
-
-    PAGE_TEMPLATE = YAML.load <<-YAML
-      extension: html
-      layout: page
-      title: true
-      date: false
-    YAML
-
     DEFAULTS = {
       url: 'http://yoursite.com',
       title: 'My Octopress Blog',
