@@ -1,5 +1,6 @@
 .bundle
 .DS_Store
+Gemfile.lock
 *.sw[mnop]
 *~
 /.sass-cache
