@@ -1,9 +1,0 @@
----
-# -------------------------------- #
-#   Tweet Sidebar Plugin Configs   #
-# -------------------------------- #
-
-twitter:
-  user:
-  # Sharing button on posts
-  # tweet-button: true
