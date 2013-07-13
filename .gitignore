@@ -18,3 +18,4 @@ node_modules
 /_config.yml
 /config/deploy.yml
 /coverage/
+*.gem
