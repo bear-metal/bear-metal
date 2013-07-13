@@ -20,6 +20,15 @@ command :build do |c|
   end
 end
 
+command :install do |c|
+  c.syntax = 'octopress install NAME'
+  c.summary = 'Install an Octopress plugin'
+
+  c.action do |args, options|
+    Octopress::Commands::Install.process(args, options.__hash__)
+  end
+end
+
 command :new do |c|
   c.syntax = 'octopress new PATH'
   c.summary = 'Create a new octopress site in the specified directory'
@@ -55,4 +64,3 @@ command :serve do |c|
     Octopress::Commands::Serve.process(args, options.__hash__)
   end
 end
-
