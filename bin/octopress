@@ -30,11 +30,14 @@ command :install do |c|
 end
 
 command :new do |c|
-  c.syntax = 'octopress new PATH'
-  c.summary = 'Create a new octopress site in the specified directory'
+  c.syntax = 'octopress new [TYPE] PATH|NAME'
+  c.summary = 'Create a new octopress site, page or post in the specified directory'
 
-  c.example 'Create new site in current directory', 'octopress build .'
-  c.example 'Create new site in subdirectory "./blog"', 'octopress build blog'
+  c.example 'Create new site in current directory', 'octopress new .'
+  c.example 'Create new site in subdirectory "./blog"', 'octopress new blog'
+  c.example 'Create new page in current directory\'s site', 'octopress new page about.md'
+  c.example 'Create new post in current directory\'s site', 'octopress new post "My adventure"'
+  c.example 'Create new draft in current directory\'s site', 'octopress new post "Hong Kong and its wonders" --draft'
 
   c.action do |args, options|
     Octopress::Commands::New.process(args, options.__hash__)
