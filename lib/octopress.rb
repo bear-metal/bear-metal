@@ -22,6 +22,7 @@ require "octopress/helpers/titlecase"
 module Octopress
   autoload :Configuration,       'octopress/configuration'
   autoload :Ink,                 'octopress/ink'
+  autoload :Installer,           'octopress/installer'
   autoload :Formatters,          'octopress/formatters'
   autoload :InquirableString,    'octopress/inquirable_string'
   autoload :DependencyInstaller, 'octopress/dependency_installer'
@@ -42,7 +43,7 @@ module Octopress
   #
   # Returns the absolute path of the main octopress installation
   def self.root
-    File.dirname(lib_root)
+    Dir.pwd
   end
 
   # Static: Fetches the Octopress environment

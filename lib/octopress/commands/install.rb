@@ -8,8 +8,7 @@ module Octopress
           plugin_name = args[0]
           require_plugin(rubyify(plugin_name))
 
-          # Essentially doing: 'Adn::Installer.new.install':
-          Object.const_get(classify(plugin_name))::Installer.new.install
+          Octopress::Installer.new(rubyify(plugin_name)).install
         end
 
         def require_plugin(plugin_name)

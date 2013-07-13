@@ -36,7 +36,7 @@ module Octopress
             FileUtils.mkdir("lib/#{ruby_name(plugin_name)}")
             FileUtils.cp(scaffold_file("Rakefile"), "Rakefile")
             FileUtils.cp(scaffold_file("plugin-name.gemspec"), "#{plugin_name}.gemspec")
-            File.open("MANIFEST.yml", "w") { |f| f.write(plugin_yaml(plugin_name)) }
+            File.open("MANIFEST.yml", "w") { |f| f.write(plugin_yaml(plugin_name, type)) }
             File.open("lib/#{ruby_name(plugin_name)}.rb", "w") do |f|
               f.puts "require 'octopress'"
               f.puts
@@ -56,10 +56,11 @@ module Octopress
           plugin_name.gsub(/-/, '_')
         end
 
-        def plugin_yaml(plugin_name)
+        def plugin_yaml(plugin_name, type)
           plugin_data = {
             "name" => plugin_name,
             "slug" => plugin_name,
+            "type" => type,
             "version" => "0.0.1",
             "description" => "TODO- Add your description",
             "summary" => "TODO- Add your summary",

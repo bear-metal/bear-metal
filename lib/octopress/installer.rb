@@ -12,7 +12,7 @@ module Octopress
       "plugins"     => "plugins"
     }
 
-    def initalize(plugin_name)
+    def initialize(plugin_name)
       begin
         require "#{plugin_name}"
       rescue LoadError
@@ -29,7 +29,7 @@ module Octopress
     end
 
     def type
-      manifest_yml.fetch('type') || "plugin"
+      manifest_yml.fetch('type', 'plugin')
     end
 
     def theme?
@@ -60,7 +60,8 @@ module Octopress
       dir = File.join(Octopress.root, subdir)
       dir = File.join(dir, "plugins") if subdir == "stylesheets" && plugin?
       dir = File.join(dir, "theme") if subdir == "stylesheets" && theme?
-      dir = File.join(dir, plugin_slug) if namespace?
+      dir = File.join(dir, plugin_slug) if namespace?(subdir)
+      Octopress.logger.warn(dir)
       dir
     end
 
@@ -70,11 +71,11 @@ module Octopress
 
     def install
       OCTO_DIRS.each do |source_dir, local_dir|
-        install(source_dir, local_dir)
+        _install(source_dir, local_dir)
       end
     end
 
-    def install(source_dir, local_dir)
+    def _install(source_dir, local_dir)
       FileUtils.mkdir_p local(local_dir), verbose: @verbose
       FileUtils.cp_r source(source_dir), local(local_dir), verbose: @verbose
     end
@@ -85,7 +86,7 @@ module Octopress
     rescue Errno::ENOENT
       Octopress.logger.error "The plugin '#{@plugin_name}' doesn't seem to have a " +
         "MANIFEST.yml file and thus isn't a valid Octopress plugin."
-      raise StandardError
+      raise LoadError
     end
 
   end
