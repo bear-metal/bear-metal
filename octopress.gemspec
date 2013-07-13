@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency('RedCloth', '~> 4.2.9')
   spec.add_runtime_dependency('haml', '~> 3.1.7')
   spec.add_runtime_dependency('compass', '~> 0.12.2')
-  spec.add_runtime_dependency('sass-globbing', '~> 1.0.0')
+  spec.add_runtime_dependency('sass-globbing', '~> 1.1.0')
   spec.add_runtime_dependency('rubypants', '~> 0.2.0')
   spec.add_runtime_dependency('stringex', '~> 1.4.0')
   spec.add_runtime_dependency('liquid', '~> 2.3.0')
