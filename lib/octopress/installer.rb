@@ -3,11 +3,11 @@ module Octopress
 
     OCTO_DIRS = {
       "configs"  => "config",
-      "includes" => "source/_includes",
-      "layouts"  => "source/_layouts",
       "javascripts/lib"     => "javascripts/lib",
       "javascripts/modules" => "javascripts/modules",
       "source"      => "source",
+      "includes" => "source/_includes",
+      "layouts"  => "source/_layouts",
       "stylesheets" => "stylesheets",
       "plugins"     => "plugins"
     }
@@ -49,7 +49,11 @@ module Octopress
     ####################
 
     def namespace?(subdir)
-      plugin? && !%w[javascripts/lib source].include?(subdir)
+      !%w[javascripts/lib source].include?(subdir)
+    end
+
+    def stylesheets?(subdir)
+      "stylesheets" == subdir
     end
 
     def source(*subdirs)
@@ -58,8 +62,8 @@ module Octopress
 
     def local(subdir)
       dir = File.join(Octopress.root, subdir)
-      dir = File.join(dir, "plugins") if subdir == "stylesheets" && plugin?
-      dir = File.join(dir, "theme") if subdir == "stylesheets" && theme?
+      dir = File.join(dir, "plugins") if stylesheets?(subdir) && plugin?
+      dir = File.join(dir, "theme") if stylesheets?(subdir) && theme?
       dir = File.join(dir, plugin_slug) if namespace?(subdir)
       dir
     end
