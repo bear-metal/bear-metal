@@ -1,4 +1,5 @@
 desc "Open Octopress console"
 task :console do
-  sh "irb -r./lib/octopress.rb"
+  prompt = `which pry`.strip.empty? ? "irb" : "pry"
+  sh "#{prompt} -r./lib/octopress.rb", verbose: false
 end
