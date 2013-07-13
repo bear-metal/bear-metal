@@ -47,7 +47,7 @@ module Octopress
             File.open("Gemfile", "w") do |f|
               f.puts "source 'https://rubygems.org'"
               f.puts
-              f.puts "gem 'octopress'"
+              f.puts "gemspec"
             end
           end
         end
