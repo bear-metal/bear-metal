@@ -61,7 +61,6 @@ module Octopress
       dir = File.join(dir, "plugins") if subdir == "stylesheets" && plugin?
       dir = File.join(dir, "theme") if subdir == "stylesheets" && theme?
       dir = File.join(dir, plugin_slug) if namespace?(subdir)
-      Octopress.logger.warn(dir)
       dir
     end
 

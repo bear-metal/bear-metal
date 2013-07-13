@@ -19,6 +19,23 @@ module Octopress
         def jekyll_flags
           Octopress.env.production? ? "" : "--drafts --trace"
         end
+
+        def get_unpublished(posts, options = {})
+          result = ""
+          message = options[:message] || "These Posts will not be published:"
+          posts.sort.each do |post|
+            file = File.read(post)
+            data = YAML.load file.match(/(^-{3}\n)(.+?)(\n-{3})/m)[2]
+
+            if options[:env] == 'production'
+              future = Time.now < Time.parse(data['date'].to_s) ? "future date: #{data['date']}" : false
+            end
+            draft = data['published'] == false ? 'published: false' : false
+            result << "- #{data['title']} (#{draft or future})\n" if draft or future
+          end
+          result = "#{message}\n" + result unless result.empty?
+          result
+        end
       end
     end
   end

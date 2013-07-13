@@ -1,4 +1,3 @@
-$:.unshift File.expand_path(File.dirname(__FILE__)) # For use/testing when no gem is installed
 require 'digest/md5'
 require 'stitch-rb'
 require 'uglifier'

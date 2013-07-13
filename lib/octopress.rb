@@ -26,7 +26,7 @@ module Octopress
   autoload :Formatters,          'octopress/formatters'
   autoload :InquirableString,    'octopress/inquirable_string'
   autoload :DependencyInstaller, 'octopress/dependency_installer'
-  autoload :JsAssetManager,      'octopress/js_asset_manager'
+  autoload :JSAssetsManager,     'octopress/js_assets_manager'
   autoload :Command,             'octopress/command'
   autoload :Commands,            'octopress/commands'
   autoload :Rake,                'octopress/rake'

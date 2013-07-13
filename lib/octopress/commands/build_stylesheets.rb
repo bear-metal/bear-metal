@@ -1,6 +1,6 @@
 module Octopress
   module Commands
-    class Build < Command
+    class BuildStylesheets < Command
       class << self
         def process(args, options)
           if Dir.exists?("stylesheets")
