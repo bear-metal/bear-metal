@@ -113,7 +113,7 @@ module Octopress
       end
     end
 
-    PostTemplate = YAML.load <<-YAML
+    POST_TEMPLATE = YAML.load <<-YAML
       extension: markdown
       layout: post
       title: true
@@ -121,7 +121,7 @@ module Octopress
       categories:
     YAML
 
-    LinkPostTemplate = YAML.load <<-YAML
+    LINK_POST_TEMPLATE = YAML.load <<-YAML
       extension: markdown
       layout: post
       title: true
@@ -130,7 +130,7 @@ module Octopress
       categories:
     YAML
 
-    PageTemplate = YAML.load <<-YAML
+    PAGE_TEMPLATE = YAML.load <<-YAML
       extension: html
       layout: page
       title: true
@@ -195,9 +195,9 @@ module Octopress
       # Templates - these can be overridden in site.yml and themes can ship with their own default templates.
 
       templates: {
-        post: PostTemplate,
-        linkpost: LinkPostTemplate,
-        page: PageTemplate,
+        post: POST_TEMPLATE,
+        linkpost: LINK_POST_TEMPLATE,
+        page: PAGE_TEMPLATE,
       },
 
 
