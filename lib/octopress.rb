@@ -15,6 +15,7 @@ SafeYAML::OPTIONS[:suppress_warnings] = true
 
 # octopress
 require "octopress/core_ext"
+require "octopress/helpers/titlecase"
 
 module Octopress
   VERSION = '3.0.0.beta1'
