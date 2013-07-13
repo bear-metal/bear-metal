@@ -3,7 +3,7 @@ module Octopress
     class New < Command
       class << self
         def process(args = nil, options = nil)
-          source = File.join(Octopress.root, 'lib/octopress/scaffold/site')
+          source = File.join(Octopress.lib_root, 'octopress/scaffold/site')
           destination = process_args(args)
           FileUtils.cp_r "#{source}/.", "#{destination}/"
         end
