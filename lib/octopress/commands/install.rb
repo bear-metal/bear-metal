@@ -9,7 +9,7 @@ module Octopress
           require_plugin(plugin_name)
 
           # Essentially doing: 'Adn::Installer.new.install':
-          Object.const_get(plugin_name.camelize)::Installer.new.install
+          Object.const_get(classify(plugin_name))::Installer.new.install
         end
 
         def require_plugin(plugin_name)
@@ -21,15 +21,23 @@ module Octopress
               `bundle install`
               require "#{plugin_name}"
             else
-              raise LoadError
+              raise LoadError, "Cannot load #{plugin_name}"
             end
           rescue LoadError
             Octopress.logger.error("We could couldn't find the plugin '#{plugin_name}'.")
             Octopress.logger.error("Make sure you add this to your Gemfile:\n")
             Octopress.logger.error("gem '#{plugin_name}'\n")
             Octopress.logger.error("Then run 'bundle install' and retry the installation.")
-            raise LoadError
+            raise LoadError, "Cannot load #{plugin_name}"
           end
+        end
+
+        def classify(plugin_name)
+          rubyify(plugin_name).split("_").map(&:capitalize).join("")
+        end
+
+        def rubyify(plugin_name)
+          plugin_name.to_s.gsub(/-/, '_')
         end
       end
     end
