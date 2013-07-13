@@ -1,7 +1,7 @@
 module Octopress
   class Command
     class << self
-      def perform
+      def process(args = nil, options = nil)
         raise NotImplementedError
       end
     end

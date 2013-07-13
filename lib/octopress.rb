@@ -1,7 +1,34 @@
 $:.unshift File.expand_path(File.dirname(__FILE__)) # For use/testing when no gem is installed
 
+# stdlib
+require 'logger'
+
+# gems
+require 'colorator'
+require 'open3'
+require 'stringex'
+require 'time'
+require 'tzinfo'
+require 'safe_yaml'
+
+SafeYAML::OPTIONS[:suppress_warnings] = true
+
+# octopress
+require "octopress/core_ext"
+
 module Octopress
   VERSION = '3.0.0.beta1'
+
+  autoload :Configuration,       'octopress/configuration'
+  autoload :Ink,                 'octopress/ink'
+  autoload :Formatters,          'octopress/formatters'
+  autoload :InquirableString,    'octopress/inquirable_string'
+  autoload :DependencyInstaller, 'octopress/dependency_installer'
+  autoload :JsAssetManager,      'octopress/js_asset_manager'
+  autoload :Command,             'octopress/command'
+  autoload :Commands,            'octopress/commands'
+  autoload :Rake,                'octopress/rake'
+  autoload :Plugin,              'octopress/plugin'
 
   # Static: Get absolute file path of the octopress lib directory
   #
@@ -38,6 +65,19 @@ module Octopress
   def self.logger
     @@logger ||= Ink.build
   end
+
+  def self.configurator(root_dir = Octopress::Configuration::DEFAULT_CONFIG_DIR)
+    @configurator ||= Configuration.new(root_dir)
+  end
+
+  def self.configuration
+    @configuration ||= self.configurator.read_configuration
+  end
+
+  def self.clear_config!
+    @configurator = nil
+    @configuration = nil
+  end
 end
 
 def require_all(relative_path)
@@ -46,30 +86,3 @@ def require_all(relative_path)
   end
 end
 
-# stdlib
-require 'logger'
-
-# gems
-require 'colorator'
-require 'open3'
-require 'stringex'
-require 'time'
-require 'tzinfo'
-require 'safe_yaml'
-
-SafeYAML::OPTIONS[:suppress_warnings] = true
-
-# octopress
-require "octopress/core_ext"
-require "octopress/ink"
-require "octopress/formatters/base_formatter"
-require "octopress/formatters/simple_formatter"
-require "octopress/formatters/verbose_formatter"
-require "octopress/configuration"
-require "octopress/inquirable_string"
-require "octopress/dependency_installer"
-require "octopress/js_asset_manager"
-require "octopress/command"
-require_all "octopress/commands"
-require "octopress/rake"
-require "octopress/plugin"

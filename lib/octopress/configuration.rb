@@ -1,19 +1,6 @@
 require 'yaml'
 
 module Octopress
-  def self.configurator(root_dir = Octopress::Configuration::DEFAULT_CONFIG_DIR)
-    @configurator ||= Configuration.new(root_dir)
-  end
-
-  def self.configuration
-    @configuration ||= self.configurator.read_configuration
-  end
-
-  def self.clear_config!
-    @configurator = nil
-    @configuration = nil
-  end
-
   class Configuration
     DEFAULT_CONFIG_DIR = File.join(Octopress.root, 'config')
     attr_accessor :config_directory
