@@ -149,7 +149,13 @@ module Octopress
       permalink:    '/:year/:month/:day/:title/',
       source:       'source',          # source file directory
       destination:  'public',          # compiled site directory
-      plugins:      ['lib/octopress/liquid_helpers', 'lib/octopress/filters', 'lib/octopress/tags', 'lib/octopress/generators', 'plugins'],
+      plugins:      [
+        "#{Octopress.lib_root}/octopress/liquid_helpers",
+        "#{Octopress.lib_root}/octopress/filters",
+        "#{Octopress.lib_root}/octopress/tags",
+        "#{Octopress.lib_root}/octopress/generators",
+        "plugins"
+      ],
       code_dir:     'downloads/code',
       category_dir: 'categories',
       include: ['.htaccess'],
