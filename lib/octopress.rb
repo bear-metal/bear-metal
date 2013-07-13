@@ -14,6 +14,7 @@ require 'safe_yaml'
 SafeYAML::OPTIONS[:suppress_warnings] = true
 
 # octopress
+require "octopress/errors"
 require "octopress/core_ext"
 require "octopress/helpers/titlecase"
 
