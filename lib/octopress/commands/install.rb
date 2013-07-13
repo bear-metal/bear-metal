@@ -6,7 +6,7 @@ module Octopress
           raise "Please specify at least one plugin to install." if args.nil? || args.empty?
 
           plugin_name = args[0]
-          require_plugin(plugin_name)
+          require_plugin(rubyify(plugin_name))
 
           # Essentially doing: 'Adn::Installer.new.install':
           Object.const_get(classify(plugin_name))::Installer.new.install
