@@ -1,0 +1,48 @@
+require 'octopress'
+require 'tzinfo'
+
+def get_stdin(message)
+  print message
+  STDIN.gets.chomp
+end
+
+def now_in_timezone(timezone)
+  time = Time.now
+  unless timezone.nil? || timezone.empty? || timezone == 'local'
+    tz = TZInfo::Timezone.get(timezone) #setup Timezone object
+    adjusted_time = tz.utc_to_local(time.utc) #time object without correct offset
+    #time object with correct offset
+    time = Time.new(
+      adjusted_time.year,
+      adjusted_time.month,
+      adjusted_time.day,
+      adjusted_time.hour,
+      adjusted_time.min,
+      adjusted_time.sec,
+      tz.period_for_utc(time.utc).utc_total_offset())
+    #convert offset to utc instead of just ±0 if that was specified
+    if ['utc','zulu','universal','uct','gmt','gmt0','gmt+0','gmt-0'].include? timezone.downcase
+      time = time.utc
+    end
+  end
+  time
+end
+
+def get_unpublished(posts, options={})
+  result = ""
+  message = options[:message] || "These Posts will not be published:"
+  posts.sort.each do |post|
+    file = File.read(post)
+    data = YAML.load file.match(/(^-{3}\n)(.+?)(\n-{3})/m)[2]
+
+    if options[:env] == 'production'
+      future = Time.now < Time.parse(data['date'].to_s) ? "future date: #{data['date']}" : false
+    end
+    draft = data['published'] == false ? 'published: false' : false
+    result << "- #{data['title']} (#{draft or future})\n" if draft or future
+  end
+  result = "#{message}\n" + result unless result.empty?
+  result
+end
+
+Octopress::Rake.init!(self)

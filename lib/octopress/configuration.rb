@@ -1,19 +1,6 @@
 require 'yaml'
 
 module Octopress
-  def self.configurator(root_dir = Octopress::Configuration::DEFAULT_CONFIG_DIR)
-    @configurator ||= Configuration.new(root_dir)
-  end
-
-  def self.configuration
-    @configuration ||= self.configurator.read_configuration
-  end
-
-  def self.clear_config!
-    @configurator = nil
-    @configuration = nil
-  end
-
   class Configuration
     DEFAULT_CONFIG_DIR = File.join(Octopress.root, 'config')
     attr_accessor :config_directory
@@ -126,30 +113,6 @@ module Octopress
       end
     end
 
-    PostTemplate = YAML.load <<-YAML
-      extension: markdown
-      layout: post
-      title: true
-      date: true
-      categories:
-    YAML
-
-    LinkPostTemplate = YAML.load <<-YAML
-      extension: markdown
-      layout: post
-      title: true
-      date: true
-      external-url:
-      categories:
-    YAML
-
-    PageTemplate = YAML.load <<-YAML
-      extension: html
-      layout: page
-      title: true
-      date: false
-    YAML
-
     DEFAULTS = {
       url: 'http://yoursite.com',
       title: 'My Octopress Blog',
@@ -162,7 +125,13 @@ module Octopress
       permalink:    '/:year/:month/:day/:title/',
       source:       'source',          # source file directory
       destination:  'public',          # compiled site directory
-      plugins:      ['lib/octopress/liquid_helpers', 'lib/octopress/filters', 'lib/octopress/tags', 'lib/octopress/generators', 'plugins'],
+      plugins:      [
+        "#{Octopress.lib_root}/octopress/liquid_helpers",
+        "#{Octopress.lib_root}/octopress/filters",
+        "#{Octopress.lib_root}/octopress/tags",
+        "#{Octopress.lib_root}/octopress/generators",
+        "plugins"
+      ],
       code_dir:     'downloads/code',
       category_dir: 'categories',
       include: ['.htaccess'],
@@ -198,15 +167,6 @@ module Octopress
       timezone:       'local',         # default time and date used to local timezone. Vew supported timezones (under TZ column): http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       #paginate_path: page/:num,       # default path for pagination, eg. page/2/
       paginate:       10,              # Posts per page on the blog index
-
-      # Templates - these can be overridden in site.yml and themes can ship with their own default templates.
-
-      templates: {
-        post: PostTemplate,
-        linkpost: LinkPostTemplate,
-        page: PageTemplate,
-      },
-
 
       # Feed settings
 

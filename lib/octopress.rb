@@ -1,6 +1,38 @@
 $:.unshift File.expand_path(File.dirname(__FILE__)) # For use/testing when no gem is installed
 
+# stdlib
+require 'logger'
+
+# gems
+require 'colorator'
+require 'open3'
+require 'stringex'
+require 'time'
+require 'tzinfo'
+require 'safe_yaml'
+require 'erb'
+
+SafeYAML::OPTIONS[:suppress_warnings] = true
+
+# octopress
+require "octopress/version"
+require "octopress/errors"
+require "octopress/core_ext"
+require "octopress/helpers/titlecase"
+
 module Octopress
+  autoload :Configuration,       'octopress/configuration'
+  autoload :Ink,                 'octopress/ink'
+  autoload :Installer,           'octopress/installer'
+  autoload :Formatters,          'octopress/formatters'
+  autoload :InquirableString,    'octopress/inquirable_string'
+  autoload :DependencyInstaller, 'octopress/dependency_installer'
+  autoload :JSAssetsManager,     'octopress/js_assets_manager'
+  autoload :Command,             'octopress/command'
+  autoload :Commands,            'octopress/commands'
+  autoload :Rake,                'octopress/rake'
+  autoload :Plugin,              'octopress/plugin'
+
   # Static: Get absolute file path of the octopress lib directory
   #
   # Returns the absolute path to the octopress lib directory
@@ -12,7 +44,7 @@ module Octopress
   #
   # Returns the absolute path of the main octopress installation
   def self.root
-    File.dirname(lib_root)
+    Dir.pwd
   end
 
   # Static: Fetches the Octopress environment
@@ -36,29 +68,24 @@ module Octopress
   def self.logger
     @@logger ||= Ink.build
   end
+
+  def self.configurator(root_dir = Octopress::Configuration::DEFAULT_CONFIG_DIR)
+    @configurator ||= Configuration.new(root_dir)
+  end
+
+  def self.configuration
+    @configuration ||= self.configurator.read_configuration
+  end
+
+  def self.clear_config!
+    @configurator = nil
+    @configuration = nil
+  end
 end
 
-# stdlib
-require 'logger'
+def require_all(relative_path)
+  Dir[File.expand_path("../#{relative_path}/**/*", __FILE__)].entries.each do |f|
+    require f
+  end
+end
 
-# gems
-require 'colorator'
-require 'open3'
-require 'stringex'
-require 'time'
-require 'tzinfo'
-require 'safe_yaml'
-
-SafeYAML::OPTIONS[:suppress_warnings] = true
-
-require "octopress/core_ext"
-require "octopress/ink"
-require "octopress/formatters/base_formatter"
-require "octopress/formatters/simple_formatter"
-require "octopress/formatters/verbose_formatter"
-require "octopress/configuration"
-require "octopress/inquirable_string"
-require "octopress/dependency_installer"
-require "octopress/js_asset_manager"
-require "octopress/rake"
-require "colorator"
