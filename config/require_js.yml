@@ -1,3 +1,0 @@
-require_js:
-  lib: ['jquery.js']
-  modules: ['modules']
