@@ -15,7 +15,6 @@ Gemfile.lock
 /vendor
 /lib/vendor
 node_modules
-/_config.yml
 /config/deploy.yml
 /coverage/
 *.gem
