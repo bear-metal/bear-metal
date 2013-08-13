@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 group :development do
   gem 'rake', '~> 0.9'
-  gem 'jekyll', '~> 0.12'
+  gem 'jekyll', '~> 0.12', :git => "git@github.com:bear-metal/jekyll.git", :branch => "0.12.1-release"
   gem 'kramdown', '~> 0.14'
   gem 'pygments.rb', '~> 0.3.4'
   gem 'RedCloth', '~> 4.2.9'
