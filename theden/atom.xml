@@ -1,100 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-
-  
-
-
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>by Bear Metal OÜ of Bear Metal</title>
-  <meta name="author" content="Bear Metal OÜ">
-
-  
-  <meta name="description" content="Photo by Ron Cogswell One of the saddest things to happen online was in 2007 when my all-time favorite author and presenter, Kathy Sierra, received &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://bearmetal.eu/blog">
-  <link href="/images/favicon.ico" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
-
-  <script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
-<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-<script type="text/javascript">
-  $(document).ready(function($) {
-    $('a.expand').click(function(event) {
-      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
-      $(this).parents('.read-more').hide();
-      return false;
-    });
-  });
-</script>
-  <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-40333336-1', 'bearmetal.eu');
-  ga('send', 'pageview');
-
-</script>
-</head>
-
-<body   >
-  <header role="banner" class="post row">
-    <div class="small-12 large-8 columns small-centered">
-      This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear Metal</a>.
-    </div>
-  </header>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[Bear Metal]]></title>
+  <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
+  <link href="http://bearmetal.eu/"/>
+  <updated>2013-08-14T16:13:33+03:00</updated>
+  <id>http://bearmetal.eu/</id>
+  <author>
+    <name><![CDATA[Bear Metal OÜ]]></name>
     
-      <h1 class="entry-title"><a href="/its-not-about-us-its-about-you/">It’s Not About Us, It’s About You (and Not Really About You, Either)</a></h1>
-    
-    
-      <p class="meta">
-        
-  
-
-<span class="byline author vcard"><span class="fn"><a href="/people/jarkko/">Jarkko</a></span> wrote this on </span>
-
-        
-
-
-
-
-
-
-
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
   
-
-
-<time datetime="2013-08-14T15:51:00+03:00" pubdate data-updated="true">Aug 14<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><div class="bogus-wrapper"><notextile><figure>
+  <entry>
+    <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
+    <link href="http://bearmetal.eu//its-not-about-us-its-about-you/"/>
+    <updated>2013-08-14T15:51:00+03:00</updated>
+    <id>http://bearmetal.eu//its-not-about-us-its-about-you</id>
+    <content type="html"><![CDATA[<div class="bogus-wrapper"><notextile><figure>
       <p><a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="http://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
 
       <figcaption>
@@ -127,21 +51,7 @@
     </li>
   </ol>
 </div>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-
-    </div>
-  </div>
-</body>
-</html>
+</feed>
