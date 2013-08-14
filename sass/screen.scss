@@ -17,6 +17,12 @@ body > header {
       family: "brandon-grotesque","Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
       weight: 300;
     }
+
+    img {
+      height: 0.8em;
+      vertical-align: baseline;
+      opacity: 0.5;
+    }
   }
 
   h1 {
@@ -279,6 +285,12 @@ article {
   footer {
     background-color: transparent;
   }
+
+  > header {
+    > h1 {
+      text-align: center;
+    }
+  }
 }
 
 figure {
@@ -297,6 +309,21 @@ figure {
 .vcard {
   border: 0;
   padding: 0;
+}
+
+#blog-archives {
+  time {
+    line-height: 3.4;
+    text-align: right;
+    font: {
+      style: italic
+    }
+    color: #666;
+  }
+
+  h2 {
+    font-size: 1.6875em;
+  }
 }
 
 //@import "custom/colors";

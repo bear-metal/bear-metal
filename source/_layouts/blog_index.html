@@ -3,7 +3,9 @@
 <body>
   {% include google_analytics.html %}
 
-  {{ content | expand_urls: root_url }}
+  {% include custom/blog_header.html %}
+
+  {{ content }}
 
   <script type="text/javascript">
     var _gauges = _gauges || [];

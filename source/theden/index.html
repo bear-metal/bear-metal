@@ -1,8 +1,10 @@
 ---
 layout: blog_index
+title: The Den
 ---
 
-<div class="blog-index">
+<section class="row">
+<div class="blog-index small-12 large-8 columns small-centered">
   {% assign index = true %}
   {% for post in paginator.posts %}
   {% assign content = post.content %}
@@ -20,3 +22,4 @@ layout: blog_index
     {% endif %}
   </div>
 </div>
+</section>
