@@ -1,0 +1,14 @@
+{% include head.html %}
+
+<body>
+  {% include google_analytics.html %}
+  {% include header.html %}
+
+  <section class="row">
+    <div class="small-12 large-8 columns small-centered">
+      {{ content }}      
+    </div>
+  </section>
+  {% include gauges.html %}
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% include head.html %}
+
+<body>
+  {% include google_analytics.html %}
+  {% include header.html %}
+
+  <section class="row">
+    <div class="small-12 large-12 columns">
+      {{ content | expand_urls: root_url }}
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="small-12 large-12 columns">
+      <h2>Articles written by {{ page.first_name }}</h2>
+    </div>
+  </section>
+  
+  <section class="row">
+  <div id="blog-archives" class="small-12 large-8 columns small-centered">
+  <article class="row">
+    {% for post in site.posts reverse %}
+      {% if post.author == page.first_name %}
+        {% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
+        <h2 class="small-2 columns">
+        {% unless year == this_year %}
+          {% assign year = this_year %}
+          {{ year }}
+        {% endunless %}
+        </h2>
+        {% include archive_post.html %}
+      {% endif %}
+    {% endfor %}
+  </article>
+  </div>
+  </section>
+  {% include gauges.html %}
+</body>
+</html>
