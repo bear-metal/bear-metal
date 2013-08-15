@@ -7,6 +7,11 @@
 @import "app-foundation";
 @import "typography";
 
+a {
+  @include transition-property(color);
+  @include transition-duration(0.5s);
+}
+
 body > header {
   &.post {
     padding-top: 1em;
@@ -22,6 +27,12 @@ body > header {
       height: 0.8em;
       vertical-align: baseline;
       opacity: 0.5;
+      @include transition-property(opacity);
+      @include transition-duration(0.5s);
+    }
+
+    a:hover img {
+      opacity: 0.8;
     }
   }
 
