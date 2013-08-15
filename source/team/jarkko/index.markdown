@@ -14,7 +14,7 @@ Jarkko is the resident armchair psychologist and jack of all trades at Bear Meta
 
 Jarkko is a diehard endurance sports enthusiast and a national level orienteer. His other disciplines include running both on and off-road, cross-country skiing, cycling and multisports from triathlon to multi-day adventure races.
 
-Jarkko was one of the earliest Ruby on Rails enthusiast by semi-accidentally ending up body doubling DHH in the Rails workshop in EuroOSCON 2005.
+Jarkko was one of the earliest Ruby on Rails evangelists by semi-accidentally ending up body doubling DHH in the Rails workshop in EuroOSCON 2005.
 
 ## Elsewhere
 
