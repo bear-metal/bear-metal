@@ -12,6 +12,32 @@ a {
   @include transition-duration(0.5s);
 }
 
+body > nav {
+  @include grid-row;
+  font: {
+    family: "brandon-grotesque","Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+    weight: 400;
+  }
+
+  a {
+    color: #2b3844;
+  }
+
+  ul {
+    @include grid-column(4, false, false, 8);
+    margin: {
+      bottom: -0.5em;
+      top: 1em;
+    }
+
+    li {
+      text-align: right;
+      float: right;
+      margin-left: 2em;
+    }
+  }
+}
+
 body > header {
   &.post {
     padding-top: 1em;
