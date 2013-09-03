@@ -7,7 +7,15 @@ comments: true
 categories: [business,operations, process, release]
 ---
 
-A few months of work during a sabbatical yielded a product that nailed a problem in the preventative healthcare space. After a freemium window, the product gained good market traction and you spawn a new company with three coworkers. Customers are raving, sales trends are on the up, the engineering team is growing and there's conceptual products in the pipeline.
+<figure markdown="1">
+  [![](http://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg)](http://www.flickr.com/photos/robbn1/3391187126/)
+
+<figcaption markdown="1">
+Photo by [Robb North](http://www.flickr.com/photos/robbn1/3391187126/)
+</figcaption>
+</figure>
+
+A few months of work during a sabbatical yielded a product that nailed a problem in the preventative healthcare space. After a freemium window, the product gained good market traction and you spawn a new company with three coworkers. Customers are raving, sales trends are on the up, the engineering team is growing and there are conceptual products in the pipeline.
 
 Three months down the line, there are 4 production applications, hordes of paying customers, a few big contracts with strict SLAs (service-level agreements) and enough resources to spin off a presence in Europe. A new feature that combines these products into a suite is slated for release. Engineering hauled ass for 2 months and sales is super stoked to be able to pitch it to customers.
 
