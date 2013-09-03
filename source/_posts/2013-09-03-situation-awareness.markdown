@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Situation awareness"
+title: "Don't Just Fly Blind: How to Regain Control of Production Systems with the Help of Situation Awareness"
 author: Lourens
 date: 2013-09-03 16:57
 comments: true
