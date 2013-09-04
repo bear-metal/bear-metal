@@ -6,6 +6,7 @@
 
 @import "app-foundation";
 @import "typography";
+@import "convertkit_embed";
 
 a {
   @include transition-property(color);
@@ -107,6 +108,12 @@ body > header {
 @media only screen and (max-width: 64em) {
   #pitch {
     ol {
+      margin-left: 20px;
+    }
+  }
+
+  article {
+    ul, ol {
       margin-left: 20px;
     }
   }
