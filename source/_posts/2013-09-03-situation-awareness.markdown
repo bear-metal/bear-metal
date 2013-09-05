@@ -76,3 +76,5 @@ Take a minute and ponder the following :
 * Are you comfortable releasing at any time?
 
 In our next post, we'll explore some common components, variables and events required for being "on top" of your stack. In the meantime, what causes you the most pain when trying to keep up with your production systems? What would you write a blank cheque for? :-)
+
+[Discuss on Hacker News](https://news.ycombinator.com/item?id=6332734).
