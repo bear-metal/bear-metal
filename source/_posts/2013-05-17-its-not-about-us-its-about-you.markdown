@@ -4,6 +4,7 @@ title: "It’s not about us, it’s about you (and not really about you, either)
 author: Jarkko
 date: 2013-08-14 15:51
 comments: true
+keywords: business, philosophy, marketing
 categories: [business, awesome, philosophy]
 ---
 

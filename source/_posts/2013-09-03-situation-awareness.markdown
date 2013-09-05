@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "Don't Just Fly Blind: How to Regain Control of Production Systems with the Help of Situation Awareness"
+title: "Are you flying blind – How to Regain Control of Production Systems with the Help of Situation Awareness?"
 author: Lourens
 date: 2013-09-03 16:57
 comments: true
+keywords: operations, situation awareness, process, release, devops
 categories: [business,operations, process, release]
 ---
 
