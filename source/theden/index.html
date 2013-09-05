@@ -11,6 +11,8 @@ title: The Den
     <article>
       {% include article.html %}
     </article>
+    {% include custom/convertkit_form.html %}
+
   {% endfor %}
   <div class="pagination">
     {% if paginator.next_page %}

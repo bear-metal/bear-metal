@@ -4,6 +4,17 @@
 
 #ck_embed_form {
     background: #f6f6f6 url('/images/ck_form_background.png') repeat-y center 0px;
+    margin: {
+      bottom: 2em
+    }
+}
+
+.blog-index {
+  #ck_embed_form {
+      margin: {
+        bottom: 6em
+      }
+  }
 }
 
 @media only screen and (max-width: 48em) {
