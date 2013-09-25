@@ -10,7 +10,11 @@ first_name: Lourens
 
 # Lourens Naudé
 
-Lourens is an ultramarathoner and enjoys coding close to the metal.
+Lourens specializes in backend / platform / domain solutions and is well versed full stack, from VM to high level protocols. He is known for his offbeat Ruby patches and extensions.
+
+Current interests include disruptive communications technology like ZeroMQ, operations tools as well as biofeedback and anything where business, technology and the health sector meets. He travels frequently, but constantly thinks of better ways and processes to move people and their belongings around.
+
+He ran his first 2 ultra-trails this year and as a result developed a muesli addiction. Lourens, along with the rest of Bear Metal, believes in a healthy work-life balance and as such spends free time either up in the mountains or at sea in sunny Madeira Island.
 
 ## Elsewhere
 
