@@ -18,3 +18,7 @@ node_modules
 /config/deploy.yml
 /coverage/
 *.gem
+
+# diff rbenv versions use diff namings
+.rbenv-version
+.ruby-version
