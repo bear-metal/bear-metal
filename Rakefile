@@ -241,7 +241,7 @@ multitask :push do
   puts "## Deploying branch to Github Pages "
   puts "## Pulling any updates from Github Pages "
   cd "#{deploy_dir}" do 
-    system "git pull"
+    system "git pull origin #{deploy_branch}"
   end
   (Dir["#{deploy_dir}/*"]).each { |f| rm_rf(f) }
   Rake::Task[:copydot].invoke(public_dir, deploy_dir)
@@ -294,7 +294,10 @@ task :set_root_dir, :dir do |t, args|
 end
 
 desc "Set up _deploy folder and deploy branch for Github Pages deployment"
-task :setup_github_pages, :repo do |t, args|
+task :setup_github_pages
+task :setup_github_pages => deploy_dir.to_sym
+
+directory deploy_dir do
   repo_url = `git config --get remote.origin.url`
   protocol = (repo_url.match(/(^git)@/).nil?) ? 'https' : 'git'
   if protocol == 'git'
@@ -323,7 +326,6 @@ task :setup_github_pages, :repo do |t, args|
     end
   end
 
-  rm_rf deploy_dir
   mkdir deploy_dir
   cd "#{deploy_dir}" do
     system "git init"
