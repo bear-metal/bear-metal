@@ -157,7 +157,7 @@ task :isolate, :filename do |t, args|
 end
 
 desc "Move all stashed posts back into the posts directory, ready for site generation."
-task :integrate do
+task :integrate  => [:setup_github_pages] do
   FileUtils.mv Dir.glob("#{source_dir}/#{stash_dir}/*.*"), "#{source_dir}/#{posts_dir}/"
 end
 
@@ -295,14 +295,7 @@ end
 
 desc "Set up _deploy folder and deploy branch for Github Pages deployment"
 task :setup_github_pages, :repo do |t, args|
-  if args.repo
-    repo_url = args.repo
-  else
-    puts "Enter the read/write url for your repository"
-    puts "(For example, 'git@github.com:your_username/your_username.github.io)"
-    puts "           or 'https://github.com/your_username/your_username.github.io')"
-    repo_url = get_stdin("Repository url: ")
-  end
+  repo_url = `git config --get remote.origin.url`
   protocol = (repo_url.match(/(^git)@/).nil?) ? 'https' : 'git'
   if protocol == 'git'
     user = repo_url.match(/:([^\/]+)/)[1]
@@ -329,13 +322,7 @@ task :setup_github_pages, :repo do |t, args|
       end
     end
   end
-  url = "http://#{user}.github.io"
-  url += "/#{project}" unless project == ''
-  jekyll_config = IO.read('_config.yml')
-  jekyll_config.sub!(/^url:.*$/, "url: #{url}")
-  File.open('_config.yml', 'w') do |f|
-    f.write jekyll_config
-  end
+
   rm_rf deploy_dir
   mkdir deploy_dir
   cd "#{deploy_dir}" do
@@ -343,7 +330,7 @@ task :setup_github_pages, :repo do |t, args|
     system "echo 'My Octopress Page is coming soon &hellip;' > index.html"
     system "git add ."
     system "git commit -m \"Octopress init\""
-    system "git branch -m gh-pages" unless branch == 'master'
+    system "git branch --track -m gh-pages" unless branch == 'master'
     system "git remote add origin #{repo_url}"
     rakefile = IO.read(__FILE__)
     rakefile.sub!(/deploy_branch(\s*)=(\s*)(["'])[\w-]*["']/, "deploy_branch\\1=\\2\\3#{branch}\\3")
@@ -352,7 +339,6 @@ task :setup_github_pages, :repo do |t, args|
       f.write rakefile
     end
   end
-  puts "\n---\n## Now you can deploy to #{url} with `rake deploy` ##"
 end
 
 def ok_failed(condition)
