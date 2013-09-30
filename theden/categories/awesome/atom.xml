@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: awesome | Bear Metal]]></title>
+  <link href="http://bearmetal.eu/theden/categories/awesome/atom.xml" rel="self"/>
+  <link href="http://bearmetal.eu/"/>
+  <updated>2013-09-30T13:00:18+03:00</updated>
+  <id>http://bearmetal.eu/</id>
+  <author>
+    <name><![CDATA[Bear Metal OÜ]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
+    <link href="http://bearmetal.eu/theden/its-not-about-us-its-about-you/"/>
+    <updated>2013-08-14T15:51:00+03:00</updated>
+    <id>http://bearmetal.eu/theden/its-not-about-us-its-about-you</id>
+    <content type="html"><![CDATA[<figure>
+  <p><a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="http://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
+
+  <figcaption>
+    <p>Photo by <a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/">Ron Cogswell</a></p>
+  </figcaption>
+</figure>
+
+<p>One of the saddest things to happen online was in 2007 when my all-time favorite author and presenter, Kathy Sierra, received death threaths and thus retreated from the public web. It also meant that she stopped writing her <a href="http://headrush.typepad.com">Creating Passionate Users</a> weblog, which had been a great inspiration for me for quite some time. Thank god she didn’t <a href="http://ejohn.org/blog/eulogy-to-_why/">pull a _why</a> on it.</p>
+
+<p>While it’s more than six years since Kathy’s last blog post (is it really that long?), there is no reason we shouldn’t apply her lessons even in today’s online world.</p>
+
+<p>Maybe the most famous mantra of Sierra was that in order to create passionate users you should make <em>them</em> kick ass. Sure, it’s nice if your UI boasts übercool 3D CSS transformations but if it doesn’t help your users shine, no one (well, except for some web geeks) will give a flying fuck.</p>
+
+<p>She demonstrated this with the fact that very often companies spend a huge amount of effort and money to hone the living daylights off their marketing materials but don’t really put that much time into what actually helps their users: tutorials and user manuals. Of course this had helped her immensively by creating a market for the visual <a href="http://www.headfirstlabs.com">Head First</a> book series on O’Reilly that she curated.</p>
+
+<p>Apple has for a long time been a good example of helping its users kick ass. The user manual of the old Final Cut Pro 7 was also a great introduction to the art of video editing<sup id="fnref:unfortunately"><a href="#fn:unfortunately" rel="footnote">1</a></sup>. Likewise, most of Apple ads show things you can do and <em>create</em> with their products, not just random people dancing around the pool.</p>
+
+<p>People care about how they can kick ass <em>themselves</em> and they need to be able to learn it to capitalize on it. Nowadays it seems that companies are much more interested in giving people free apps and then using psychological tricks to milk money out of them than helping them shine. Which, coincidentally, brings us back to Kathy Sierra.</p>
+
+<p>To my pleasant surprise, I last week learned that Kathy is back with the pseudonym <a href="https://twitter.com/seriouspony">Serious Pony</a>, and <a href="http://seriouspony.com/blog/">a new blog</a> of the same name. The first article, <a href="http://seriouspony.com/blog/2013/7/24/your-app-makes-me-fat">Your app makes me fat</a>, is of the same awesome quality as her old pieces. In it, she tackles head-on the aforementioned gamification trend and the <a href="http://youarenotsosmart.com/2012/04/17/ego-depletion/">ego depletion</a> tax it puts on us as app users.</p>
+
+<p>To honor Kathy, we wanted to start this blog off by not talking about us ourselves, because <a href="http://youarenotsosmart.com/2012/04/17/ego-depletion/">Bear Metal</a> isn’t really about us, but you. And – assuming you are a developer, entrepreneur or content provider – not really about you either. It’s about who we (you and us) serve. Because without them there is no market, no audience, no need, no problems to solve, no pains to relieve. Your customers should be the ones that matter to you. And they don’t care about you or us. They care about whether your product can make them shine.</p>
+
+<p>Can your product help <em>them kick ass</em>? <em>Does it</em>? Are you <em>communicating that effectively</em> to your current and potential customers? That is all that should matter.</p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:unfortunately">
+      <p>Unfortunately this can’t be said about the manual of the new version, Final Cut Pro X.<a href="#fnref:unfortunately" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+</feed>
