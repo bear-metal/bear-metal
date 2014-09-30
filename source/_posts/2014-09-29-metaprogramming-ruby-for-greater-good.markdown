@@ -440,13 +440,13 @@ So, how to add the method to the class?
       end
     end
   end
-  ```
+```
   
   In the code above we define a new class method, `nattr_accessor`[^collision]. Then we iterate over all the method names the method is called with[^asterisk]. For each method, we use `define_method` twice, to generate both the getter and setter methods. Inside them, we use the `instance_variable_get` and `instance_variable_get` methods to dynamically get and set the variable value. Using these methods we can again avoid having to evaluate a string of code, the way as with using `define_method`.
   
  Let's now take a look whether our code works:
  
-   ```ruby
+```ruby
   
   class Cat < Animal
     nattr_accessor :legs, :diet
@@ -457,13 +457,13 @@ So, how to add the method to the class?
   c.diet = "Small birds"
   c.legs # => 4
   c.diet # => "Small birds"
-  ```
+```
 
 But what if we want to make the method more reusable? Where should it go then?
 
 We could obviously put it into the `Object` class:
 
-  ```ruby
+```ruby
   class Object
     def self.nattr_accessor(*meths)
       meths.each do |meth|
@@ -479,11 +479,11 @@ We could obviously put it into the `Object` class:
       end
     end
   end
-  ```
+```
   
 But what if we don't want it everywhere, cluttering the inheritance chain? Let's put it in a module and reuse it where needed.
 
-  ```ruby
+```ruby
   module Nattr
     def nattr_accessor(*meths)
       meths.each do |meth|
