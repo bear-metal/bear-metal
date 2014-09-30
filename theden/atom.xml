@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-09-30T11:59:36+03:00</updated>
+  <updated>2014-09-30T12:08:03+03:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -587,65 +587,6 @@
 <span class="line-number">13</span>
 <span class="line-number">14</span>
 <span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-<span class="line-number">34</span>
-<span class="line-number">35</span>
-<span class="line-number">36</span>
-<span class="line-number">37</span>
-<span class="line-number">38</span>
-<span class="line-number">39</span>
-<span class="line-number">40</span>
-<span class="line-number">41</span>
-<span class="line-number">42</span>
-<span class="line-number">43</span>
-<span class="line-number">44</span>
-<span class="line-number">45</span>
-<span class="line-number">46</span>
-<span class="line-number">47</span>
-<span class="line-number">48</span>
-<span class="line-number">49</span>
-<span class="line-number">50</span>
-<span class="line-number">51</span>
-<span class="line-number">52</span>
-<span class="line-number">53</span>
-<span class="line-number">54</span>
-<span class="line-number">55</span>
-<span class="line-number">56</span>
-<span class="line-number">57</span>
-<span class="line-number">58</span>
-<span class="line-number">59</span>
-<span class="line-number">60</span>
-<span class="line-number">61</span>
-<span class="line-number">62</span>
-<span class="line-number">63</span>
-<span class="line-number">64</span>
-<span class="line-number">65</span>
-<span class="line-number">66</span>
-<span class="line-number">67</span>
-<span class="line-number">68</span>
-<span class="line-number">69</span>
-<span class="line-number">70</span>
-<span class="line-number">71</span>
-<span class="line-number">72</span>
-<span class="line-number">73</span>
-<span class="line-number">74</span>
 </pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="k">class</span> <span class="nc">Animal</span>
 </span><span class="line">    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
 </span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
@@ -661,14 +602,23 @@
 </span><span class="line">      <span class="k">end</span>
 </span><span class="line">    <span class="k">end</span>
 </span><span class="line">  <span class="k">end</span>
-</span><span class="line">  <span class="sb">```</span>
-</span><span class="line"><span class="sb">  </span>
-</span><span class="line"><span class="sb">  In the code above we define a new class method, `</span><span class="n">nattr_accessor</span><span class="sb">`[^collision]. Then we iterate over all the method names the method is called with[^asterisk]. For each method, we use `</span><span class="n">define_method</span><span class="sb">` twice, to generate both the getter and setter methods. Inside them, we use the `</span><span class="nb">instance_variable_get</span><span class="sb">` and `</span><span class="nb">instance_variable_get</span><span class="sb">` methods to dynamically get and set the variable value. Using these methods we can again avoid having to evaluate a string of code, the way as with using `</span><span class="n">define_method</span><span class="sb">`.</span>
-</span><span class="line"><span class="sb">  </span>
-</span><span class="line"><span class="sb"> Let&#39;s now take a look whether our code works:</span>
-</span><span class="line"><span class="sb"> </span>
-</span><span class="line"><span class="sb">   ```</span><span class="n">ruby</span>
-</span><span class="line">
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In the code above we define a new class method, <code>nattr_accessor</code><sup id="fnref:collision"><a href="#fn:collision" rel="footnote">2</a></sup>. Then we iterate over all the method names the method is called with<sup id="fnref:asterisk"><a href="#fn:asterisk" rel="footnote">3</a></sup>. For each method, we use <code>define_method</code> twice, to generate both the getter and setter methods. Inside them, we use the <code>instance_variable_get</code> and <code>instance_variable_get</code> methods to dynamically get and set the variable value. Using these methods we can again avoid having to evaluate a string of code, the way as with using <code>define_method</code>.</p>
+
+<p>Let’s now take a look whether our code works:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">
 </span><span class="line">  <span class="k">class</span> <span class="nc">Cat</span> <span class="o">&lt;</span> <span class="no">Animal</span>
 </span><span class="line">    <span class="n">nattr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:diet</span>
 </span><span class="line">  <span class="k">end</span>
@@ -678,14 +628,28 @@
 </span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">diet</span> <span class="o">=</span> <span class="s2">&quot;Small birds&quot;</span>
 </span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">legs</span> <span class="c1"># =&gt; 4</span>
 </span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">diet</span> <span class="c1"># =&gt; &quot;Small birds&quot;</span>
-</span><span class="line">  <span class="sb">```</span>
-</span><span class="line">
-</span><span class="line"><span class="sb">But what if we want to make the method more reusable? Where should it go then?</span>
-</span><span class="line">
-</span><span class="line"><span class="sb">We could obviously put it into the `</span><span class="no">Object</span><span class="sb">` class:</span>
-</span><span class="line">
-</span><span class="line"><span class="sb">  ```</span><span class="n">ruby</span>
-</span><span class="line">  <span class="k">class</span> <span class="nc">Object</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>But what if we want to make the method more reusable? Where should it go then?</p>
+
+<p>We could obviously put it into the <code>Object</code> class:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="k">class</span> <span class="nc">Object</span>
 </span><span class="line">    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
 </span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
 </span><span class="line">        <span class="c1"># getter</span>
@@ -700,12 +664,26 @@
 </span><span class="line">      <span class="k">end</span>
 </span><span class="line">    <span class="k">end</span>
 </span><span class="line">  <span class="k">end</span>
-</span><span class="line">  <span class="sb">```</span>
-</span><span class="line"><span class="sb">  </span>
-</span><span class="line"><span class="sb">But what if we don&#39;t want it everywhere, cluttering the inheritance chain? Let&#39;s put it in a module and reuse it where needed.</span>
-</span><span class="line">
-</span><span class="line"><span class="sb">  ```</span><span class="n">ruby</span>
-</span><span class="line">  <span class="k">module</span> <span class="nn">Nattr</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>But what if we don’t want it everywhere, cluttering the inheritance chain? Let’s put it in a module and reuse it where needed.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="k">module</span> <span class="nn">Nattr</span>
 </span><span class="line">    <span class="k">def</span> <span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
 </span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
 </span><span class="line">        <span class="c1"># getter</span>
@@ -744,7 +722,7 @@
 
 <p>We used include to get the Nattr module into Animal. However, include will take the methods in the module and make them <em>instance methods</em> of the including class. However, we need the method as a class method. What to do?</p>
 
-<p>Fortunately, Ruby has a similar method called <code>extend</code>. It works the same way as include, except that it makes the methods from the module class methods<sup id="fnref:technically"><a href="#fn:technically" rel="footnote">2</a></sup> of our Animal class.</p>
+<p>Fortunately, Ruby has a similar method called <code>extend</code>. It works the same way as include, except that it makes the methods from the module class methods<sup id="fnref:technically"><a href="#fn:technically" rel="footnote">4</a></sup> of our Animal class.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -815,6 +793,12 @@
   <ol>
     <li id="fn:instance">
       <p>Yeah, I know, singleton method of the class itself.<a href="#fnref:instance" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:collision">
+      <p>Let’s name it something other than the built-in method just to avoid name collisions and nasty surprises.<a href="#fnref:collision" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:asterisk">
+      <p>The asterisk before the parameter name means that we can have a number of arguments, each of which will be passed to the method in an array called <code>meths</code>.<a href="#fnref:asterisk" rel="reference">&#8617;</a></p>
     </li>
     <li id="fn:technically">
       <p>Technically, it opens up the singleton class of the Animal class and throws the methods in there. Thus they’ll become singleton methods for the Animal class, just like we want them to.<a href="#fnref:technically" rel="reference">&#8617;</a></p>

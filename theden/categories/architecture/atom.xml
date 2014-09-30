@@ -4,7 +4,7 @@
   <title><![CDATA[Category: architecture | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/architecture/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-09-30T11:59:36+03:00</updated>
+  <updated>2014-09-30T12:08:03+03:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -462,7 +462,7 @@ Animal.attr_accessor :legs, :diet
       instance_variable_set("@#{meth}", wut)
     end
   end
-end   end   ```
+end   end ```
 </code></pre>
 
 <p>In the code above we define a new class method, <code>nattr_accessor</code><sup id="fnref:collision"><a href="#fn:collision" rel="footnote">2</a></sup>. Then we iterate over all the method names the method is called with<sup id="fnref:asterisk"><a href="#fn:asterisk" rel="footnote">3</a></sup>. For each method, we use <code>define_method</code> twice, to generate both the getter and setter methods. Inside them, we use the <code>instance_variable_get</code> and <code>instance_variable_get</code> methods to dynamically get and set the variable value. Using these methods we can again avoid having to evaluate a string of code, the way as with using <code>define_method</code>.</p>
@@ -480,7 +480,7 @@ end   end   ```
   c.diet = “Small birds”
   c.legs # =&gt; 4
   c.diet # =&gt; “Small birds”
-  ```</p>
+```</p>
 
 <p>But what if we want to make the method more reusable? Where should it go then?</p>
 
@@ -500,7 +500,7 @@ end   end   ```
       instance_variable_set("@#{meth}", wut)
     end
   end
-end   end   ```
+end   end ```
 </code></pre>
 
 <p>But what if we don’t want it everywhere, cluttering the inheritance chain? Let’s put it in a module and reuse it where needed.</p>
