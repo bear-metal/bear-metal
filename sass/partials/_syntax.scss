@@ -61,7 +61,6 @@ html .gist .gist-file {
    } @else {
      background: $base02 $noise-bg;
    }
-   @extend .sans;
    line-height: 1.5em;
     a {
       color: mix($base1, $base01) !important;
@@ -83,7 +82,7 @@ html .gist .gist-file {
 pre {
   background: $pre-bg $noise-bg;
   @include border-radius(.4em);
-  @extend .mono;
+  font-family: $code-font-family !important;
   border: 1px solid $pre-border;
   line-height: 1.45em;
   font-size: 13px;
@@ -99,7 +98,7 @@ h3.filename {
 
 p, li {
   code {
-    @extend .mono;
+    font-family: $code-font-family !important;
     display: inline-block;
     white-space: no-wrap;
     background: #fff;
@@ -115,7 +114,7 @@ p, li {
 }
 
 .pre-code {
-  font-family: $mono !important;
+  font-family: $code-font-family !important;
   overflow: scroll;
   overflow-y: hidden;
   display: block;
@@ -221,7 +220,8 @@ figure.code {
   padding: 0;
   border: 0;
   margin-bottom: 1.5em;
-  pre { margin-bottom: 0; }
+  pre, table { margin-bottom: 0; }
+  
   figcaption {
     position: relative;
     @extend .code-title;
@@ -230,6 +230,7 @@ figure.code {
   .highlight {
     margin-bottom: 0;
   }
+  .gutter, .code { padding: 0;}
 }
 
 .code-title {
