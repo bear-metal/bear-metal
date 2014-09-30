@@ -19,8 +19,12 @@
         <lastmod>2014-01-15T11:44:35+02:00</lastmod>
     </url>
     <url>
+        <loc>http://bearmetal.eu/theden/metaprogramming-ruby-for-greater-good/</loc>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
+    </url>
+    <url>
         <loc>http://bearmetal.eu/</loc>
-        <lastmod>2014-01-15T11:44:35+02:00</lastmod>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/robots.txt</loc>
@@ -28,7 +32,7 @@
     </url>
     <url>
         <loc>http://bearmetal.eu/services/</loc>
-        <lastmod>2014-01-15T11:44:35+02:00</lastmod>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/erkki/</loc>
@@ -52,14 +56,14 @@
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/archives/</loc>
-        <lastmod>2014-01-15T11:44:35+02:00</lastmod>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/</loc>
-        <lastmod>2014-01-15T11:44:35+02:00</lastmod>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/zeromq/</loc>
-        <lastmod>2014-01-15T11:44:35+02:00</lastmod>
+        <lastmod>2014-09-30T11:57:10+03:00</lastmod>
     </url>
 </urlset>

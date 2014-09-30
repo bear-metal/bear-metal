@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-08-21T15:08:23+03:00</updated>
+  <updated>2014-09-30T11:59:36+03:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,817 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Metaprogramming Ruby for Greater Good]]></title>
+    <link href="http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good/"/>
+    <updated>2014-09-29T11:43:00+03:00</updated>
+    <id>http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good</id>
+    <content type="html"><![CDATA[<p><em>This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014.</em> </p>
+
+<script async="" class="speakerdeck-embed" data-id="89eb608027ae01321e4c624b84330d5d" data-ratio="1.77777777777778" src="http://bearmetal.eu//speakerdeck.com/assets/embed.js"></script>
+
+<p>Thanks, and hi, everyone! It’s a real honor to be here. I’ve been a big fan of Reaktor for a long time, that is, UNTIL ALL MY GEEK FRIENDS DEFECTED THERE. There’s been lots of talk about Rosatom building a new nuclear plant here in Finland. I say fuck that, we already have enough nuclear knowledge locally. But I digress.</p>
+
+<p>I’d like to be one of the cool kids and <em>Start with Why</em> just like Simon Sinek told us. However, before that it’s worth defining the term metaprogramming in the context of this talk.</p>
+
+<p>What do we mean by metaprogramming? <em>In its simplest form, metaprogramming means code that writes code</em>.</p>
+
+<p>A-ha! So, code generators are metaprogramming, too? Not really. I go with the definition where the code is generated on the fly in the runtime. We could perhaps call it dynamic metaprogramming. This means that most of what I’m going to talk about is not possible in a static language.</p>
+
+<p>So a more appropriate definition might be, to quote Paolo Perrotta,</p>
+
+<blockquote>
+  <p>Writing code that manipulates language constructs at runtime.</p>
+</blockquote>
+
+<h2 id="why">Why?</h2>
+
+<p>But why, I hear you ask. What’s in it for me? Well, first of all, because metaprogramming is…</p>
+
+<p>…magic. And magic is good, right? Right? RIGHT? Well, it <em>can</em> be. At least it’s cool.</p>
+
+<p>It’s also a fun topic for a conference like this, because it’s frankly, quite often, mind-boggling. Think of it like this. You take your brain out of your head. You put it in your backpocket. Then you sit on it. <em>Does it bend?</em> If it does, you’re talking about metaprogramming.</p>
+
+<p>I also like things that make me scratch my head. I mean, scratching your head is a form of exercise. Just try it yourself. Scratch your head vigorously and your Fitbit will tell you you worked out like crazy today. That’s healthy.</p>
+
+<p>But all joking aside, we don’t use metaprogramming to be clever, we use it to be flexible. And with Ruby – and any other sufficiently dynamic language – in the end of the day, <em>metaprogramming is just a fancy word for normal, advanced programming</em>.</p>
+
+<h2 id="why-ruby">Why Ruby?</h2>
+
+<p>So why Ruby? First of all, Ruby is the language I know by far the best. Second, Ruby combines Lisp-like dynamism and flexibility to a syntax that humans can actually decipher.</p>
+
+<p>Like said, in Ruby there’s really no distinction between metaprogramming and advanced OO programming in general. Thus, before we go to things that are more literally metaprogramming, let’s have a look at Ruby’s object model and constructs that lay the groundwork for metaprogramming.</p>
+
+<p>Thus, in a way, this talk can be reduced to <em>advanced OO concepts in Ruby</em>.</p>
+
+<h2 id="how">How?</h2>
+
+<p>Before we delve more deeply into the Ruby object model, let’s take a step back and have a look at what we mean by object-orientation.</p>
+
+<p>Generally, there are two main approaches to object-oriented programming. By far the most popular is class-based OO, used in languages such as C++ and Java. The other one is prototype-based OO, which is most commonly seen in Javascript. So which of the two does Ruby use?</p>
+
+<p>Class-based? Well, let’s have a look.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="n">speaker</span> <span class="o">=</span> <span class="no">Object</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line">	
+</span><span class="line">  <span class="k">def</span> <span class="nc">speaker</span><span class="o">.</span><span class="nf">talk_length</span>
+</span><span class="line">    <span class="vi">@talk_length</span> <span class="o">||=</span> <span class="mi">30</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">def</span> <span class="nc">speaker</span><span class="o">.</span><span class="nf">talk_length</span><span class="o">=</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+</span><span class="line">    <span class="vi">@talk_length</span> <span class="o">=</span> <span class="n">length</span>
+</span><span class="line">  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="n">gary</span> <span class="o">=</span> <span class="n">speaker</span><span class="o">.</span><span class="n">clone</span>
+</span><span class="line">  <span class="n">gary</span><span class="o">.</span><span class="n">talk_length</span> <span class="c1"># =&gt; 30</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">gary</span><span class="o">.</span><span class="n">talk_length</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span class="line">  <span class="n">gary</span><span class="o">.</span><span class="n">talk_length</span> <span class="c1"># =&gt; 60</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">scott</span> <span class="o">=</span> <span class="n">gary</span><span class="o">.</span><span class="n">clone</span>
+</span><span class="line">  <span class="n">scott</span><span class="o">.</span><span class="n">talk_length</span> <span class="c1"># =&gt; 60</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">scott</span><span class="o">.</span><span class="n">talk_length</span> <span class="o">=</span> <span class="mi">45</span>
+</span><span class="line">  <span class="n">scott</span><span class="o">.</span><span class="n">talk_length</span> <span class="c1"># =&gt; 45</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>How’s that for prototype-oriented OO in Ruby? But, noone does anything like this with Ruby. <em>No?</em> Just ask the DCI guys. Or, well, ask <a href="https://twitter.com/garybernhardt/status/514413978777563136">Gary about DCI (and Snuggies)</a>.</p>
+
+<p>But I get your point, mainly when you do Ruby programming, you use something that resembles more the good ole class-based OO model. However, in Ruby it comes with a twist – or a dozen.</p>
+
+<h3 id="everything-is-executable">Everything is executable</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Conference</span>
+</span><span class="line">  <span class="nb">puts</span> <span class="s2">&quot;Hello world (open)&quot;</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">def</span> <span class="nf">venue</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">  <span class="c1"># …</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="c1"># Hello world (open)</span>
+</span><span class="line"><span class="c1"># =&gt; nil</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In Ruby, everything is executable, even the class definitions. But it doesn’t end there. What does the following produce?</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Conference</span> <span class="o">&lt;</span> <span class="no">Event</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="o">&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="no">Conference</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span>
+</span><span class="line">  <span class="o">=&gt;</span> <span class="no">Conference</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">superclass</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Event? Let’s see.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Conference</span> <span class="o">&lt;</span> <span class="no">Event</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="o">&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="no">Conference</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span>
+</span><span class="line">  <span class="o">=&gt;</span> <span class="no">Conference</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class="line">  <span class="o">=&gt;</span> <span class="no">ChunkyBacon</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Bet you didn’t see that coming. Ok, I’ll admit, I hid something out of the original listing.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">ChunkyBacon</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="no">Event</span> <span class="o">=</span> <span class="no">ChunkyBacon</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">Conference</span> <span class="o">&lt;</span> <span class="no">Event</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="o">&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="no">Conference</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span>
+</span><span class="line">  <span class="o">=&gt;</span> <span class="no">Conference</span>
+</span><span class="line">  <span class="o">&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">superclass</span>
+</span><span class="line">  <span class="o">=&gt;</span> <span class="no">ChunkyBacon</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Remember, everything is executable. Thus, this would be just as valid:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">def</span> <span class="nf">gimme_a_class</span>
+</span><span class="line">  <span class="o">[</span><span class="nb">Array</span><span class="p">,</span> <span class="no">Hash</span><span class="p">,</span> <span class="nb">String</span><span class="o">][</span><span class="nb">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">Conference</span> <span class="o">&lt;</span> <span class="n">gimme_a_class</span><span class="p">()</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Stupid? Yes, but valid nonetheless.</p>
+
+<h3 id="open-classes">Open classes</h3>
+
+<p>In Ruby, you can open any class, even the built-in classes, to modify it. This is something that is called monkey-patching, or <a href="http://www.paulirish.com/2010/duck-punching-with-jquery/">duck punching</a> for extra giggles.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">String</span>
+</span><span class="line">  <span class="n">alias_method</span> <span class="ss">:old_reverse</span><span class="p">,</span> <span class="ss">:reverse</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">reverse</span>
+</span><span class="line">    <span class="n">old_reverse</span><span class="o">.</span><span class="n">upcase</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;</span> <span class="n">speaker</span> <span class="o">=</span> <span class="s2">&quot;Gary&quot;</span>
+</span><span class="line"><span class="o">&gt;</span> <span class="n">speaker</span><span class="o">.</span><span class="n">reverse</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="s2">&quot;YRAG&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="everything-is-an-object">Everything is an Object</h3>
+
+<p>Even methods. Thus you can even do functional style programming with Ruby. Think about it, you can use your favorite language to cook a delicious meal of callback spaghetti. Believe me, I’ve tried.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="o">&gt;</span> <span class="nb">String</span><span class="o">.</span><span class="n">instance_method</span><span class="p">(</span><span class="ss">:reverse</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="c1">#&lt;UnboundMethod: String#reverse&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="classes-are-objects-too">Classes are Objects, too</h3>
+
+<p><em>Wait, what?</em></p>
+
+<p>But, classes are different, I hear you say. They have class methods, and stuff.</p>
+
+<p>I’ll let you into a secret. In Ruby, class methods are just like Ukraine in docent Bäckman’s rethoric: they don’t really exist. Wanna proof?</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Conference</span>
+</span><span class="line">  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">in_finland</span>
+</span><span class="line">    <span class="c1"># return conferences in Finland</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here’s an example of a class method in Ruby. Self is the current object, which in the case of a class definition is the class itself. Does this look familiar?</p>
+
+<p>It should.</p>
+
+<h3 id="singleton-methods">Singleton Methods</h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="k">def</span> <span class="nc">speaker</span><span class="o">.</span><span class="nf">talk_length</span>
+</span><span class="line">	<span class="vi">@talk_length</span> <span class="o">||=</span> <span class="mi">30</span>
+</span><span class="line">  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Singleton methods are methods that are defined for a single object, not for the whole object class.</p>
+
+<h3 id="ruby-method-lookup">Ruby method lookup</h3>
+
+<p><img src="http://bearmetal.eu/images/c3ba7a9122156b8a63f17a9ea1744800.png" alt="" /></p>
+
+<p>Above is a simple (and pretty, huh?) diagram of Ruby method lookup. Methods reside in the object’s class, right of the object in the image. But where do singleton methods live? They can’t sit in the class, since then they’d be shared by all the objects of the same class. Neither can they be in the Object class, for the same reason.</p>
+
+<p>Turns out they live in something called a singleton class.</p>
+
+<h3 id="singleton-class">Singleton class</h3>
+
+<p><img src="http://bearmetal.eu/images/1900b9d0d3a8368f8e56c39d8fc8ebc1.png" alt="Singleton classes in Ruby" /></p>
+
+<p>Singleton class, a.k.a ghost class, metaclass, or eigenclass, is a special case of a class. It’s a regular class except for a couple of details:</p>
+
+<ul>
+  <li>It’s hidden from the generic class hierarchy. Thus e.g. the <code>#ancestors</code> method for a class never lists singleton classes.</li>
+  <li>It cannot be directly inherited.</li>
+  <li>It only ever has a single instance.</li>
+</ul>
+
+<p>So, what are class methods? They’re simply singleton methods for the class object itself. And like all singleton methods, they live in the singleton class of the object in question – in this case, the class object. <em>Because classes are just objects themselves</em>.</p>
+
+<p><img src="http://bearmetal.eu/images/05cdd010de1fdf3005147e905f3c9ed7.png" alt="" /></p>
+
+<p>This has an interesting corollary. Singleton classes are classes, and classes are objects, so…</p>
+
+<p>…wait for it…</p>
+
+<p>…a singleton class must have its own singleton class as well.</p>
+
+<p>That’s right, it’s turtles…errr…singleton classes all the way down. Is it starting to feel like metaprogramming already? We have barely started.</p>
+
+<h3 id="generating-code-dynamically-in-ruby">Generating Code Dynamically in Ruby</h3>
+
+<p>We’re going to have a look at four different ways to generate code dynamically in Ruby:</p>
+
+<ul>
+  <li><code>eval</code></li>
+  <li><code>instance_eval</code> &amp; <code>class_eval</code></li>
+  <li><code>define_method</code></li>
+  <li><code>method_missing</code></li>
+</ul>
+
+<h3 id="eval"><code>eval</code></h3>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="n">meth</span> <span class="o">=</span> <span class="s2">&quot;my_method&quot;</span>
+</span><span class="line">  <span class="nb">eval</span> <span class="o">&lt;&lt;-</span><span class="no">END</span>
+</span><span class="line"><span class="sh">    def #{meth}</span>
+</span><span class="line"><span class="sh">      &quot;foo&quot;</span>
+</span><span class="line"><span class="sh">    end</span>
+</span><span class="line"><span class="no">  END</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Eval is the simplest and barest way to dynamically execute code in Ruby. It takes a string of code and then executes it in the current scope. You can also give eval an explicit scope using a <a href="http://www.ruby-doc.org/core-2.1.3/Binding.html">binding object</a> as the second argument.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">def</span> <span class="nf">get_binding</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</span><span class="line">  <span class="nb">binding</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;a+1&#39;</span><span class="p">,</span> <span class="n">get_binding</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="c1"># =&gt; 4, because &#39;a&#39; in the context of get_binding is 3</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Eval is super powerful, but has a few huge drawbacks:</p>
+
+<ul>
+  <li>It messes up syntax highlighting and autocompletion since the code is just a string as far as the editor goes.</li>
+  <li>It is a giant attack vector for code injection, unless you carefully make sure that no user-submitted data is passed to eval.</li>
+</ul>
+
+<p>For these reasons eval has slowly fallen out of favor, but there are still some cases where you have to drop down to bear metal (excuse the pun) means. As a rule of thumb however, you should as a first option resort to one of the following constructs.</p>
+
+<h3 id="instanceeval"><code>instance_eval</code></h3>
+
+<p>Put simply, <code>instance_eval</code> takes a block of code and executes it in the context of the receiving object. It can – just like <code>eval</code> – take a string, but also a real code block:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">obj</span><span class="o">.</span><span class="n">instance_eval</span> <span class="k">do</span>
+</span><span class="line">  <span class="nb">self</span> <span class="c1"># =&gt; obj</span>
+</span><span class="line">  <span class="vi">@v</span> <span class="c1"># =&gt; obj&#39;s instance var</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>For the reasons above, you should probably use a code block with <code>instance_eval</code> instead of a string of code, unless you know what you’re doing and have a good reason for your choice.</p>
+
+<p>A very common usecase for <code>instance_eval</code> is to build domain-specific languages.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Turtle</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class="line">    <span class="nb">instance_eval</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">def</span> <span class="nf">right</span><span class="p">(</span><span class="n">n</span><span class="p">);</span> <span class="k">end</span><span class="p">;</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">left</span><span class="p">(</span><span class="n">n</span><span class="p">);</span> <span class="k">end</span><span class="p">;</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="n">n</span><span class="p">);</span> <span class="k">end</span><span class="p">;</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="n">n</span><span class="p">);</span> <span class="k">end</span><span class="p">;</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">t</span> <span class="o">=</span> <span class="no">Turtle</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line"><span class="n">t</span><span class="o">.</span><span class="n">move</span> <span class="k">do</span>
+</span><span class="line">  <span class="n">right</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line">  <span class="n">up</span>
+</span><span class="line">  <span class="n">left</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">  <span class="n">down</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="classeval"><code>class_eval</code></h3>
+
+<p><code>class_eval</code> is the sister method for <code>instance_eval</code>. It changes the scope to inside the class definition of the used class. Thus, unlike <code>instance_eval</code>, it can only be called for classes and modules.</p>
+
+<p>Because of this, a bit counterintuitively methods defined inside <code>class_eval</code> will become instance methods for that class’s objects, while methods defined inside <code>ClassName.instance_eval</code> will become its class methods.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="o">[</span><span class="nb">String</span><span class="p">,</span> <span class="nb">Array</span><span class="p">,</span> <span class="no">Hash</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">cls</span><span class="o">|</span>
+</span><span class="line">  <span class="n">cls</span><span class="o">.</span><span class="n">class_eval</span> <span class="p">{</span> <span class="kp">include</span> <span class="no">HelloWorld</span> <span class="p">}</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="definemethod"><code>define_method</code></h3>
+
+<p><code>define_method</code> is the most straightforward and highest-level way to dynamically create new methods. It is just the same as using the normal def syntax, except:</p>
+
+<ul>
+  <li>With <code>define_method</code> you can set the method name dynamically.</li>
+  <li>You pass a block to <code>define_method</code> as the method body.</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Cat</span> <span class="o">&lt;</span> <span class="no">Animal</span>
+</span><span class="line">  <span class="o">[</span><span class="ss">:leg</span><span class="p">,</span> <span class="ss">:head</span><span class="p">,</span> <span class="ss">:tail</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">part</span><span class="o">|</span>
+</span><span class="line">    <span class="n">define_method</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="k">do</span>
+</span><span class="line">      <span class="c1"># …</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>It is worth noting that you often use both <code>*_eval</code> and <code>define_method</code> together, e.g. when defining class methods.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Cat</span> <span class="o">&lt;</span> <span class="no">Animal</span>
+</span><span class="line">  <span class="nb">instance_eval</span> <span class="k">do</span>
+</span><span class="line">    <span class="o">[</span><span class="ss">:total_number</span><span class="p">,</span> <span class="ss">:sum_of_legs</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">calc</span><span class="o">|</span>
+</span><span class="line">      <span class="n">define_method</span><span class="p">(</span><span class="n">calc</span><span class="p">)</span> <span class="k">do</span>
+</span><span class="line">        <span class="c1"># creates a class method, such as Cat.total_number</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h3 id="methodmissing"><code>method_missing</code></h3>
+
+<p><code>method_missing</code> is a special case of dynamic code in Ruby in that it doesn’t just by itself generate any dynamic code. However, you can use it to catch method calls that otherwise would go unanswered.</p>
+
+<p><code>method_missing</code> is called for an object when the called method is not found in either the object’s class or any of its ancestors. By default <code>method_missing</code> raises a <code>NoMethodError</code>, but you can redefine it for any class to work as you need it to.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Speaker</span>
+</span><span class="line">  <span class="k">def</span> <span class="nf">method_missing</span><span class="p">(</span><span class="n">met</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">met</span><span class="o">.</span><span class="n">to_s</span> <span class="o">==</span> <span class="s2">&quot;speak&quot;</span>
+</span><span class="line">      <span class="s2">&quot;I might as well say something: </span><span class="si">#{</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class="line">    <span class="k">else</span>
+</span><span class="line">      <span class="k">super</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">gary</span> <span class="o">=</span> <span class="no">Speaker</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line"><span class="n">gary</span><span class="o">.</span><span class="n">talk</span><span class="p">(</span><span class="s2">&quot;Destroy it&quot;</span><span class="p">)</span> <span class="c1"># =&gt; NoMethodError</span>
+</span><span class="line"><span class="n">gary</span><span class="o">.</span><span class="n">speak</span><span class="p">(</span><span class="s2">&quot;Just destroy it!&quot;</span><span class="p">)</span>
+</span><span class="line">  <span class="c1"># =&gt; &quot;I might as well say something: Just destroy it!&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><code>method_missing</code> is an example of a hook method in Ruby. Hook methods are similar to event handlers in Javascript in that they are called whenever a certain event (such as an unanswered method call above) happens during runtime. There are a bunch of hook methods in Ruby, but we don’t have time to dive deeper into them during this talk.</p>
+
+<p><code>method_missing</code> differs from the previous concepts in this talk in that it doesn’t by itself generate new methods. This has two implications:</p>
+
+<ul>
+  <li>You don’t need to know the name of potentially called methods in advance. This can be very powerful in e.g. libraries that talk to external APIs.</li>
+  <li>You can’t introspect the methods caught by <code>method_missing</code>. This means that e.g. <code>#instance_methods</code> won’t return the “ghost methods” that only <code>method_missing</code> catches. Likewise, <code>#respond_to?</code> will return false regardless of whether <code>method_missing</code> would have caught the call or not, unless you also overwrite the <a href="http://ruby-doc.org/core-2.1.3/Object.html#method-i-respond_to_missing-3F"><code>respond_to_missing?</code></a> method to be aware of the ghost method.</li>
+</ul>
+
+<h3 id="example-attraccessor-rewritten-in-ruby">Example: <code>attr_accessor</code> Rewritten in Ruby</h3>
+
+<p>To top off this talk, we’re going to combine the topics we have learned so far to do a simple exercise. Namely, we’re going to rewrite a simple Ruby language construct ourself, in pure Ruby.</p>
+
+<p>Ruby  has a simple construct called <code>attr_accessor</code> that creates getter and setter methods for named instance variables of the class’s object.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Animal</span>
+</span><span class="line">  <span class="kp">attr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:diet</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">cat</span> <span class="o">=</span> <span class="no">Animal</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line"><span class="n">cat</span><span class="o">.</span><span class="n">legs</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class="line"><span class="n">cat</span><span class="o">.</span><span class="n">legs</span> <span class="c1"># =&gt; 4</span>
+</span><span class="line"><span class="n">cat</span><span class="o">.</span><span class="n">diet</span> <span class="o">=</span> <span class="s2">&quot;Small birds&quot;</span>
+</span><span class="line"><span class="n">cat</span><span class="o">.</span><span class="n">diet</span> <span class="c1"># =&gt; &quot;Small birds&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>While <code>attr_accessor</code> above looks like some kind of keyword, it is actually just a call to a class method<sup id="fnref:instance"><a href="#fn:instance" rel="footnote">1</a></sup>. Remember, the whole class definition is executable code and <code>self</code> inside the class definition is set to the class itself. Thus, the line is the same as:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="no">Animal</span><span class="o">.</span><span class="n">attr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:diet</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>So, how to add the method to the class?</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="k">class</span> <span class="nc">Animal</span>
+</span><span class="line">    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
+</span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
+</span><span class="line">        <span class="c1"># getter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span> <span class="k">do</span>
+</span><span class="line">          <span class="nb">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">        <span class="c1"># setter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">=&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">wut</span><span class="o">|</span>
+</span><span class="line">          <span class="nb">instance_variable_set</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">wut</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="sb">```</span>
+</span><span class="line"><span class="sb">  </span>
+</span><span class="line"><span class="sb">  In the code above we define a new class method, `</span><span class="n">nattr_accessor</span><span class="sb">`[^collision]. Then we iterate over all the method names the method is called with[^asterisk]. For each method, we use `</span><span class="n">define_method</span><span class="sb">` twice, to generate both the getter and setter methods. Inside them, we use the `</span><span class="nb">instance_variable_get</span><span class="sb">` and `</span><span class="nb">instance_variable_get</span><span class="sb">` methods to dynamically get and set the variable value. Using these methods we can again avoid having to evaluate a string of code, the way as with using `</span><span class="n">define_method</span><span class="sb">`.</span>
+</span><span class="line"><span class="sb">  </span>
+</span><span class="line"><span class="sb"> Let&#39;s now take a look whether our code works:</span>
+</span><span class="line"><span class="sb"> </span>
+</span><span class="line"><span class="sb">   ```</span><span class="n">ruby</span>
+</span><span class="line">
+</span><span class="line">  <span class="k">class</span> <span class="nc">Cat</span> <span class="o">&lt;</span> <span class="no">Animal</span>
+</span><span class="line">    <span class="n">nattr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:diet</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">  <span class="n">c</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">legs</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">diet</span> <span class="o">=</span> <span class="s2">&quot;Small birds&quot;</span>
+</span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">legs</span> <span class="c1"># =&gt; 4</span>
+</span><span class="line">  <span class="n">c</span><span class="o">.</span><span class="n">diet</span> <span class="c1"># =&gt; &quot;Small birds&quot;</span>
+</span><span class="line">  <span class="sb">```</span>
+</span><span class="line">
+</span><span class="line"><span class="sb">But what if we want to make the method more reusable? Where should it go then?</span>
+</span><span class="line">
+</span><span class="line"><span class="sb">We could obviously put it into the `</span><span class="no">Object</span><span class="sb">` class:</span>
+</span><span class="line">
+</span><span class="line"><span class="sb">  ```</span><span class="n">ruby</span>
+</span><span class="line">  <span class="k">class</span> <span class="nc">Object</span>
+</span><span class="line">    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
+</span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
+</span><span class="line">        <span class="c1"># getter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span> <span class="k">do</span>
+</span><span class="line">          <span class="nb">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">        <span class="c1"># setter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">=&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">wut</span><span class="o">|</span>
+</span><span class="line">          <span class="nb">instance_variable_set</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">wut</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="sb">```</span>
+</span><span class="line"><span class="sb">  </span>
+</span><span class="line"><span class="sb">But what if we don&#39;t want it everywhere, cluttering the inheritance chain? Let&#39;s put it in a module and reuse it where needed.</span>
+</span><span class="line">
+</span><span class="line"><span class="sb">  ```</span><span class="n">ruby</span>
+</span><span class="line">  <span class="k">module</span> <span class="nn">Nattr</span>
+</span><span class="line">    <span class="k">def</span> <span class="nf">nattr_accessor</span><span class="p">(</span><span class="o">*</span><span class="n">meths</span><span class="p">)</span>
+</span><span class="line">      <span class="n">meths</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">meth</span><span class="o">|</span>
+</span><span class="line">        <span class="c1"># getter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="n">meth</span><span class="p">)</span> <span class="k">do</span>
+</span><span class="line">          <span class="nb">instance_variable_get</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">        <span class="c1"># setter</span>
+</span><span class="line">        <span class="n">define_method</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">=&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">wut</span><span class="o">|</span>
+</span><span class="line">          <span class="nb">instance_variable_set</span><span class="p">(</span><span class="s2">&quot;@</span><span class="si">#{</span><span class="n">meth</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">wut</span><span class="p">)</span>
+</span><span class="line">        <span class="k">end</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now we can use it our class:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Animal</span>
+</span><span class="line">  <span class="kp">include</span> <span class="no">Nattr</span>
+</span><span class="line">  <span class="n">nattr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:heads</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="c1"># =&gt; NoMethodError: undefined method `nattr_accessor&#39; for Animal:Class</span>
+</span><span class="line"><span class="n">from</span> <span class="p">(</span><span class="n">pry</span><span class="p">):</span><span class="mi">63</span><span class="ss">:in</span> <span class="sb">`&lt;class:Animal&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Oops. What happened?</p>
+
+<p>We used include to get the Nattr module into Animal. However, include will take the methods in the module and make them <em>instance methods</em> of the including class. However, we need the method as a class method. What to do?</p>
+
+<p>Fortunately, Ruby has a similar method called <code>extend</code>. It works the same way as include, except that it makes the methods from the module class methods<sup id="fnref:technically"><a href="#fn:technically" rel="footnote">2</a></sup> of our Animal class.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="k">class</span> <span class="nc">Animal</span>
+</span><span class="line">  <span class="kp">extend</span> <span class="no">Nattr</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">Cat</span> <span class="o">&lt;</span> <span class="no">Animal</span>
+</span><span class="line">  <span class="n">nattr_accessor</span> <span class="ss">:legs</span><span class="p">,</span> <span class="ss">:diet</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">c</span> <span class="o">=</span> <span class="no">Cat</span><span class="o">.</span><span class="n">new</span>
+</span><span class="line"><span class="n">c</span><span class="o">.</span><span class="n">legs</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class="line"><span class="n">c</span><span class="o">.</span><span class="n">diet</span> <span class="o">=</span> <span class="s2">&quot;Mice&quot;</span>
+</span><span class="line"><span class="n">c</span><span class="o">.</span><span class="n">legs</span>
+</span><span class="line"><span class="n">c</span><span class="o">.</span><span class="n">diet</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><em>Now we’re talking.</em></p>
+
+<h3 id="problems-with-metaprogramming">Problems with metaprogramming</h3>
+
+<p>Lemme tell you a story. About a dozen or so years ago I was living in Zürich, as an exchange student. I hadn’t yet found a permanent apartment so I was living at some friends’ place while they were abroad. A permanent internet connection wasn’t an ubiquitous thing back then, and the Swiss aren’t big into tv’s, so I had to figure out things to do at nights. I was living alone, and as a somewhat geeky guy I wasn’t that much into social life. Thus, I mostly read at nights. I had just found this <a href="http://www.joelonsoftware.com">Joel guy and a shitload of his writings</a>, so I used the printers at the university to print on the thin brownish paper (hey, it was free!) his somewhat ranting articles and then spent nights reading about <a href="http://www.joelonsoftware.com/articles/CamelsandRubberDuckies.html">camels and rubber duckies</a>, the <a href="http://www.joelonsoftware.com/articles/fog0000000043.html">Joel test</a>, – and <a href="http://www.joelonsoftware.com/articles/LeakyAbstractions.html">leaky abstractions</a>. And that is what metaprogramming in many cases is: an abstraction.</p>
+
+<p>Now, there is nothing inherently wrong with abstractions – otherwise we’d all be programming in Assembler – but we’ll have to keep in mind that they always come at a cost. So keep in mind that metaprogramming is a super powerful tool to reduce duplication and to add power to your code, but you do have to pay a price for it.</p>
+
+<p>Using too much metaprogramming, your code can become harder to:</p>
+
+<ul>
+  <li>read,</li>
+  <li>debug, and</li>
+  <li>search for.</li>
+</ul>
+
+<p>So use it as any powerful but potentially dangerous tool: start simply but when the complexity gets out of hand, sprinkle some metaprogramming magic dust to get back on the driver’s seat. Never use metaprogramming just for the sake of metaprogramming.</p>
+
+<p>As Dave Thomas once said:</p>
+
+<blockquote>
+  <p>“The only thing worth worrying about when looking at code is ‘is it easy to change?’”</p>
+</blockquote>
+
+<p>Keep this in mind. Will metaprogramming make your code easier to change in this particular case? If yes, go for it. If not, don’t bother.</p>
+
+<h3 id="where-now">Where now?</h3>
+
+<p>We’ve only had time to scratch the surface of Ruby object model and metaprogramming. It’s a fractal of sometimes mind-boggling stuff, which also makes it so interesting. If you want to take the next steps in you advanced Ruby object model and metaprogramming knowledge, I’d recommend checking out the following:</p>
+
+<ul>
+  <li><a href="https://pragprog.com/screencasts/v-dtrubyom/the-ruby-object-model-and-metaprogramming">Dave Thomas’s screencasts at Prag Prog</a>. They’re a bit dated as in they cover Ruby 1.8. However, <em>not that much</em> has changed since then. Watching them also makes you feel good because you can see the great Prag Dave use Textmate, make mistakes, and delete characters in the code one by one.</li>
+  <li>Paolo Perrotta’s <a href="https://pragprog.com/book/ppmetr2/metaprogramming-ruby-2">Metaprogramming Ruby</a> was just updated to cover the latest Ruby and Rails versions. It’s a very down-to-earth and easy read of a sometimes intimidating subject.</li>
+  <li>If you already think you know everything about the subject, I’d recommend checking out Pat Shaughnessy’s <a href="http://patshaughnessy.net/ruby-under-a-microscope">Ruby Under a Microscope</a>. It goes down to the level of how the Ruby object model is implemented in C (yeah, really), while still being an entertaining read.</li>
+  <li>Last but not least, read the source, Luke. Any non-trivial Ruby application is bound to have more than its share of metaprogramming sprinkled into it. Because, <strong>in Ruby, metaprogramming is just programming.</strong></li>
+</ul>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:instance">
+      <p>Yeah, I know, singleton method of the class itself.<a href="#fnref:instance" rel="reference">&#8617;</a></p>
+    </li>
+    <li id="fn:technically">
+      <p>Technically, it opens up the singleton class of the Animal class and throws the methods in there. Thus they’ll become singleton methods for the Animal class, just like we want them to.<a href="#fnref:technically" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Do you know the biggest reason for why enterprise software sucks?]]></title>
