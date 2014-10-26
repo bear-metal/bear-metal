@@ -17,6 +17,10 @@ a {
   @include transition-duration(0.5s);
 }
 
+body > .row {
+  background-color: transparent;
+}
+
 body > nav {
   @include grid-row;
   font: {
@@ -270,7 +274,6 @@ body > header {
   }
 
   padding-top: 2em;
-  margin-bottom: 1em;
 
   #emblem {
     @include grid-column(3);
