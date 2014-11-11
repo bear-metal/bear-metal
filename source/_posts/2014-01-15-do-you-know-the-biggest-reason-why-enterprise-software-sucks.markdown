@@ -10,7 +10,7 @@ categories: [software, business, craftsmanship, philosophy]
 
 *We all know the story. Your company was going to get this big new shiny ERP software. It was going to replace a third of the workforce in the company, cut the costs in half and make everyone happy. In reality the project went two years over schedule, cost three times as much as envisioned, and the end result was a steaming pile of shit.*
 
-[![](http://farm9.staticflickr.com/8453/8043877054_883963cf80_c.jpg)](http://www.flickr.com/photos/53326337@N00/8043877054/)
+[![](https://farm9.staticflickr.com/8453/8043877054_883963cf80_c.jpg)](http://www.flickr.com/photos/53326337@N00/8043877054/)
 
 <small>Photo by [Quinn Dombrowski](http://www.flickr.com/photos/53326337@N00/8043877054/), used under the Creative Commons license.</small>
 

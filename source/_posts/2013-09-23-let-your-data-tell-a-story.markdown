@@ -38,7 +38,7 @@ The human vision is a bit like a digital camera. Light is directed through a len
 
 However, the fovea, at that same length, is only about the size of a thumbnail. Outside that, the “pixel density” goes down really fast. In the periphery of our vision, we can't really detect any details at all.
 
-[![](http://farm6.staticflickr.com/5502/9911880963_2790398f39_h.jpg)](http://www.flickr.com/photos/jarkko/9911880963/)
+[![](https://farm6.staticflickr.com/5502/9911880963_2790398f39_h.jpg)](http://www.flickr.com/photos/jarkko/9911880963/)
 
 The obvious question here is, how then can we process a more or less sharp image of our surroundings? The answer is: we don't. But we cheat. We move our eyes rapidly to scan our vision, which creates an illusion of a sharper image than it really is.
 
@@ -147,7 +147,7 @@ It is important to build continuum, a narrative to your visualizations. The info
 
 And whatever you do, keep in mind both a story and a visualization has to make sense.
 
-[![](http://25.media.tumblr.com/38972b1522b97f4aec2de97161eac2d9/tumblr_msz2xaFSmK1sgh0voo1_1280.png)](http://wtfviz.net/post/61791256708/inverse-relationship)
+[![](https://25.media.tumblr.com/38972b1522b97f4aec2de97161eac2d9/tumblr_msz2xaFSmK1sgh0voo1_1280.png)](http://wtfviz.net/post/61791256708/inverse-relationship)
 
 The above graph courtesy of [WTF Visualizations](http://wtfviz.net/).
 

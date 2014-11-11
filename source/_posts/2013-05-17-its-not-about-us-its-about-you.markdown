@@ -9,7 +9,7 @@ categories: [business, awesome, philosophy]
 ---
 
 <figure markdown="1">
-  [![](http://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg)](http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/)
+  [![](https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg)](http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/)
 
 <figcaption markdown="1">
 Photo by [Ron Cogswell](http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/)

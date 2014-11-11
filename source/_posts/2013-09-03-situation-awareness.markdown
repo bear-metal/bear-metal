@@ -9,7 +9,7 @@ categories: [business,operations, process, release]
 ---
 
 <figure markdown="1">
-  [![](http://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg)](http://www.flickr.com/photos/robbn1/3391187126/)
+  [![](https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg)](http://www.flickr.com/photos/robbn1/3391187126/)
 
 <figcaption markdown="1">
 Photo by [Robb North](http://www.flickr.com/photos/robbn1/3391187126/)
