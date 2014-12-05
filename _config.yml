@@ -96,3 +96,12 @@ google_analytics_tracking_id:
 
 # Facebook Like
 facebook_like: false
+
+navigation:
+- text: Team
+  url: /team
+- text: Company Blog
+  url: /theden
+- text: Services
+  url: /services
+  layout: services
