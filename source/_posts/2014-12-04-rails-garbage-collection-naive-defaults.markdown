@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Rails Garbage Collection: junk food"
+title: "Rails Garbage Collection: naive defaults"
 author: Lourens
 date: 2014-12-04 17:27
 comments: true
@@ -79,5 +79,9 @@ Ruby pages - containers for objects. All of the plates and glasses on a given ta
 #### Type of cuisine
 
 Some dishes incur a lot of work to prepare AND to clean up. Cooked basmati rice will leave a very very different footprint in your kitchen than a paella or salmon option would.
+
+The GC defaults for most Rails applications assume a reasonable sized home environment, a well defined guest list and just enough food and drinks for each. Everyone can sit at the same table, wine and dine on fine dishes, all with a minimal cleanup burden.
+
+In reality, it's a frat party. Gone seriously wrong.
 
 *In the next part of this series, we're going to take a look at how the Ruby runtime can better host Rails applications. And what you can optimize for.*
