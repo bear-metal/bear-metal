@@ -8,7 +8,7 @@ keywords: ruby, rails, gc, garbage collection
 categories: [ruby, rails, gc, garbage collection]
 ---
 
-The vast majority of Ruby and Rails applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that "works" for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). Except in practice this doesn't work very well:
+The vast majority of [Ruby on Rails](http://www.rubyonrails.org) applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that "works" for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). Except in practice this doesn't work very well:
 
 * Too aggressive growth of Ruby heap slots and pages when thresholds are reached
 * A large ratio of short and medium lived objects in relation to long lived ones for Rails applications
@@ -17,10 +17,10 @@ The vast majority of Ruby and Rails applications deploy to production with the v
 
 Let's context switch to a metaphor most of us can better relate to. *Dreaded household chores.* Your ability and frequency of hosting dinners at home are limited by four things (takeaways and paper plates aside):
 
-* Quantity of available ingredients
-* How many seats you have
-* How many sets of clean cutlery, plates and other utensils are available
-* Willingness to clean up and do dishes
+* How many seats and tables you have
+* How many sets of clean cutlery, plates and glasses are available
+* Overhead preparing a particular choice of cuisine
+* Willingness to clean up and do dishes after
 
 This is what you have to work with at home:
 
@@ -45,8 +45,6 @@ You consume the bottle of wine and the 3 steaks. Life's good again. Plenty to cl
 17 guests show up at your door. Half is heavily intoxicated because Dylan invited the rest of his wine tasting group too. Only one eats any of your food, yet breaks 4 plates. Beer disappeared in 3 minutes. They reveal 7 new bottles of wine, makes your dog drink one and he kernel panics as a result.
 
 You were not f*cking prepared. At all. Marinated steak's now ruined, there's less inventory and 30+ bottles to recycle. You're hungry and now there's no plates left!
-
-#### On being a better host
 
 In both of these scenarios, from the perspective of your friends it mostly worked out just fine. It wasn't optimal for you or your environment though. What's important is that you learned a few things. Next time it's easier to execute optimally, but there may still be a party and some broken plates. And a barbeque for 17 in your one bedroom flat with a George Foreman grill doesn't scale well.
 
@@ -78,7 +76,7 @@ An object slot on the Ruby heap. One String, Array, Hash or any other object. Ke
 
 Ruby pages - containers for objects. All of the plates and glasses on a given table. They're mostly prepared in advance, but you can "construct" and improvise as needed to.
 
-#### Type of food
+#### Type of cuisine
 
 Some dishes incur a lot of work to prepare AND to clean up. Cooked basmati rice will leave a very very different footprint in your kitchen than a paella or salmon option would.
 
