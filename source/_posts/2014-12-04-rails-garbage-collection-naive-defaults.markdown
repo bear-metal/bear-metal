@@ -57,8 +57,9 @@ In the end, you down the whole bottle of wine and the three steaks. Life's good 
 You were not f*cking prepared. At all. Marinated steak's now ruined, there's less inventory and 30+ bottles to recycle. You're hungry and now there are no plates left!
 
 In both of these scenarios, from the perspective of your friends it mostly worked out just fine. It wasn't optimal for you or your environment, though. What's important is that you learned a few things:
-	* Next time it's easier to execute optimally, but there may still be a party and some broken plates.
-	* A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn't scale well.
+
+  * Next time it's easier to execute optimally, but there may still be a party and some broken plates.
+  * A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn't scale well.
 
 ## Cooking with Ruby
 
