@@ -8,6 +8,12 @@ keywords: ruby, rails, gc, garbage collection
 categories: [ruby, rails, gc, garbage collection]
 ---
 
+
+
+[![](https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg)](https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1)
+
+<small>Photo by [martin](https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1), used under the Creative Commons license.</small>
+
 The vast majority of [Ruby on Rails](http://www.rubyonrails.org) applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that "works" for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). In practice this doesn't work very well, however. It produces:
 
 * Too aggressive growth of Ruby heap slots and pages when thresholds are reached.
