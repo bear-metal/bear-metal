@@ -8,6 +8,12 @@ keywords: ruby, rails, gc, garbage collection
 categories: [ruby, rails, gc, garbage collection]
 ---
 
+
+
+[![](https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg)](https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1)
+
+<small>Photo by [martin](https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1), used under the Creative Commons license.</small>
+
 The vast majority of [Ruby on Rails](http://www.rubyonrails.org) applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that "works" for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). In practice this doesn't work very well, however. It produces:
 
 * Too aggressive growth of Ruby heap slots and pages when thresholds are reached.
@@ -51,8 +57,9 @@ In the end, you down the whole bottle of wine and the three steaks. Life's good 
 You were not f*cking prepared. At all. Marinated steak's now ruined, there's less inventory and 30+ bottles to recycle. You're hungry and now there are no plates left!
 
 In both of these scenarios, from the perspective of your friends it mostly worked out just fine. It wasn't optimal for you or your environment, though. What's important is that you learned a few things:
-	* Next time it's easier to execute optimally, but there may still be a party and some broken plates.
-	* A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn't scale well.
+
+  * Next time it's easier to execute optimally, but there may still be a party and some broken plates.
+  * A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn't scale well.
 
 ## Cooking with Ruby
 
