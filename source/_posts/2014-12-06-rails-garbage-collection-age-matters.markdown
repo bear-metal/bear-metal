@@ -10,18 +10,26 @@ categories: [ruby, rails, gc, garbage collection, generational gc]
 
 In a previous post [Rails Garbage Collection: naive defaults](http://www.bear-metal.eu) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object generations in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
 
-As a prerequisite of this and subsequent posts, basic understanding of a [Mark and Sweep](https://ruby-hacking-guide.github.io/gc.html) collector is assumed. I'd recommended scanning the content below the first few headings, until turned off by C.
+As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed. For simplicity we'll break it down as:
+
+* Such a collector traverses the object graph
+* It checks which objects are in use (referenced) and which ones are not
+* This is called object marking, aka. the *MARK PHASE*
+* All unused objects are freed, making their memory available
+* This is called sweeping, aka. the *SWEEP PHASE*
+* Nothing changes for used objects
+
+A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all needs to be scanned during the *MARK* phase, to normally yield a smaller set to *SWEEP*.
+
+There's a large amount of the graph that's going to be traversed over and over again that will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.
 
 ## Generations
 
 The secret sauce for following along and understanding the basis of the new Garbage Collector is:
 
-MOST OBJECTS DIE YOUNG.
+*MOST OBJECTS DIE YOUNG.*
 
-Objects on the Ruby heap can thus be classified as either OLD or YOUNG.
-
-Young objects are more likely to reference old objects, than old objects referencing young objects.
-HOWEVER it's possible for old objects to reference new objects.
+Objects on the Ruby heap can thus be classified as either *OLD* or *YOUNG*. This segregation now allows the garbage collector to work with 2 distinct generations, with the *OLD* generation much less likely to yield much improvements towards recovering memory.
 
 What generally makes an object old?
 
@@ -29,11 +37,38 @@ What generally makes an object old?
 * Old objects survived at least one GC cycle (workable for this first version of the generational collector)
 * The collector thus reasons that the object will stick around and not become garbage quickly
 
+For a typical Rails request, some examples of old and new objects would be:
+
+* Old: compiled routes, templates, ActiveRecord connections, cached DB column info etc.
+* New: short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.
+
+Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects. HOWEVER it's possible for old objects to reference new objects.
+
+```ruby
+  u = User.first
+  #<User id: 1, email: "lourens@something.com", encrypted_password: "blahblah...", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 2, current_sign_in_at: "2014-10-31 11:52:30", last_sign_in_at: "2014-10-29 10:04:01", current_sign_in_ip: "127.0.0.1", last_sign_in_ip: "127.0.0.1", created_at: "2014-10-29 10:04:01", updated_at: "2014-11-30 14:07:15", provider: nil, uid: nil, first_name: "dfdsfds", last_name: "dfdsfds", confirmation_token: nil, confirmed_at: "2014-10-30 10:11:42", confirmation_sent_at: nil, unconfirmed_email: nil, onboarded_at: nil>
+```
+
+Notice how the attribute keys/names reference the columns here:
+
+```ruby
+	{"id"=>
+	   #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Integer:0x007fbe756d1d30>,
+	  "email"=>
+	   #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718>,
+	  "encrypted_password"=>
+	   #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718>,
+	  "reset_password_token"=>
+	   #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718>,
+	  "reset_password_sent_at"=>
+	   #<ActiveRecord::AttributeMethods::TimeZoneConversion::Type:0x007fbe741f63c0
+	    @column=
+	     #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58>>,
+```
+
 What happens when old objects references new ones?
 
-Old objects with references to new objects are stored in a "remembered set". The remembered set is thus a container of references 
-
-There's other rules such as the remembered set and write barriers that also govern promotion to the older generation, but it's beyond the scope for what we're covering here.
+Old objects with references to new objects are stored in a "remembered set". The remembered set is thus a container of references from old objects to new objects.
 
 Generations are also just classifications - old and young objects aren't stored in distinct memory spaces.
 
@@ -92,3 +127,5 @@ This is a marked improvement to the C Ruby GC and serves as a base for implement
 As they say, "Nothing is faster than no code" and the same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there's no free object slots on the Ruby heap and a major GC is triggered as a result.
 
 A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in act promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
+
+[^marksweep]:See the Ruby Hacking Guide's [GC chapter](https://ruby-hacking-guide.github.io/gc.html) for further context and nitty gritty details. I'd recommended scanning the content below the first few headings, until turned off by C.
