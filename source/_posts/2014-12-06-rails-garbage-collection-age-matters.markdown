@@ -19,9 +19,35 @@ As a prerequisite of this and subsequent posts, basic understanding of a `mark a
 * This is called sweeping, aka. the *SWEEP PHASE*
 * Nothing changes for used objects
 
-A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all needs to be scanned during the *MARK* phase, to normally yield a smaller set to *SWEEP*.
+A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all needs to be scanned during the *MARK* phase and usually yields a smaller set to *SWEEP*.
 
 There's a large amount of the graph that's going to be traversed over and over again that will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.
+
+## Object references
+
+In this simple example below we create an String array with 3 elements.
+
+```ruby
+	irb(main):001:0> require 'objspace'
+	=> true
+	irb(main):002:0> ObjectSpace.trace_object_allocations_start
+	=> nil
+	irb(main):003:0> ary = %w(a b c)
+	=> ["a", "b", "c"]
+```
+
+Very much like a river flowing downstream, the Array has knowledge of (a "reference to") each of it's String elements. On the contrary, the Strings don't have an awareness of (or "references back to") the Array container.
+
+```ruby
+	irb(main):004:0> ObjectSpace.dump(ary)
+	=> "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
+	irb(main):004:0> ObjectSpace.reachable_objects_from(ary)
+	=> [Array, "a", "b", "c"]
+	irb(main):006:0> ObjectSpace.reachable_objects_from(ary[1])
+	=> [String]
+	irb(main):007:0> ObjectSpace.dump(ary[1])
+	=> "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
+```
 
 ## Old and young objects
 
@@ -66,7 +92,14 @@ Notice how the transient attribute keys/names reference the long lived columns h
 	     #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58>>,
 ```
 
-Every major GC cycle that an object survived is it's current generation.
+Age segregation is also just a classification - old and young objects aren't stored in distinct memory spaces - they're just conceptional buckets. The generation of an object refers to the amount of GC cycles it survived:
+
+```ruby
+irb(main):009:0> ObjectSpace.dump([])
+=> "{\"address\":\"0x007fd24c007668\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":0, \"file\":\"(irb)\", \"line\":9, \"method\":\"irb_binding\", \"generation\":8, \"flags\":{\"wb_protected\":true}}\n"
+irb(main):010:0> GC.count
+=> 8
+```
 
 ## What the heck is major and minor GC?
 
@@ -102,13 +135,11 @@ Minor GC (or "partial marking"): This cycle only traverses the young generation 
 
 It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
-Major GC: Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young generations are traversed and it's thus significantly slower.
+Major GC: Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Every major GC cycle that an object survived bumps it's current generation.
 
 It runs much less frequently - 6 times for the stats dump above.
 
-Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC.
-
-Generations are also just classifications - old and young objects aren't stored in distinct memory spaces - they're just conceptional buckets.
+Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. Every major GC cycle that an object survived is it's current generation.
 
 ## Attributes of a generational collector
 
@@ -122,11 +153,13 @@ This is a marked improvement to the C Ruby GC and serves as a base for implement
 
 ## References between young and old objects
 
-HOWEVER it's possible for old objects to reference new objects.
+We stated earlier that:
 
-What happens when old objects references new ones?
+*Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects.*
 
-Old objects with references to new objects are stored in a "remembered set". The remembered set is thus a container of references from old objects to new objects.
+HOWEVER it's possible for old objects to reference new objects. What happens when old objects reference new ones?
+
+Old objects with references to new objects are stored in a "remembered set". The remembered set is a container of references from old objects to new objects.
 
 ## Implications for Rails
 
@@ -134,7 +167,9 @@ As they say, "Nothing is faster than no code" and the same applies to automatic 
 
 A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in fact promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
 
-Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set per request. And subsequent too fast promotion from young to old generation.
+Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.
+
+*In our next post we will explore how you'd approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory*
 
 [^marksweep]:See the Ruby Hacking Guide's [GC chapter](https://ruby-hacking-guide.github.io/gc.html) for further context and nitty gritty details. I'd recommended scanning the content below the first few headings, until turned off by C.
 
