@@ -23,7 +23,7 @@ A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300
 
 There's a large amount of the graph that's going to be traversed over and over again that will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.
 
-## Generations
+## Old and young objects
 
 The secret sauce for following along and understanding the basis of the new Garbage Collector is:
 
@@ -39,17 +39,17 @@ What generally makes an object old?
 
 For a typical Rails request, some examples of old and new objects would be:
 
-* Old: compiled routes, templates, ActiveRecord connections, cached DB column info etc.
+* Old: compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.
 * New: short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.
 
-Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects. HOWEVER it's possible for old objects to reference new objects.
+Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects.
 
 ```ruby
   u = User.first
   #<User id: 1, email: "lourens@something.com", encrypted_password: "blahblah...", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 2, current_sign_in_at: "2014-10-31 11:52:30", last_sign_in_at: "2014-10-29 10:04:01", current_sign_in_ip: "127.0.0.1", last_sign_in_ip: "127.0.0.1", created_at: "2014-10-29 10:04:01", updated_at: "2014-11-30 14:07:15", provider: nil, uid: nil, first_name: "dfdsfds", last_name: "dfdsfds", confirmation_token: nil, confirmed_at: "2014-10-30 10:11:42", confirmation_sent_at: nil, unconfirmed_email: nil, onboarded_at: nil>
 ```
 
-Notice how the attribute keys/names reference the columns here:
+Notice how the transient attribute keys/names reference the long lived columns here:
 
 ```ruby
 	{"id"=>
@@ -66,11 +66,7 @@ Notice how the attribute keys/names reference the columns here:
 	     #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58>>,
 ```
 
-What happens when old objects references new ones?
-
-Old objects with references to new objects are stored in a "remembered set". The remembered set is thus a container of references from old objects to new objects.
-
-Generations are also just classifications - old and young objects aren't stored in distinct memory spaces.
+Every major GC cycle that an object survived is it's current generation.
 
 ## What the heck is major and minor GC?
 
@@ -102,7 +98,7 @@ You may have heard, read about or noticed in GC.stat output the terms "minor" an
 	 :oldmalloc_limit=>24159190}
 ```
 
-Minor GC: This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.
+Minor GC (or "partial marking"): This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.
 
 It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
@@ -110,7 +106,9 @@ Major GC: Triggered by out of memory conditions - Ruby heap space needs to be ex
 
 It runs much less frequently - 6 times for the stats dump above.
 
-Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC
+Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC.
+
+Generations are also just classifications - old and young objects aren't stored in distinct memory spaces - they're just conceptional buckets.
 
 ## Attributes of a generational collector
 
@@ -122,10 +120,21 @@ At a very high level C Ruby 2.1's collector has the following properties:
 
 This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and a object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation interleaves short steps of mark and sweep cycles between other VM operations.
 
+## References between young and old objects
+
+HOWEVER it's possible for old objects to reference new objects.
+
+What happens when old objects references new ones?
+
+Old objects with references to new objects are stored in a "remembered set". The remembered set is thus a container of references from old objects to new objects.
+
 ## Implications for Rails
 
 As they say, "Nothing is faster than no code" and the same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there's no free object slots on the Ruby heap and a major GC is triggered as a result.
 
-A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in act promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
+A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in fact promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
+
+Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set per request. And subsequent too fast promotion from young to old generation.
 
 [^marksweep]:See the Ruby Hacking Guide's [GC chapter](https://ruby-hacking-guide.github.io/gc.html) for further context and nitty gritty details. I'd recommended scanning the content below the first few headings, until turned off by C.
+
