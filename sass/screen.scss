@@ -140,8 +140,12 @@ body > header {
   p, h1 {
     @include grid-column(12);
   }
+  
+  .treadmill {
+    text-align: center;
+  }
 
-  #blurb p {
+  #blurb p, #treadmill {
     font-size: 125%;
   }
 
