@@ -4,8 +4,8 @@ title: "Rails Garbage Collection: naive defaults"
 author: Lourens
 date: 2014-12-04 17:27
 comments: true
-keywords: ruby, rails, gc, garbage collection
-categories: [ruby, rails, gc, garbage collection]
+keywords: ruby, rails, gc, garbage collection, rails performance
+categories: [ruby, rails, gc, garbage collection, 'rails performance']
 ---
 
 
