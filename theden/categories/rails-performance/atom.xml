@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: rails | Bear Metal]]></title>
-  <link href="http://bearmetal.eu/theden/categories/rails/atom.xml" rel="self"/>
+  <title><![CDATA[Category: rails performance | Bear Metal]]></title>
+  <link href="http://bearmetal.eu/theden/categories/rails-performance/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
   <updated>2014-12-19T16:22:04+02:00</updated>
   <id>http://bearmetal.eu/</id>
