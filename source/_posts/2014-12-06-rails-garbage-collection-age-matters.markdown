@@ -8,7 +8,7 @@ keywords: ruby, rails, gc, garbage collection, generational gc
 categories: [ruby, rails, gc, garbage collection, generational gc]
 ---
 
-In a previous post [Rails Garbage Collection: naive defaults](http://www.bear-metal.eu) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object generations in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
+In a previous post [Rails Garbage Collection: naive defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object generations in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
 
 As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed. For simplicity we'll break it down as:
 
