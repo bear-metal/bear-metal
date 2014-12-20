@@ -8,7 +8,7 @@ keywords: ruby, rails, gc, garbage collection, generational gc
 categories: [ruby, rails, gc, garbage collection, generational gc]
 ---
 
-In a previous post [Rails Garbage Collection: naive defaults](http://www.bear-metal.eu) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object generations in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
+In a previous post [Rails Garbage Collection: naive defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object age in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
 
 As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed. For simplicity we'll break it down as:
 
@@ -135,7 +135,7 @@ Minor GC (or "partial marking"): This cycle only traverses the young generation 
 
 It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
-Major GC: Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Every major GC cycle that an object survived bumps it's current generation.
+Major GC: Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Generally when there's a significant increase in old objects, a major GC would trigger. Every major GC cycle that an object survived bumps it's current generation.
 
 It runs much less frequently - 6 times for the stats dump above.
 
@@ -149,7 +149,7 @@ At a very high level C Ruby 2.1's collector has the following properties:
 * GC pauses are still long ("stop the world") for major GC cycles
 * Generational collectors have much shorter mark cycles as it traverses only the young generation, most of the time.
 
-This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and a object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation interleaves short steps of mark and sweep cycles between other VM operations.
+This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation (Ruby 2.2.) interleaves short steps of mark and sweep cycles between other VM operations.
 
 ## References between young and old objects
 
@@ -165,7 +165,7 @@ Old objects with references to new objects are stored in a "remembered set". The
 
 As they say, "Nothing is faster than no code" and the same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there's no free object slots on the Ruby heap and a major GC is triggered as a result.
 
-A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in fact promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
+A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in fact promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks". These transient objects can be conceptually classified as of "medium lifetime" as they need to stick around for the duration of a request. There's however a large probability that a minor GC would run during request lifetime, promoting young objects to oldgen, effectively increasing their lifetime to well beyond the end a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and newgen.
 
 Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.
 
