@@ -10,7 +10,11 @@ categories: [ruby, rails, gc, garbage collection, generational gc]
 
 In a previous post [Rails Garbage Collection: naive defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object age in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
 
-As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed. For simplicity we'll break it down as:
+As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed.
+
+![](/images/gc_mark_sweep.png)
+
+For simplicity we'll break it down as:
 
 * Such a collector traverses the object graph
 * It checks which objects are in use (referenced) and which ones are not
@@ -138,6 +142,14 @@ It runs quite often - 26 times for the GC dump of a booted Rails app above.
 **Major GC:** Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Generally when there's a significant increase in old objects, a major GC would trigger. Every major GC cycle that an object survived bumps it's current generation.
 
 It runs much less frequently - 6 times for the stats dump above.
+
+The following diagram represents a minor GC cycle that identifies and promotes some objects to oldgen.
+
+![](/images/gc_first_minor.png)
+
+A subsequent minor GC cycle ignores old objects during the mark phase.
+
+![](/images/gc_second_minor.png)
 
 Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. Every major GC cycle that an object survived is it's current generation.
 
