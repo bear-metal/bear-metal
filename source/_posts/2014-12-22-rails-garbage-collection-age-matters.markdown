@@ -2,7 +2,7 @@
 layout: post
 title: "Rails Garbage Collection: age matters"
 author: Lourens
-date: 2014-12-06 20:26
+date: 2014-12-22 20:26
 comments: true
 keywords: ruby, rails, gc, garbage collection, generational gc
 categories: [ruby, rails, gc, garbage collection, generational gc]
