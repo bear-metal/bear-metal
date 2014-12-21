@@ -171,7 +171,7 @@ We stated earlier that:
 
 HOWEVER it's possible for old objects to reference new objects. What happens when old objects reference new ones?
 
-Old objects with references to new objects are stored in a "remembered set". The remembered set is a container of references from old objects to new objects.
+Old objects with references to new objects are stored in a "remembered set". The remembered set is a container of references from old objects to new objects and is a shortcut for preventing heap scans for finding such references.
 
 ## Implications for Rails
 
