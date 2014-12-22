@@ -2,25 +2,29 @@
 layout: post
 title: "Rails Garbage Collection: age matters"
 author: Lourens
-date: 2014-12-06 20:26
+date: 2014-12-22 20:26
 comments: true
 keywords: ruby, rails, gc, garbage collection, generational gc, rails performance
 categories: [ruby, rails, gc, garbage collection, generational gc, 'rails performance']
 published: false
 ---
 
-In a previous post [Rails Garbage Collection: naive defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object generations in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
+In a previous post [Rails Garbage Collection: naive defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) we stated that Ruby GC defaults for [Ruby on Rails](http://www.rubyonrails.org) applications is not optimal. In this post we'll explore the basics of object age in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
 
-As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed. For simplicity we'll break it down as:
+As a prerequisite of this and subsequent posts, basic understanding of a `mark and sweep`[^marksweep] collector is assumed.
+
+![](/images/gc_mark_sweep.png)
+
+For simplicity we'll break it down as:
 
 * Such a collector traverses the object graph
 * It checks which objects are in use (referenced) and which ones are not
-* This is called object marking, aka. the *MARK PHASE*
+* This is called object marking, aka. the **MARK PHASE**
 * All unused objects are freed, making their memory available
-* This is called sweeping, aka. the *SWEEP PHASE*
+* This is called sweeping, aka. the **SWEEP PHASE**
 * Nothing changes for used objects
 
-A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all needs to be scanned during the *MARK* phase and usually yields a smaller set to *SWEEP*.
+A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all needs to be scanned during the **MARK** phase and usually yields a smaller set to **SWEEP**.
 
 There's a large amount of the graph that's going to be traversed over and over again that will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.
 
@@ -54,9 +58,9 @@ Very much like a river flowing downstream, the Array has knowledge of (a "refere
 
 The secret sauce for following along and understanding the basis of the new Garbage Collector is:
 
-*MOST OBJECTS DIE YOUNG.*
+**MOST OBJECTS DIE YOUNG.**
 
-Objects on the Ruby heap can thus be classified as either *OLD* or *YOUNG*. This segregation now allows the garbage collector to work with 2 distinct generations, with the *OLD* generation much less likely to yield much improvements towards recovering memory.
+Objects on the Ruby heap can thus be classified as either **OLD** or **YOUNG**. This segregation now allows the garbage collector to work with 2 distinct generations, with the **OLD** generation much less likely to yield much improvement towards recovering memory.
 
 What generally makes an object old?
 
@@ -66,8 +70,8 @@ What generally makes an object old?
 
 For a typical Rails request, some examples of old and new objects would be:
 
-* Old: compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.
-* New: short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.
+* **Old:** compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.
+* **New:** short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.
 
 Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects.
 
@@ -132,17 +136,25 @@ You may have heard, read about or noticed in GC.stat output the terms "minor" an
 	 :oldmalloc_limit=>24159190}
 ```
 
-Minor GC (or "partial marking"): This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.
+**Minor GC (or "partial marking"):** This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.
 
 It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
-Major GC: Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Every major GC cycle that an object survived bumps it's current generation.
+**Major GC:** Triggered by out of memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Generally when there's a significant increase in old objects, a major GC would trigger. Every major GC cycle that an object survived bumps it's current generation.
 
 It runs much less frequently - 6 times for the stats dump above.
 
+The following diagram represents a minor GC cycle that identifies and promotes some objects to oldgen.
+
+![](/images/gc_first_minor.png)
+
+A subsequent minor GC cycle ignores old objects during the mark phase.
+
+![](/images/gc_second_minor.png)
+
 Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. Every major GC cycle that an object survived is it's current generation.
 
-## Attributes of a generational collector
+## RGenGC
 
 At a very high level C Ruby 2.1's collector has the following properties:
 
@@ -150,25 +162,25 @@ At a very high level C Ruby 2.1's collector has the following properties:
 * GC pauses are still long ("stop the world") for major GC cycles
 * Generational collectors have much shorter mark cycles as it traverses only the young generation, most of the time.
 
-This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and a object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation interleaves short steps of mark and sweep cycles between other VM operations.
+This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation (Ruby 2.2.) interleaves short steps of mark and sweep cycles between other VM operations.
 
 ## References between young and old objects
 
 We stated earlier that:
 
-*Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects.*
+**Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently references other old objects.**
 
 HOWEVER it's possible for old objects to reference new objects. What happens when old objects reference new ones?
 
-Old objects with references to new objects are stored in a "remembered set". The remembered set is a container of references from old objects to new objects.
+Old objects with references to new objects are stored in a "remembered set". The remembered set is a container of references from old objects to new objects and is a shortcut for preventing heap scans for finding such references.
 
 ## Implications for Rails
 
 As they say, "Nothing is faster than no code" and the same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there's no free object slots on the Ruby heap and a major GC is triggered as a result.
 
-A major drawback of this limited segregation of OLD vs YOUNG is that many transient objects are in fact promoted to oldgen for large contexts like a Rails request. These long lived objects eventually become unexpected "memory leaks".
+A major drawback of this limited segregation of OLD vs YOUNG is that **many transient objects are in fact promoted to oldgen for large contexts like a Rails request**. These long lived objects eventually become unexpected "memory leaks". These transient objects can be conceptually classified as of "medium lifetime" as they need to stick around for the duration of a request. There's however a large probability that a minor GC would run during request lifetime, promoting young objects to oldgen, effectively increasing their lifetime to well beyond the end a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and newgen.
 
-Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.
+**Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.**
 
 *In our next post we will explore how you'd approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory*
 
