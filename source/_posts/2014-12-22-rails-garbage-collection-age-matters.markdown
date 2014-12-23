@@ -55,16 +55,16 @@ Very much like a river flowing downstream, the array has knowledge of (a referen
 
 ## Old and young objects
 
+**What generally makes an object old?**
+
+* *All new objects are considered to be young*.
+* *Old objects survived at least one GC cycle (major or minor)* The collector thus reasons that the object will stick around and not become garbage quickly.
+
 The idea behind the new generational garbage collector is this:
 
 > **MOST OBJECTS DIE YOUNG.**
 
 To take advantage of this fact, the new GC classifies objects on the Ruby heap as either **OLD** or **YOUNG**. This segregation now allows the garbage collector to work with two distinct generations, with the **OLD** generation much less likely to yield much improvement towards recovering memory.
-
-**What generally makes an object old?**
-
-* *All new objects are considered to be young*.
-* *Old objects survived at least one GC cycle* (workable for this first version of the generational collector). The collector thus reasons that the object will stick around and not become garbage quickly.
 
 For a typical Rails request, some examples of old and new objects would be:
 
@@ -142,11 +142,11 @@ It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
 It runs much less frequently - six times for the stats dump above.
 
-The following diagram represents a minor GC cycle that identifies and promotes some objects to old.
+The following diagram represents a minor GC cycle (**MARK** phase completed, **SWEEP** still pending) that identifies and promotes some objects to old.
 
 ![](/images/gc_first_minor.png)
 
-A subsequent minor GC cycle ignores old objects during the mark phase.
+A subsequent minor GC cycle (**MARK** phase completed, **SWEEP** still pending) ignores old objects during the mark phase.
 
 ![](/images/gc_second_minor.png)
 
