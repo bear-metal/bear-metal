@@ -60,6 +60,10 @@ The secret sauce for following along and understanding the basis of the new Garb
 
 > **MOST OBJECTS DIE YOUNG.**
 
+and
+
+> **OLDER OBJECTS ARE LIKELY TO REMAIN IN USE FOR A LONG TIME.**
+
 Objects on the Ruby heap can thus be classified as either **OLD** or **YOUNG**. This segregation now allows the garbage collector to work with two distinct generations, with the **OLD** generation much less likely to yield much improvement towards recovering memory.
 
 What generally makes an object old?
@@ -67,6 +71,25 @@ What generally makes an object old?
 * All new objects are considered to be young.
 * Old objects survived at least one GC cycle (workable for this first version of the generational collector)
 * The collector thus reasons that the object will stick around and not become garbage quickly
+
+In the IRB session below, we create a single char String object, run GC once and notice that the object got promoted to oldgen ("old": true flag from the object dump):
+
+```ruby
+	irb(main):001:0> require 'objspace'
+	=> true
+	irb(main):002:0> ObjectSpace.trace_object_allocations_start
+	=> nil
+	irb(main):003:0> a = "a"
+	=> "a"
+	irb(main):004:0> ObjectSpace.dump a
+	=> "{\"address\":\"0x007f95c0821e70\", \"type\":\"STRING\", \"class\":\"0x007f95c0829670\", \"embedded\":true, \"bytesize\":1, \"value\":\"a\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
+	irb(main):005:0> GC.count
+	=> 7
+	irb(main):006:0> GC.start(full_mark:  true, immediate_sweep: false)
+	=> nil
+	irb(main):007:0> ObjectSpace.dump a
+	=> "{\"address\":\"0x007f95c0821e70\", \"type\":\"STRING\", \"class\":\"0x007f95c0829670\", \"embedded\":true, \"bytesize\":1, \"value\":\"a\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
+```
 
 For a typical Rails request, some examples of old and new objects would be:
 
@@ -97,14 +120,7 @@ Notice how the transient attribute keys/names reference the long lived columns h
 	     #<ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58>>,
 ```
 
-Age segregation is also just a classification - old and young objects aren't stored in distinct memory spaces - they're just conceptional buckets. The generation of an object refers to the amount of GC cycles it survived:
-
-```ruby
-irb(main):009:0> ObjectSpace.dump([])
-=> "{\"address\":\"0x007fd24c007668\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":0, \"file\":\"(irb)\", \"line\":9, \"method\":\"irb_binding\", \"generation\":8, \"flags\":{\"wb_protected\":true}}\n"
-irb(main):010:0> GC.count
-=> 8
-```
+Age segregation is also just a classification - old and young objects aren't stored in distinct memory spaces - they're just conceptional buckets.
 
 ## What the heck is major and minor GC?
 
@@ -140,7 +156,7 @@ You may have heard, read about or noticed in GC.stat output the terms "minor" an
 
 It runs quite often - 26 times for the GC dump of a booted Rails app above.
 
-**Major GC:** Triggered by out-of-memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Generally when there's a significant increase in old objects, a major GC would trigger. Every major GC cycle that an object survived bumps its current generation.
+**Major GC:** Triggered by out-of-memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it's thus significantly slower. Generally when there's a significant increase in old objects, a major GC would trigger.
 
 It runs much less frequently - six times for the stats dump above.
 
@@ -152,7 +168,7 @@ A subsequent minor GC cycle ignores old objects during the mark phase.
 
 ![](/images/gc_second_minor.png)
 
-Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. The current generation of an object is the number of major GC cycles it has survived.
+Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC.
 
 ## RGenGC
 
@@ -178,9 +194,15 @@ Old objects with references to new objects are stored in a "remembered set". The
 
 As our friend Ezra used to say, "no code is faster than no code." The same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there are no free object slots on the Ruby heap and a major GC is triggered as a result.
 
-A major drawback of this limited segregation of OLD vs YOUNG is that **many transient objects are in fact promoted to oldgen for large contexts like a Rails request**. These long lived objects eventually become unexpected "memory leaks". These transient objects can be conceptually classified as of "medium lifetime" as they need to stick around for the duration of a request. There's however a large probability that a minor GC would run during request lifetime, promoting young objects to oldgen, effectively increasing their lifetime to well beyond the end of a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and newgen.
+A major drawback of this limited segregation of OLD vs YOUNG is that **many transient objects are in fact promoted to oldgen for large contexts like a Rails request**. These long lived objects eventually become unexpected "memory leaks". These transient objects can be conceptually classified as of "medium lifetime" as they need to stick around for the duration of a request.
 
-**Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.**
+There's however a large probability that a minor GC would run during request lifetime, promoting young objects to oldgen, effectively increasing their lifetime to well beyond the end of a request.
+
+This situation can only be revisited again during a major GC, which sweeps both old and newgen, but runs infrequently.
+
+## Tuning
+
+Each generation can be specifically tweaked. The older generation is particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. It's growth also mostly drives and triggers major GC cycles, which is still "stop the world" for Ruby 2.1 applicaitons.
 
 *In our next post we will explore how you'd approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory*
 
