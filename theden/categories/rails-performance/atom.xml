@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rails performance | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/rails-performance/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-12-23T18:25:58+02:00</updated>
+  <updated>2014-12-23T18:29:35+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -38,32 +38,6 @@
 <p>A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all need to be scanned during the <strong>MARK</strong> phase. That usually yields a smaller set to <strong>SWEEP</strong>.</p>
 
 <p>A large percentage of the graph is going to be traversed over and over again but will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.</p>
-
-<h2 id="object-references">Object references</h2>
-
-<p>In this simple example below we create a String array with three elements.</p>
-
-<p><code>ruby
-	irb(main):001:0&gt; require 'objspace'
-	=&gt; true
-	irb(main):002:0&gt; ObjectSpace.trace_object_allocations_start
-	=&gt; nil
-	irb(main):003:0&gt; ary = %w(a b c)
-	=&gt; ["a", "b", "c"]
-</code></p>
-
-<p>Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don’t have an awareness of (or references back to) the array container.</p>
-
-<p><code>ruby
-	irb(main):004:0&gt; ObjectSpace.dump(ary)
-	=&gt; "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
-	irb(main):004:0&gt; ObjectSpace.reachable_objects_from(ary)
-	=&gt; [Array, "a", "b", "c"]
-	irb(main):006:0&gt; ObjectSpace.reachable_objects_from(ary[1])
-	=&gt; [String]
-	irb(main):007:0&gt; ObjectSpace.dump(ary[1])
-	=&gt; "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
-</code></p>
 
 <h2 id="old-and-young-objects">Old and young objects</h2>
 
@@ -182,7 +156,31 @@ irb(main):010:0&gt; GC.count
 
 <p>This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a “stop the world” manner, whereas a more involved incremental implementation (Ruby 2.2) interleaves short steps of mark and sweep cycles between other VM operations.</p>
 
-<h2 id="references-between-young-and-old-objects">References between young and old objects</h2>
+<h2 id="object-references">Object references</h2>
+
+<p>In this simple example below we create a String array with three elements.</p>
+
+<p><code>ruby
+	irb(main):001:0&gt; require 'objspace'
+	=&gt; true
+	irb(main):002:0&gt; ObjectSpace.trace_object_allocations_start
+	=&gt; nil
+	irb(main):003:0&gt; ary = %w(a b c)
+	=&gt; ["a", "b", "c"]
+</code></p>
+
+<p>Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don’t have an awareness of (or references back to) the array container.</p>
+
+<p><code>ruby
+	irb(main):004:0&gt; ObjectSpace.dump(ary)
+	=&gt; "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
+	irb(main):004:0&gt; ObjectSpace.reachable_objects_from(ary)
+	=&gt; [Array, "a", "b", "c"]
+	irb(main):006:0&gt; ObjectSpace.reachable_objects_from(ary[1])
+	=&gt; [String]
+	irb(main):007:0&gt; ObjectSpace.dump(ary[1])
+	=&gt; "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
+</code></p>
 
 <p>We stated earlier that:</p>
 
