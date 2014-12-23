@@ -6,7 +6,6 @@ date: 2014-12-22 20:26
 comments: true
 keywords: ruby, rails, gc, garbage collection, generational gc, rails performance
 categories: [ruby, rails, gc, garbage collection, generational gc, 'rails performance']
-published: false
 ---
 
 In a [previous post](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/) in the [Rails Performance](/theden/categories/rails-performance) series we stated that the default garbage collection settings for [Ruby on Rails](http://www.rubyonrails.org) applications are not optimal. In this post we'll explore the basics of object age in RGenGC, Ruby 2.1's new *restricted generational garbage collector*.
