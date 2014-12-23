@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: gc | Bear Metal]]></title>
-  <link href="http://bearmetal.eu/theden/categories/gc/atom.xml" rel="self"/>
+  <title><![CDATA[Category: generational gc | Bear Metal]]></title>
+  <link href="http://bearmetal.eu/theden/categories/generational-gc/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
   <updated>2014-12-23T16:46:15+02:00</updated>
   <id>http://bearmetal.eu/</id>
@@ -206,115 +206,6 @@ irb(main):010:0&gt; GC.count
   <ol>
     <li id="fn:marksweep">
       <p>See the Ruby Hacking Guide’s <a href="https://ruby-hacking-guide.github.io/gc.html">GC chapter</a> for further context and nitty gritty details. I’d recommended scanning the content below the first few headings, until turned off by C.<a href="#fnref:marksweep" rel="reference">&#8617;</a></p>
-    </li>
-  </ol>
-</div>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rails Garbage Collection: naive defaults]]></title>
-    <link href="http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/"/>
-    <updated>2014-12-04T17:27:00+02:00</updated>
-    <id>http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults</id>
-    <content type="html"><![CDATA[<p><a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1"><img src="https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg" alt="" /></a></p>
-
-<p><small>Photo by <a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1">martin</a>, used under the Creative Commons license.</small></p>
-
-<p>The vast majority of <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that “works” for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). In practice this doesn’t work very well, however. It produces:</p>
-
-<ul>
-  <li>Too aggressive growth of Ruby heap slots and pages when thresholds are reached.</li>
-  <li>A large ratio of short and medium lived objects in relation to long lived ones for Rails applications.</li>
-  <li>Too many intermittent major GC cycles during the request / response cycle.</li>
-  <li>Heap fragmentation.</li>
-</ul>
-
-<p>Let’s use a metaphor most of us can better relate to: <em>dreaded household chores.</em> Your ability and frequency of hosting dinners at home are limited by four things (takeaways and paper plates aside):</p>
-
-<ul>
-  <li>How many seats and tables you have</li>
-  <li>How many sets of clean cutlery, plates and glasses are available</li>
-  <li>Overhead preparing a particular choice of cuisine</li>
-  <li>Willingness to clean up and do dishes after</li>
-</ul>
-
-<p>This is what you have to work with at home:</p>
-
-<ul>
-  <li>4 chairs and a table</li>
-  <li>12 plates and equivalent utensils</li>
-  <li>83 friends (60 from Facebook, 20 at work, your 2 brothers and then there’s Jim)</li>
-  <li>3 wine glasses and a beer mug</li>
-  <li>1 bottle of wine and 24 beers<sup id="fnref:promotions"><a href="#fn:promotions" rel="footnote">1</a></sup></li>
-  <li>3 awesome steaks and a piece of tofu</li>
-  <li>Fresh local produce</li>
-</ul>
-
-<p>Some of your friends are also vegetarian.</p>
-
-<p>Let’s have a look at two different scenarios.</p>
-
-<h4 id="irb-scenario">IRB scenario</h4>
-
-<p>You’ve invited and subsequently prepared dinner and the table—seats, plates and cutlery sets—for four, popped open your bottle of wine and fired up the grill. However, only one friend arrives, quite late. You’re grilling steak number three, yet he’s the vegetarian…and only drinks beer. And even then doesn’t talk very much.</p>
-
-<p>In the end, you down the whole bottle of wine and the three steaks. Life’s good again. There’s plenty to clean up and pack away, still.</p>
-
-<h4 id="rails-scenario">Rails scenario</h4>
-
-<p>17 guests show up at your door. Half of them are heavily intoxicated because Dylan invited the rest of his wine tasting group, too. Only one eats any of your food, yet breaks four plates. Beer disappeared in three minutes. The group members reveal seven new bottles of wine, make your dog drink one and he kernel panics as a result.</p>
-
-<p>You were not f*cking prepared. At all. Marinated steak’s now ruined, there’s less inventory and 30+ bottles to recycle. You’re hungry and now there are no plates left!</p>
-
-<p>In both of these scenarios, from the perspective of your friends it mostly worked out just fine. It wasn’t optimal for you or your environment, though. What’s important is that you learned a few things:</p>
-
-<ul>
-  <li>Next time it’s easier to execute optimally, but there may still be a party and some broken plates.</li>
-  <li>A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn’t scale well.</li>
-</ul>
-
-<h2 id="cooking-with-ruby">Cooking with Ruby</h2>
-
-<p>In the same manner, different use cases for the Ruby runtime require different preparations. Let’s tie the dinner metaphor back to Ruby land and its memory model.</p>
-
-<h4 id="home-environment">Home environment</h4>
-
-<p>The Ruby runtime, with everything else inside. Pages, objects and auxilary object data.</p>
-
-<h4 id="guest-count">Guest count</h4>
-
-<p>The number of major features and facets you need to support. Gems and engines are good candidates along with individual models, controllers, views etc. These “seats” are also connected - different guests mingle together.</p>
-
-<h4 id="guest-distribution">Guest distribution</h4>
-
-<p>Rails provides a framework for building applications, thus should be considered as part of the guest list too. Like some family members that make their way to gettogethers. First and second tier cousins you may hear of once a year and never talk with - they’re present (consume memory), yet don’t always add much value to the ambient.</p>
-
-<h4 id="food-and-drink">Food and drink</h4>
-
-<p>The amount and distribution of objects required to make a feature or facet work. A mix bag of small entrees (embedded objects like 2-char strings), main dishes (a Rails request and all its context) to cocktails and tequila shots (threads!).</p>
-
-<h4 id="plates-and-glasses">Plates and glasses</h4>
-
-<p>An object slot on the Ruby heap. One String, Array, Hash or any other object. Keep in mind that they can overflow and be recycled too - a wine glass is good for multiple servings. For buffets, a single plate can go very far too :-)</p>
-
-<h4 id="tables">Tables</h4>
-
-<p>Ruby pages - containers for objects. All of the plates and glasses on a given table. They’re mostly prepared in advance, but you can “construct” and improvise as needed to.</p>
-
-<h4 id="type-of-cuisine">Type of cuisine</h4>
-
-<p>Some dishes incur a lot of work to prepare <em>and</em> to clean up. Cooked basmati rice will leave a very very different footprint in your kitchen than a paella or salmon option would.</p>
-
-<p>The GC defaults for most Rails applications assume a reasonable sized home environment, a well defined guest list and just enough food and drinks for each. Everyone can sit at the same table, wine and dine on fine dishes, all with a minimal cleanup burden.</p>
-
-<p><em>In reality, it’s a frat party. Gone seriously wrong.</em></p>
-
-<p><em>In the next part of this series, we’re going to take a look at how the Ruby runtime can better host Rails applications. And what you can optimize for.</em></p>
-<div class="footnotes">
-  <ol>
-    <li id="fn:promotions">
-      <p>Because if there’s a promotion, you buy.<a href="#fnref:promotions" rel="reference">&#8617;</a></p>
     </li>
   </ol>
 </div>

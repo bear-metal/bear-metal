@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-12-23T16:33:53+02:00</updated>
+  <updated>2014-12-23T16:46:15+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,254 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Garbage Collection: age matters]]></title>
+    <link href="http://bearmetal.eu//theden/rails-garbage-collection-age-matters/"/>
+    <updated>2014-12-22T20:26:00+02:00</updated>
+    <id>http://bearmetal.eu//theden/rails-garbage-collection-age-matters</id>
+    <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="http://bearmetal.eu/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we’ll explore the basics of object age in RGenGC, Ruby 2.1’s new <em>restricted generational garbage collector</em>.</p>
+
+<p>As a prerequisite of this and subsequent posts, basic understanding of a <em>mark and sweep</em><sup id="fnref:marksweep"><a href="#fn:marksweep" rel="footnote">1</a></sup> collector is assumed.</p>
+
+<p><img src="http://bearmetal.eu/images/gc_mark_sweep.png" alt="" /></p>
+
+<p>A somewhat simplified mark and sweep cycle goes like this:</p>
+
+<ol>
+  <li>A mark and sweep collector traverses the object graph.</li>
+  <li>It checks which objects are in use (referenced) and which ones are not.</li>
+  <li>This is called object marking, aka. the <strong>MARK PHASE</strong>.</li>
+  <li>All unused objects are freed, making their memory available.</li>
+  <li>This is called sweeping, aka. the <strong>SWEEP PHASE</strong>.</li>
+  <li>Nothing changes for used objects.</li>
+</ol>
+
+<p>A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all need to be scanned during the <strong>MARK</strong> phase. That usually yields a smaller set to <strong>SWEEP</strong>.</p>
+
+<p>A large percentage of the graph is going to be traversed over and over again but will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.</p>
+
+<h2 id="object-references">Object references</h2>
+
+<p>In this simple example below we create a String array with three elements.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="nb">require</span> <span class="s1">&#39;objspace&#39;</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="kp">true</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">trace_object_allocations_start</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="kp">nil</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">ary</span> <span class="o">=</span> <span class="sx">%w(a b c)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don’t have an awareness of (or references back to) the array container.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b890fd8</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ARRAY</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b872038</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">length</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">embedded</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">references</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">0x007fd24b891050</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">0x007fd24b891028</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">0x007fd24b891000</span><span class="se">\&quot;</span><span class="s2">], </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:7, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">reachable_objects_from</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="nb">Array</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="o">]</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">006</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">reachable_objects_from</span><span class="p">(</span><span class="n">ary</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="o">]</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">007</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ary</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b891028</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">STRING</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b829658</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">embedded</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">bytesize</span><span class="se">\&quot;</span><span class="s2">:1, </span><span class="se">\&quot;</span><span class="s2">value</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">b</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">encoding</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:7, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">old</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">marked</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="old-and-young-objects">Old and young objects</h2>
+
+<p>The idea behind the new generational garbage collector is this:</p>
+
+<blockquote>
+  <p><strong>MOST OBJECTS DIE YOUNG.</strong></p>
+</blockquote>
+
+<p>To take advantage of this fact, the new GC classifies objects on the Ruby heap as either <strong>OLD</strong> or <strong>YOUNG</strong>. This segregation now allows the garbage collector to work with two distinct generations, with the <strong>OLD</strong> generation much less likely to yield much improvement towards recovering memory.</p>
+
+<p><strong>What generally makes an object old?</strong></p>
+
+<ul>
+  <li><em>All new objects are considered to be young</em>.</li>
+  <li><em>Old objects survived at least one GC cycle</em> (workable for this first version of the generational collector). The collector thus reasons that the object will stick around and not become garbage quickly.</li>
+</ul>
+
+<p>For a typical Rails request, some examples of old and new objects would be:</p>
+
+<ul>
+  <li><strong>Old:</strong> compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.</li>
+  <li><strong>New:</strong> short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.</li>
+</ul>
+
+<p>Young objects are more likely to reference old objects than old objects referencing young objects. Old objects also frequently reference other old objects.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line">  <span class="n">u</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span>
+</span><span class="line">  <span class="c1">#&lt;User id: 1, email: &quot;lourens@something.com&quot;, encrypted_password: &quot;blahblah...&quot;, reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 2, current_sign_in_at: &quot;2014-10-31 11:52:30&quot;, last_sign_in_at: &quot;2014-10-29 10:04:01&quot;, current_sign_in_ip: &quot;127.0.0.1&quot;, last_sign_in_ip: &quot;127.0.0.1&quot;, created_at: &quot;2014-10-29 10:04:01&quot;, updated_at: &quot;2014-11-30 14:07:15&quot;, provider: nil, uid: nil, first_name: &quot;dfdsfds&quot;, last_name: &quot;dfdsfds&quot;, confirmation_token: nil, confirmed_at: &quot;2014-10-30 10:11:42&quot;, confirmation_sent_at: nil, unconfirmed_email: nil, onboarded_at: nil&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Notice how the transient attribute keys and names reference the long lived columns here:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">=&gt;</span>
+</span><span class="line">   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Integer:0x007fbe756d1d30&gt;,</span>
+</span><span class="line">  <span class="s2">&quot;email&quot;</span><span class="o">=&gt;</span>
+</span><span class="line">   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
+</span><span class="line">  <span class="s2">&quot;encrypted_password&quot;</span><span class="o">=&gt;</span>
+</span><span class="line">   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
+</span><span class="line">  <span class="s2">&quot;reset_password_token&quot;</span><span class="o">=&gt;</span>
+</span><span class="line">   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
+</span><span class="line">  <span class="s2">&quot;reset_password_sent_at&quot;</span><span class="o">=&gt;</span>
+</span><span class="line">   <span class="c1">#&lt;ActiveRecord::AttributeMethods::TimeZoneConversion::Type:0x007fbe741f63c0</span>
+</span><span class="line">    <span class="vi">@column</span><span class="o">=</span>
+</span><span class="line">     <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58&gt;&gt;,</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Age segregation is also just a classification – old and young objects aren’t stored in distinct memory spaces – they’re just conceptional buckets. The generation of an object refers to the amount of GC cycles it survived:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">9</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="o">[]</span><span class="p">)</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24c007668</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ARRAY</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b872038</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">length</span><span class="se">\&quot;</span><span class="s2">:0, </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:9, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:8, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
+</span><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">010</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">count</span>
+</span><span class="line"><span class="o">=&gt;</span> <span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="what-the-heck-is-major-and-minor-gc">What the heck is major and minor GC?</h2>
+
+<p>You may have heard, read about or noticed in GC.stat output the terms “minor” and “major” GC.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="ruby"><span class="line"><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">pp</span> <span class="no">GC</span><span class="o">.</span><span class="n">stat</span>
+</span><span class="line"><span class="p">{</span><span class="ss">:count</span><span class="o">=&gt;</span><span class="mi">32</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_used</span><span class="o">=&gt;</span><span class="mi">1181</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_length</span><span class="o">=&gt;</span><span class="mi">1233</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_increment</span><span class="o">=&gt;</span><span class="mi">50</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_live_slot</span><span class="o">=&gt;</span><span class="mi">325148</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_free_slot</span><span class="o">=&gt;</span><span class="mi">156231</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_final_slot</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_swept_slot</span><span class="o">=&gt;</span><span class="mi">163121</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_eden_page_length</span><span class="o">=&gt;</span><span class="mi">1171</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:heap_tomb_page_length</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:total_allocated_object</span><span class="o">=&gt;</span><span class="mi">2050551</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:total_freed_object</span><span class="o">=&gt;</span><span class="mi">1725403</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:malloc_increase</span><span class="o">=&gt;</span><span class="mi">1462784</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:malloc_limit</span><span class="o">=&gt;</span><span class="mi">24750208</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:minor_gc_count</span><span class="o">=&gt;</span><span class="mi">26</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:major_gc_count</span><span class="o">=&gt;</span><span class="mi">6</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:remembered_shady_object</span><span class="o">=&gt;</span><span class="mi">3877</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:remembered_shady_object_limit</span><span class="o">=&gt;</span><span class="mi">4042</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:old_object</span><span class="o">=&gt;</span><span class="mi">304270</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:old_object_limit</span><span class="o">=&gt;</span><span class="mi">259974</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:oldmalloc_increase</span><span class="o">=&gt;</span><span class="mi">23639792</span><span class="p">,</span>
+</span><span class="line"> <span class="ss">:oldmalloc_limit</span><span class="o">=&gt;</span><span class="mi">24159190</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong>Minor GC (or “partial marking”):</strong> This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.</p>
+
+<p>It runs quite often - 26 times for the GC dump of a booted Rails app above.</p>
+
+<p><strong>Major GC:</strong> Triggered by out-of-memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it’s thus significantly slower than a minor GC round. Generally when there’s a significant increase in old objects, a major GC would be triggered. Every major GC cycle that an object survived bumps its current generation.</p>
+
+<p>It runs much less frequently - six times for the stats dump above.</p>
+
+<p>The following diagram represents a minor GC cycle that identifies and promotes some objects to old.</p>
+
+<p><img src="http://bearmetal.eu/images/gc_first_minor.png" alt="" /></p>
+
+<p>A subsequent minor GC cycle ignores old objects during the mark phase.</p>
+
+<p><img src="http://bearmetal.eu/images/gc_second_minor.png" alt="" /></p>
+
+<p>Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. The current generation of an object is the number of major GC cycles it has survived.</p>
+
+<h2 id="rgengc">RGenGC</h2>
+
+<p>At a very high level C Ruby 2.1’s collector has the following properties:</p>
+
+<ul>
+  <li>High throughput - it can sustain a high rate of allocations / collections due to faster minor GC cycles and very rare major GC cycles.</li>
+  <li>GC pauses are still long (“stop the world”) for major GC cycles.</li>
+  <li>Generational collectors have much shorter mark cycles as they traverse only the young generation, most of the time.</li>
+</ul>
+
+<p>This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a “stop the world” manner, whereas a more involved incremental implementation (Ruby 2.2) interleaves short steps of mark and sweep cycles between other VM operations.</p>
+
+<h2 id="references-between-young-and-old-objects">References between young and old objects</h2>
+
+<p>We stated earlier that:</p>
+
+<p><strong>Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently reference other old objects.</strong></p>
+
+<p><em>However</em> it’s possible for old objects to reference new objects. What happens when old objects reference new ones?</p>
+
+<p>Old objects with references to new objects are stored in a “remembered set”. The remembered set is a container of references from old objects to new objects and is a shortcut for preventing heap scans for finding such references.</p>
+
+<h2 id="implications-for-rails">Implications for Rails</h2>
+
+<p>As our friend Ezra used to say, “no code is faster than no code.” The same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there are no free object slots on the Ruby heap and a major GC is triggered as a result.</p>
+
+<p>A major drawback of this limited segregation of OLD vs YOUNG is that <strong>many transient objects are in fact promoted to old during large contexts such as a Rails request</strong>. These long lived objects eventually become unexpected “memory leaks”. These transient objects can be conceptually classified as of “medium lifetime” as they need to stick around for the duration of a request. There’s however a large probability that a minor GC would run during request lifetime, promoting young objects to old, effectively increasing their lifetime to well beyond the end of a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and young objects.</p>
+
+<p><strong>Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.</strong></p>
+
+<p><em>In our next post we will explore how you’d approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory. Leave your email address below and we’ll let you know as soon as it’s posted.</em></p>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:marksweep">
+      <p>See the Ruby Hacking Guide’s <a href="https://ruby-hacking-guide.github.io/gc.html">GC chapter</a> for further context and nitty gritty details. I’d recommended scanning the content below the first few headings, until turned off by C.<a href="#fnref:marksweep" rel="reference">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Does Rails Scale?]]></title>
