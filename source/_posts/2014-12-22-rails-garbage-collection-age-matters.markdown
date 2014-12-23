@@ -27,32 +27,6 @@ A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300
 
 A large percentage of the graph is going to be traversed over and over again but will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.
 
-## Object references
-
-In this simple example below we create a String array with three elements.
-
-```ruby
-	irb(main):001:0> require 'objspace'
-	=> true
-	irb(main):002:0> ObjectSpace.trace_object_allocations_start
-	=> nil
-	irb(main):003:0> ary = %w(a b c)
-	=> ["a", "b", "c"]
-```
-
-Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don't have an awareness of (or references back to) the array container.
-
-```ruby
-	irb(main):004:0> ObjectSpace.dump(ary)
-	=> "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
-	irb(main):004:0> ObjectSpace.reachable_objects_from(ary)
-	=> [Array, "a", "b", "c"]
-	irb(main):006:0> ObjectSpace.reachable_objects_from(ary[1])
-	=> [String]
-	irb(main):007:0> ObjectSpace.dump(ary[1])
-	=> "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
-```
-
 ## Old and young objects
 
 **What generally makes an object old?**
@@ -162,7 +136,31 @@ At a very high level C Ruby 2.1's collector has the following properties:
 
 This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a "stop the world" manner, whereas a more involved incremental implementation (Ruby 2.2) interleaves short steps of mark and sweep cycles between other VM operations.
 
-## References between young and old objects
+## Object references
+
+In this simple example below we create a String array with three elements.
+
+```ruby
+	irb(main):001:0> require 'objspace'
+	=> true
+	irb(main):002:0> ObjectSpace.trace_object_allocations_start
+	=> nil
+	irb(main):003:0> ary = %w(a b c)
+	=> ["a", "b", "c"]
+```
+
+Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don't have an awareness of (or references back to) the array container.
+
+```ruby
+	irb(main):004:0> ObjectSpace.dump(ary)
+	=> "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
+	irb(main):004:0> ObjectSpace.reachable_objects_from(ary)
+	=> [Array, "a", "b", "c"]
+	irb(main):006:0> ObjectSpace.reachable_objects_from(ary[1])
+	=> [String]
+	irb(main):007:0> ObjectSpace.dump(ary[1])
+	=> "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
+```
 
 We stated earlier that:
 
