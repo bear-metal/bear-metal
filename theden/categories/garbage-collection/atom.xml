@@ -4,7 +4,7 @@
   <title><![CDATA[Category: garbage collection | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/garbage-collection/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-12-23T16:46:15+02:00</updated>
+  <updated>2014-12-23T18:25:58+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -67,6 +67,13 @@
 
 <h2 id="old-and-young-objects">Old and young objects</h2>
 
+<p><strong>What generally makes an object old?</strong></p>
+
+<ul>
+  <li><em>All new objects are considered to be young</em>.</li>
+  <li><em>Old objects survived at least one GC cycle (major or minor)</em> The collector thus reasons that the object will stick around and not become garbage quickly.</li>
+</ul>
+
 <p>The idea behind the new generational garbage collector is this:</p>
 
 <blockquote>
@@ -74,13 +81,6 @@
 </blockquote>
 
 <p>To take advantage of this fact, the new GC classifies objects on the Ruby heap as either <strong>OLD</strong> or <strong>YOUNG</strong>. This segregation now allows the garbage collector to work with two distinct generations, with the <strong>OLD</strong> generation much less likely to yield much improvement towards recovering memory.</p>
-
-<p><strong>What generally makes an object old?</strong></p>
-
-<ul>
-  <li><em>All new objects are considered to be young</em>.</li>
-  <li><em>Old objects survived at least one GC cycle</em> (workable for this first version of the generational collector). The collector thus reasons that the object will stick around and not become garbage quickly.</li>
-</ul>
 
 <p>For a typical Rails request, some examples of old and new objects would be:</p>
 
@@ -160,11 +160,11 @@ irb(main):010:0&gt; GC.count
 
 <p>It runs much less frequently - six times for the stats dump above.</p>
 
-<p>The following diagram represents a minor GC cycle that identifies and promotes some objects to old.</p>
+<p>The following diagram represents a minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) that identifies and promotes some objects to old.</p>
 
 <p><img src="/images/gc_first_minor.png" alt="" /></p>
 
-<p>A subsequent minor GC cycle ignores old objects during the mark phase.</p>
+<p>A subsequent minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) ignores old objects during the mark phase.</p>
 
 <p><img src="/images/gc_second_minor.png" alt="" /></p>
 

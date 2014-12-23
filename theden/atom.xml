@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-12-23T16:46:15+02:00</updated>
+  <updated>2014-12-23T18:25:58+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -79,6 +79,13 @@
 
 <h2 id="old-and-young-objects">Old and young objects</h2>
 
+<p><strong>What generally makes an object old?</strong></p>
+
+<ul>
+  <li><em>All new objects are considered to be young</em>.</li>
+  <li><em>Old objects survived at least one GC cycle (major or minor)</em> The collector thus reasons that the object will stick around and not become garbage quickly.</li>
+</ul>
+
 <p>The idea behind the new generational garbage collector is this:</p>
 
 <blockquote>
@@ -86,13 +93,6 @@
 </blockquote>
 
 <p>To take advantage of this fact, the new GC classifies objects on the Ruby heap as either <strong>OLD</strong> or <strong>YOUNG</strong>. This segregation now allows the garbage collector to work with two distinct generations, with the <strong>OLD</strong> generation much less likely to yield much improvement towards recovering memory.</p>
-
-<p><strong>What generally makes an object old?</strong></p>
-
-<ul>
-  <li><em>All new objects are considered to be young</em>.</li>
-  <li><em>Old objects survived at least one GC cycle</em> (workable for this first version of the generational collector). The collector thus reasons that the object will stick around and not become garbage quickly.</li>
-</ul>
 
 <p>For a typical Rails request, some examples of old and new objects would be:</p>
 
@@ -209,11 +209,11 @@
 
 <p>It runs much less frequently - six times for the stats dump above.</p>
 
-<p>The following diagram represents a minor GC cycle that identifies and promotes some objects to old.</p>
+<p>The following diagram represents a minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) that identifies and promotes some objects to old.</p>
 
 <p><img src="http://bearmetal.eu/images/gc_first_minor.png" alt="" /></p>
 
-<p>A subsequent minor GC cycle ignores old objects during the mark phase.</p>
+<p>A subsequent minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) ignores old objects during the mark phase.</p>
 
 <p><img src="http://bearmetal.eu/images/gc_second_minor.png" alt="" /></p>
 
@@ -489,7 +489,7 @@
   <entry>
     <title type="html"><![CDATA[Metaprogramming Ruby for Greater Good]]></title>
     <link href="http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good/"/>
-    <updated>2014-09-29T11:43:00+03:00</updated>
+    <updated>2014-09-29T11:43:00+02:00</updated>
     <id>http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good</id>
     <content type="html"><![CDATA[<p><em>This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014.</em> </p>
 
@@ -1326,7 +1326,7 @@
   <entry>
     <title type="html"><![CDATA[Let Your Data Tell a Story]]></title>
     <link href="http://bearmetal.eu//theden/let-your-data-tell-a-story/"/>
-    <updated>2013-09-24T16:57:00+03:00</updated>
+    <updated>2013-09-24T16:57:00+02:00</updated>
     <id>http://bearmetal.eu//theden/let-your-data-tell-a-story</id>
     <content type="html"><![CDATA[<script async="" class="speakerdeck-embed" data-id="39c500c005dc01314f705605cd4f70bc" data-ratio="1.37081659973226" src="http://bearmetal.eu//speakerdeck.com/assets/embed.js"></script>
 
@@ -1523,7 +1523,7 @@
   <entry>
     <title type="html"><![CDATA[Are you flying blind – How to Regain Control of Production Systems with the Help of Situation Awareness?]]></title>
     <link href="http://bearmetal.eu//theden/situation-awareness/"/>
-    <updated>2013-09-03T16:57:00+03:00</updated>
+    <updated>2013-09-03T16:57:00+02:00</updated>
     <id>http://bearmetal.eu//theden/situation-awareness</id>
     <content type="html"><![CDATA[<div class="bogus-wrapper"><notextile><figure>
       <p><a href="http://www.flickr.com/photos/robbn1/3391187126/"><img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg" alt="" /></a></p>
@@ -1605,7 +1605,7 @@
   <entry>
     <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
     <link href="http://bearmetal.eu//theden/its-not-about-us-its-about-you/"/>
-    <updated>2013-08-14T15:51:00+03:00</updated>
+    <updated>2013-08-14T15:51:00+02:00</updated>
     <id>http://bearmetal.eu//theden/its-not-about-us-its-about-you</id>
     <content type="html"><![CDATA[<div class="bogus-wrapper"><notextile><figure>
       <p><a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
