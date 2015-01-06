@@ -2,80 +2,84 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://bearmetal.eu/theden/its-not-about-us-its-about-you/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-09T21:02:54+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/situation-awareness/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-09T21:02:54+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/let-your-data-tell-a-story/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-09T21:02:54+02:00</lastmod>
     </url>
     <url>
         <loc>
             http://bearmetal.eu/theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks/
         </loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-09T21:02:54+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/metaprogramming-ruby-for-greater-good/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-09T21:02:54+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-19T15:34:59+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/does-rails-scale/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-12-19T16:14:10+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/rails-garbage-collection-age-matters/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2014-12-29T17:32:50+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/</loc>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/robots.txt</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/services/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/erkki/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/jarkko/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/lourens/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/team/tarmo/</loc>
-        <lastmod>2014-12-23T18:25:43+02:00</lastmod>
+        <lastmod>2014-01-15T11:36:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/archives/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/theden/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
     <url>
         <loc>http://bearmetal.eu/zeromq/</loc>
-        <lastmod>2014-12-23T18:28:42+02:00</lastmod>
+        <lastmod>2015-01-06T16:19:27+02:00</lastmod>
     </url>
 </urlset>

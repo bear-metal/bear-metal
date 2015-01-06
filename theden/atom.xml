@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2014-12-23T18:29:35+02:00</updated>
+  <updated>2015-01-06T16:21:44+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,301 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to install Ruby 2.2.0 on OS X Yosemite with Homebrew and rbenv]]></title>
+    <link href="http://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
+    <updated>2015-01-06T16:15:00+02:00</updated>
+    <id>http://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
+    <content type="html"><![CDATA[<p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">➜  ~ ✗ rbenv install 2.2.0
+</span><span class="line">Downloading ruby-2.2.0.tar.gz...
+</span><span class="line">-&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
+</span><span class="line">Installing ruby-2.2.0...
+</span><span class="line">
+</span><span class="line">BUILD FAILED (OS X 10.10.1 using ruby-build 20141225)
+</span><span class="line">
+</span><span class="line">Inspect or clean up the working tree at /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466
+</span><span class="line">Results logged to /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466.log
+</span><span class="line">
+</span><span class="line">Last 10 log lines:
+</span><span class="line">make[2]: *** Waiting for unfinished jobs....
+</span><span class="line">compiling raddrinfo.c
+</span><span class="line">compiling ifaddr.c
+</span><span class="line">make[1]: *** [ext/openssl/all] Error 2
+</span><span class="line">make[1]: *** Waiting for unfinished jobs....
+</span><span class="line">linking shared-object zlib.bundle
+</span><span class="line">linking shared-object socket.bundle
+</span><span class="line">linking shared-object date_core.bundle
+</span><span class="line">linking shared-object ripper.bundle
+</span><span class="line">make: *** [build-ext] Error 2</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>When I opened up the log file mentioned in the output above, I could see the actual cause of the error:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">ossl_ssl.c:125:5: error: use of undeclared identifier 'TLSv1_2_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_2),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_2_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:126:5: error: use of undeclared identifier 'TLSv1_2_server_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_2_server),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_2_server_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:127:5: error: use of undeclared identifier 'TLSv1_2_client_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_2_client),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_2_client_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:131:5: error: use of undeclared identifier 'TLSv1_1_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_1),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_1_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:132:5: error: use of undeclared identifier 'TLSv1_1_server_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_1_server),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_1_server_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:133:5: error: use of undeclared identifier 'TLSv1_1_client_method'
+</span><span class="line">    OSSL_SSL_METHOD_ENTRY(TLSv1_1_client),
+</span><span class="line">    ^
+</span><span class="line">ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class="line">#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class="line">                                                                    ^
+</span><span class="line">&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class="line">TLSv1_1_client_method
+</span><span class="line">^
+</span><span class="line">ossl_ssl.c:210:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class="line">    for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
+</span><span class="line">                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class="line">ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class="line">#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class="line">                                  ^~~~~
+</span><span class="line">ossl_ssl.c:1127:13: warning: using the result of an assignment as a condition without parentheses [-Wparentheses]
+</span><span class="line">            if (rc = SSL_shutdown(ssl))
+</span><span class="line">                ~~~^~~~~~~~~~~~~~~~~~~
+</span><span class="line">ossl_ssl.c:1127:13: note: place parentheses around the assignment to silence this warning
+</span><span class="line">            if (rc = SSL_shutdown(ssl))
+</span><span class="line">                   ^
+</span><span class="line">                (                     )
+</span><span class="line">ossl_ssl.c:1127:13: note: use '==' to turn this assignment into an equality comparison
+</span><span class="line">            if (rc = SSL_shutdown(ssl))
+</span><span class="line">                   ^
+</span><span class="line">                   ==
+</span><span class="line">ossl_ssl.c:2194:23: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class="line">    ary = rb_ary_new2(numberof(ossl_ssl_method_tab));
+</span><span class="line">                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class="line">ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class="line">#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class="line">                                  ^~~~~
+</span><span class="line">ossl_ssl.c:2195:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class="line">    for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
+</span><span class="line">                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class="line">ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class="line">#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class="line">                                  ^~~~~
+</span><span class="line">1 warning and 9 errors generated.
+</span><span class="line">make[2]: *** [ossl_ssl.o] Error 1
+</span><span class="line">make[2]: *** Waiting for unfinished jobs....
+</span><span class="line">compiling raddrinfo.c
+</span><span class="line">compiling ifaddr.c
+</span><span class="line">make[1]: *** [ext/openssl/all] Error 2
+</span><span class="line">make[1]: *** Waiting for unfinished jobs....
+</span><span class="line">linking shared-object zlib.bundle
+</span><span class="line">linking shared-object socket.bundle
+</span><span class="line">linking shared-object date_core.bundle
+</span><span class="line">linking shared-object ripper.bundle
+</span><span class="line">make: *** [build-ext] Error 2</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The weird thing here is that I did not get the usual ‘Missing the OpenSSL lib?’ warning. The lib <em>was</em> found but somehow the headers were fucked up. It also did not happen with older rbenv Rubies.</p>
+
+<p>Thanks to <a href="https://bearmetal.eu/team/tarmo/">Tarmo</a> I found the solution <a href="https://issues.apache.org/jira/browse/THRIFT-2515?focusedCommentId=14012758&amp;page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14012758">here</a>.</p>
+
+<p>What I had to do was this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">➜  ~  brew update
+</span><span class="line">➜  ~  brew install openssl
+</span><span class="line">➜  ~  /usr/local/opt/openssl/bin/c_rehash                
+</span><span class="line">➜  ~  sudo rm /usr/bin/openssl      
+</span><span class="line">➜  ~  ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
+</span><span class="line"># Open up a new terminal window, just in case
+</span><span class="line">➜  ~  brew unlink openssl
+</span><span class="line">➜  ~  brew link --overwrite --force openssl
+</span><span class="line">➜  ~  openssl version -a                                             
+</span><span class="line">OpenSSL 1.0.1j 15 Oct 2014
+</span><span class="line">built on: Sun Dec  7 02:14:31 GMT 2014
+</span><span class="line">platform: darwin64-x86_64-cc
+</span><span class="line">options:  bn(64,64) rc4(ptr,char) des(idx,cisc,16,int) idea(int) blowfish(idx) 
+</span><span class="line">compiler: clang -fPIC -fno-common -DOPENSSL_PIC -DZLIB_SHARED -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -arch x86_64 -O3 -DL_ENDIAN -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
+</span><span class="line">OPENSSLDIR: "/usr/local/etc/openssl"</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>After that, Ruby 2.2.0 installed cleanly without any specific parameters needed:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">➜  ~  rbenv install 2.2.0
+</span><span class="line">Downloading ruby-2.2.0.tar.gz...
+</span><span class="line">-&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
+</span><span class="line">Installing ruby-2.2.0...
+</span><span class="line">Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0</span></code></pre></td></tr></table></div></figure></notextile></div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: age matters]]></title>
@@ -487,7 +782,7 @@
   <entry>
     <title type="html"><![CDATA[Metaprogramming Ruby for Greater Good]]></title>
     <link href="http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good/"/>
-    <updated>2014-09-29T11:43:00+02:00</updated>
+    <updated>2014-09-29T11:43:00+03:00</updated>
     <id>http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good</id>
     <content type="html"><![CDATA[<p><em>This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014.</em> </p>
 
@@ -1324,7 +1619,7 @@
   <entry>
     <title type="html"><![CDATA[Let Your Data Tell a Story]]></title>
     <link href="http://bearmetal.eu//theden/let-your-data-tell-a-story/"/>
-    <updated>2013-09-24T16:57:00+02:00</updated>
+    <updated>2013-09-24T16:57:00+03:00</updated>
     <id>http://bearmetal.eu//theden/let-your-data-tell-a-story</id>
     <content type="html"><![CDATA[<script async="" class="speakerdeck-embed" data-id="39c500c005dc01314f705605cd4f70bc" data-ratio="1.37081659973226" src="http://bearmetal.eu//speakerdeck.com/assets/embed.js"></script>
 
@@ -1521,7 +1816,7 @@
   <entry>
     <title type="html"><![CDATA[Are you flying blind – How to Regain Control of Production Systems with the Help of Situation Awareness?]]></title>
     <link href="http://bearmetal.eu//theden/situation-awareness/"/>
-    <updated>2013-09-03T16:57:00+02:00</updated>
+    <updated>2013-09-03T16:57:00+03:00</updated>
     <id>http://bearmetal.eu//theden/situation-awareness</id>
     <content type="html"><![CDATA[<div class="bogus-wrapper"><notextile><figure>
       <p><a href="http://www.flickr.com/photos/robbn1/3391187126/"><img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg" alt="" /></a></p>
@@ -1603,7 +1898,7 @@
   <entry>
     <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
     <link href="http://bearmetal.eu//theden/its-not-about-us-its-about-you/"/>
-    <updated>2013-08-14T15:51:00+02:00</updated>
+    <updated>2013-08-14T15:51:00+03:00</updated>
     <id>http://bearmetal.eu//theden/its-not-about-us-its-about-you</id>
     <content type="html"><![CDATA[<div class="bogus-wrapper"><notextile><figure>
       <p><a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
