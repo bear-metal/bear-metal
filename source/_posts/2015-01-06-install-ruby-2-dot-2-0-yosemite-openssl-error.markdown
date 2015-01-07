@@ -143,13 +143,44 @@ What I had to do was this:
 ```
 ➜  ~  brew update
 ➜  ~  brew install openssl
-➜  ~  /usr/local/opt/openssl/bin/c_rehash                
-➜  ~  sudo rm /usr/bin/openssl      
+➜  ~  /usr/local/opt/openssl/bin/c_rehash
+```
+
+Now make sure that your new binary is in your PATH before the system one.
+
+```
 ➜  ~  ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
-# Open up a new terminal window, just in case
+➜  ~ which openssl
+/usr/bin/openssl
+➜  ~ echo $PATH
+/usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
+```
+
+That's no good. Let's fix our PATH. I'm using zsh, so for me it's set in `~/.zshrc`. Your particular file depends on the shell you're using (for bash it would be `~/.bashrc` or `~/.bash_profile`, but see the caveat [here](http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html)).
+
+```
+➜  ~ vim ~/.zshrc
+# Change the line that sets PATH so that /usr/local/bin
+# comes BEFORE /usr/bin. For me, it looks like this:
+# export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+```
+
+Open up a new terminal window and check that the PATH is correct:
+
+```
+➜  ~  echo $PATH
+/usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+➜  ~  which openssl
+/usr/local/bin/openssl
+```
+
+Better. Now, let's make sure that homebrew libs symlink to the newer openssl.
+
+```
 ➜  ~  brew unlink openssl
 ➜  ~  brew link --overwrite --force openssl
-➜  ~  openssl version -a                                             
+➜  ~  openssl version -a
+
 OpenSSL 1.0.1j 15 Oct 2014
 built on: Sun Dec  7 02:14:31 GMT 2014
 platform: darwin64-x86_64-cc
@@ -157,6 +188,8 @@ options:  bn(64,64) rc4(ptr,char) des(idx,cisc,16,int) idea(int) blowfish(idx)
 compiler: clang -fPIC -fno-common -DOPENSSL_PIC -DZLIB_SHARED -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -arch x86_64 -O3 -DL_ENDIAN -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
 OPENSSLDIR: "/usr/local/etc/openssl"
 ```
+
+Splendid.
 
 After that, Ruby 2.2.0 installed cleanly without any specific parameters needed:
 
@@ -167,3 +200,5 @@ Downloading ruby-2.2.0.tar.gz...
 Installing ruby-2.2.0...
 Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0
 ```
+
+**[UPDATE 1, Jan 7]** The original version of this post told you to `rm /usr/bin/openssl`, based on the link above. As James Tucker pointed out, this is a horrible idea. I fixed the article so that we now fix the `$PATH` instead.
