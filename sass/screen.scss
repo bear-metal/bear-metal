@@ -140,13 +140,13 @@ body > header {
   p, h1 {
     @include grid-column(12);
   }
-  
+
   .treadmill {
     text-align: center;
   }
 
   #blurb p, #treadmill {
-    font-size: 125%;
+    font--moz-border-radiusze: 125%;
   }
 
   h1 {
@@ -402,6 +402,27 @@ figure {
   }
 }
 
+.side-nav {
+  .major {
+    margin-bottom: 0;
+
+    a {
+      font-family: brandon-grotesque, 'Helvetica Neue', Helvetica, Helvetica, Arial, sans-serif;
+      padding: 0.5em;
+      margin-left: -0.5em;
+      background-color: rgb(43, 56, 68);
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    &.last {
+      margin: {
+        bottom: 6.125px;
+      }
+    }
+  }
+}
+
 //@import "custom/colors";
 //@import "custom/fonts";
 //@import "custom/layout";
@@ -409,3 +430,4 @@ figure {
 //@import "partials";
 //@import "plugins/**/*";
 //@import "custom/styles";
+
