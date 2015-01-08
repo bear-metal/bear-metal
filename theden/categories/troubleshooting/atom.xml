@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: troubleshooting | Bear Metal]]></title>
+  <title><![CDATA[Category: Troubleshooting | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/troubleshooting/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-07T08:58:33+02:00</updated>
+  <updated>2015-01-08T17:27:49+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -14,88 +14,92 @@
 
   
   <entry>
-    <title type="html"><![CDATA[How to install Ruby 2.2.0 on OS X Yosemite with Homebrew and rbenv]]></title>
+    <title type="html"><![CDATA[How to Install Ruby 2.2.0 on OS X Yosemite With Homebrew and Rbenv]]></title>
     <link href="http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
     <updated>2015-01-06T16:15:00+02:00</updated>
     <id>http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
     <content type="html"><![CDATA[<p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
 
-<p>```
-➜  ~ ✗ rbenv install 2.2.0
-Downloading ruby-2.2.0.tar.gz…
+<pre><code>➜  ~ ✗ rbenv install 2.2.0
+Downloading ruby-2.2.0.tar.gz...
 -&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
-Installing ruby-2.2.0…</p>
+Installing ruby-2.2.0...
 
-<p>BUILD FAILED (OS X 10.10.1 using ruby-build 20141225)</p>
+BUILD FAILED (OS X 10.10.1 using ruby-build 20141225)
 
-<p>Inspect or clean up the working tree at /var/folders/s<em>/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466
-Results logged to /var/folders/s</em>/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466.log</p>
+Inspect or clean up the working tree at /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466
+Results logged to /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466.log
 
-<p>Last 10 log lines:
-make[2]: <em>** Waiting for unfinished jobs….
+Last 10 log lines:
+make[2]: *** Waiting for unfinished jobs....
 compiling raddrinfo.c
 compiling ifaddr.c
-make[1]: **</em> [ext/openssl/all] Error 2
-make[1]: <em>** Waiting for unfinished jobs….
+make[1]: *** [ext/openssl/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
 linking shared-object zlib.bundle
 linking shared-object socket.bundle
 linking shared-object date_core.bundle
 linking shared-object ripper.bundle
-make: **</em> [build-ext] Error 2
-```</p>
+make: *** [build-ext] Error 2
+</code></pre>
 
 <p>When I opened up the log file mentioned in the output above, I could see the actual cause of the error:</p>
 
-<p>```
-ossl_ssl.c:125:5: error: use of undeclared identifier ‘TLSv1<em>2_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>2),
+<pre><code>ossl_ssl.c:125:5: error: use of undeclared identifier 'TLSv1_2_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_2),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_2_method</scratch></p>
-<p>ossl_ssl.c:126:5: error: use of undeclared identifier ‘TLSv1<em>2_server_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>2_server),
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_2_method
+^
+ossl_ssl.c:126:5: error: use of undeclared identifier 'TLSv1_2_server_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_2_server),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_2_server_method</scratch></p>
-<p>ossl_ssl.c:127:5: error: use of undeclared identifier ‘TLSv1<em>2_client_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>2_client),
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_2_server_method
+^
+ossl_ssl.c:127:5: error: use of undeclared identifier 'TLSv1_2_client_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_2_client),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_2_client_method</scratch></p>
-<p>ossl_ssl.c:131:5: error: use of undeclared identifier ‘TLSv1<em>1_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>1),
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_2_client_method
+^
+ossl_ssl.c:131:5: error: use of undeclared identifier 'TLSv1_1_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_1),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_1_method</scratch></p>
-<p>ossl_ssl.c:132:5: error: use of undeclared identifier ‘TLSv1<em>1_server_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>1_server),
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_1_method
+^
+ossl_ssl.c:132:5: error: use of undeclared identifier 'TLSv1_1_server_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_1_server),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_1_server_method</scratch></p>
-<p>ossl_ssl.c:133:5: error: use of undeclared identifier ‘TLSv1<em>1_client_method’
-    OSSL_SSL_METHOD_ENTRY(TLSv1</em>1_client),
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_1_server_method
+^
+ossl_ssl.c:133:5: error: use of undeclared identifier 'TLSv1_1_client_method'
+    OSSL_SSL_METHOD_ENTRY(TLSv1_1_client),
     ^
-ossl_ssl.c:119:69: note: expanded from macro ‘OSSL_SSL_METHOD_ENTRY’
-#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD <em>(</em>)(void))name##_method }
+ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
                                                                     ^
-<scratch space="">:148:1: note: expanded from here
-TLSv1_1_client_method</scratch></p>
-<p>ossl_ssl.c:210:21: error: invalid application of ‘sizeof’ to an incomplete type ‘const struct <anonymous struct="" at="" ossl_ssl.c:115:14=""> []'
+&lt;scratch space&gt;:148:1: note: expanded from here
+TLSv1_1_client_method
+^
+ossl_ssl.c:210:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
     for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ossl_ssl.c:19:35: note: expanded from macro 'numberof'
@@ -112,13 +116,13 @@ ossl_ssl.c:1127:13: note: use '==' to turn this assignment into an equality comp
             if (rc = SSL_shutdown(ssl))
                    ^
                    ==
-ossl_ssl.c:2194:23: error: invalid application of 'sizeof' to an incomplete type 'const struct <anonymous struct="" at="" ossl_ssl.c:115:14=""> []'
+ossl_ssl.c:2194:23: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
     ary = rb_ary_new2(numberof(ossl_ssl_method_tab));
                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ossl_ssl.c:19:35: note: expanded from macro 'numberof'
 #define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
                                   ^~~~~
-ossl_ssl.c:2195:21: error: invalid application of 'sizeof' to an incomplete type 'const struct <anonymous struct="" at="" ossl_ssl.c:115:14=""> []'
+ossl_ssl.c:2195:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
     for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ossl_ssl.c:19:35: note: expanded from macro 'numberof'
@@ -136,74 +140,68 @@ linking shared-object socket.bundle
 linking shared-object date_core.bundle
 linking shared-object ripper.bundle
 make: *** [build-ext] Error 2
-```</anonymous></anonymous></anonymous></p>
+</code></pre>
 
-<p>The weird thing here is that I did not get the usual ‘Missing the OpenSSL lib?’ warning. The lib <em>was</em> found but somehow the headers were fucked up. It also did not happen with older rbenv Rubies.</p>
+<p>The weird thing here is that I did not get the usual &lsquo;Missing the OpenSSL lib?&rsquo; warning. The lib <em>was</em> found but somehow the headers were fucked up. It also did not happen with older rbenv Rubies.</p>
 
 <p>Thanks to <a href="https://bearmetal.eu/team/tarmo/">Tarmo</a> I found the solution <a href="https://issues.apache.org/jira/browse/THRIFT-2515?focusedCommentId=14012758&amp;page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14012758">here</a>.</p>
 
 <p>What I had to do was this:</p>
 
-<p><code>
-➜  ~  brew update
+<pre><code>➜  ~  brew update
 ➜  ~  brew install openssl
 ➜  ~  /usr/local/opt/openssl/bin/c_rehash
-</code></p>
+</code></pre>
 
 <p>Now make sure that your new binary is in your PATH before the system one.</p>
 
-<p><code>
-➜  ~  ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
+<pre><code>➜  ~  ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
 ➜  ~ which openssl
 /usr/bin/openssl
 ➜  ~ echo $PATH
 /usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
-</code></p>
+</code></pre>
 
-<p>That’s no good. Let’s fix our PATH. I’m using zsh, so for me it’s set in <code>~/.zshrc</code>. Your particular file depends on the shell you’re using (for bash it would be <code>~/.bashrc</code> or <code>~/.bash_profile</code>, but see the caveat <a href="http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html">here</a>).</p>
+<p>That&rsquo;s no good. Let&rsquo;s fix our PATH. I&rsquo;m using zsh, so for me it&rsquo;s set in <code>~/.zshrc</code>. Your particular file depends on the shell you&rsquo;re using (for bash it would be <code>~/.bashrc</code> or <code>~/.bash_profile</code>, but see the caveat <a href="http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html">here</a>).</p>
 
-<p><code>
-➜  ~ vim ~/.zshrc
+<pre><code>➜  ~ vim ~/.zshrc
 # Change the line that sets PATH so that /usr/local/bin
 # comes BEFORE /usr/bin. For me, it looks like this:
 # export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
-</code></p>
+</code></pre>
 
 <p>Open up a new terminal window and check that the PATH is correct:</p>
 
-<p><code>
-➜  ~  echo $PATH
+<pre><code>➜  ~  echo $PATH
 /usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 ➜  ~  which openssl
 /usr/local/bin/openssl
-</code></p>
+</code></pre>
 
-<p>Better. Now, let’s make sure that homebrew libs symlink to the newer openssl.</p>
+<p>Better. Now, let&rsquo;s make sure that homebrew libs symlink to the newer openssl.</p>
 
-<p>```
-➜  ~  brew unlink openssl
-➜  ~  brew link –overwrite –force openssl
-➜  ~  openssl version -a</p>
+<pre><code>➜  ~  brew unlink openssl
+➜  ~  brew link --overwrite --force openssl
+➜  ~  openssl version -a
 
-<p>OpenSSL 1.0.1j 15 Oct 2014
+OpenSSL 1.0.1j 15 Oct 2014
 built on: Sun Dec  7 02:14:31 GMT 2014
-platform: darwin64-x86<em>64-cc
+platform: darwin64-x86_64-cc
 options:  bn(64,64) rc4(ptr,char) des(idx,cisc,16,int) idea(int) blowfish(idx) 
-compiler: clang -fPIC -fno-common -DOPENSSL_PIC -DZLIB_SHARED -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -arch x86</em>64 -O3 -DL_ENDIAN -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
-OPENSSLDIR: “/usr/local/etc/openssl”
-```</p>
+compiler: clang -fPIC -fno-common -DOPENSSL_PIC -DZLIB_SHARED -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -arch x86_64 -O3 -DL_ENDIAN -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
+OPENSSLDIR: "/usr/local/etc/openssl"
+</code></pre>
 
 <p>Splendid.</p>
 
 <p>After that, Ruby 2.2.0 installed cleanly without any specific parameters needed:</p>
 
-<p><code>
-➜  ~  rbenv install 2.2.0
+<pre><code>➜  ~  rbenv install 2.2.0
 Downloading ruby-2.2.0.tar.gz...
 -&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
 Installing ruby-2.2.0...
 Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0
-</code></p>
+</code></pre>
 
 <p><strong>[UPDATE 1, Jan 7]</strong> The original version of this post told you to <code>rm /usr/bin/openssl</code>, based on the link above. As James Tucker pointed out, this is a horrible idea. I fixed the article so that we now fix the <code>$PATH</code> instead.</p>
 ]]></content>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: philosophy | Bear Metal]]></title>
+  <title><![CDATA[Category: Philosophy | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/philosophy/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-07T08:58:33+02:00</updated>
+  <updated>2015-01-08T17:27:49+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Do you know the biggest reason for why enterprise software sucks?]]></title>
+    <title type="html"><![CDATA[Do You Know the Biggest Reason for Why Enterprise Software Sucks?]]></title>
     <link href="http://bearmetal.eu/theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks/"/>
     <updated>2014-01-15T11:43:00+02:00</updated>
     <id>http://bearmetal.eu/theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks</id>
@@ -24,75 +24,74 @@
 
 <p><small>Photo by <a href="http://www.flickr.com/photos/53326337@N00/8043877054/">Quinn Dombrowski</a>, used under the Creative Commons license.</small></p>
 
-<p>At this point started the blame-throwing. The provider duped the client with waterfall and exorbitant change fees. The buyer didn’t know how to act as a client in an information system project. The specs weren’t good/detailed/strict/loose enough. The consultants just weren’t that good in the first place. On and on and on.</p>
+<p>At this point started the blame-throwing. The provider duped the client with waterfall and exorbitant change fees. The buyer didn&rsquo;t know how to act as a client in an information system project. The specs weren&rsquo;t good/detailed/strict/loose enough. The consultants just weren&rsquo;t that good in the first place. On and on and on.</p>
 
-<p>While one or more of the above invariably are true in failed software projects, there’s one issue that almost each and every failed enterprise software project has in common: <em>the buyers were not (going to be) the users of the software</em>.</p>
+<p>While one or more of the above invariably are true in failed software projects, there&rsquo;s one issue that almost each and every failed enterprise software project has in common: <em>the buyers were not (going to be) the users of the software</em>.</p>
 
-<p>This simple fact has huge implications. Ever heard that “the client didn’t really know what they wanted”? Well, that’s because they didn’t. Thus, most such software projects are built with something completely different than the end user in mind. Be it the ego of the CTO, his debt to his mason brothers who happen to be in the software business<sup id="fnref:many-horses"><a href="#fn:many-horses" rel="footnote">1</a></sup>, or just the cheapest initial bid<sup id="fnref:nevermind"><a href="#fn:nevermind" rel="footnote">2</a></sup>. In any case, it’s in the software provider’s best interest to appeal to the decisionmaker, not the people actually using the system.</p>
+<p>This simple fact has huge implications. Ever heard that “the client didn&rsquo;t really know what they wanted”? Well, that&rsquo;s because they didn&rsquo;t. Thus, most such software projects are built with something completely different than the end user in mind. Be it the ego of the CTO, his debt to his mason brothers who happen to be in the software business<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>, or just the cheapest initial bid<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>. In any case, it&rsquo;s in the software provider&rsquo;s best interest to appeal to the decisionmaker, not the people actually using the system.</p>
 
-<p>Of course, not every software buyer is as bad as described above. Many truly care about the success of the system and even its users. If for no other reason, at least because it has a direct effect on the company’s bottom line. But even then, they just don’t have the first-hand experience of working in the daily churn. They simply can’t know what’s best for the users. Of course, this gets even worse in the design-by-committee, big-spec-upfront projects.</p>
+<p>Of course, not every software buyer is as bad as described above. Many truly care about the success of the system and even its users. If for no other reason, at least because it has a direct effect on the company&rsquo;s bottom line. But even then, they just don&rsquo;t have the first-hand experience of working in the daily churn. They simply can&rsquo;t know what&rsquo;s best for the users. Of course, this gets even worse in the design-by-committee, big-spec-upfront projects.</p>
 
-<p>Since it’s not very likely that we could change the process of making large software project purchases any time soon, what can we as software vendors do? One word: <em>empathy</em>. If you just take a spec and implement it with no questions asked, shame on you. You deserve all the blame. Your job is not to implement what the spec says. Heck, your job isn’t even to create what the client wants. Your job is to build what the client – no, the end users – need. For this – no matter how blasphemous it might sound to an engineer – you have to actually <em>talk</em> to the people that will be using your software.</p>
+<p>Since it&rsquo;s not very likely that we could change the process of making large software project purchases any time soon, what can we as software vendors do? One word: <em>empathy</em>. If you just take a spec and implement it with no questions asked, shame on you. You deserve all the blame. Your job is not to implement what the spec says. Heck, your job isn&rsquo;t even to create what the client wants. Your job is to build what the client – no, the end users – need. For this – no matter how blasphemous it might sound to an engineer – you have to actually <em>talk</em> to the people that will be using your software.</p>
 
-<p>This is why it’s so important to put the software developers to actually do what the end-users would. <strong>If you’re building call-center software, make the developers work in the call center a day or a week. If you’re building web apps, make the developers and designers work the support queue, don’t just outsource it to India.</strong></p>
+<p>This is why it&rsquo;s so important to put the software developers to actually do what the end-users would. <strong>If you&rsquo;re building call-center software, make the developers work in the call center a day or a week. If you&rsquo;re building web apps, make the developers and designers work the support queue, don&rsquo;t just outsource it to India.</strong></p>
 
-<p>There is no better way to understand the needs for software you’re building than to talk directly to its users or use it yourself for real, in a real-life situation. While there aren’t that many opportunities to dog-fooding when building (perhaps internal) enterprise software for a client, there’s nothing preventing you from sending your people to the actual cost center. Nothing will give as much insight to the needs and pains of the actual users. No spec will ever give you as broad a picture. No technical brilliance will ever make up for lacking domain knowledge. And no client will ever love you as much as the one in the project where you threw yourself (even without being asked) on the line of fire. That’s what we here at Bear Metal insist on doing at the start of every project. I think you should, too.</p>
+<p>There is no better way to understand the needs for software you&rsquo;re building than to talk directly to its users or use it yourself for real, in a real-life situation. While there aren&rsquo;t that many opportunities to dog-fooding when building (perhaps internal) enterprise software for a client, there&rsquo;s nothing preventing you from sending your people to the actual cost center. Nothing will give as much insight to the needs and pains of the actual users. No spec will ever give you as broad a picture. No technical brilliance will ever make up for lacking domain knowledge. And no client will ever love you as much as the one in the project where you threw yourself (even without being asked) on the line of fire. That&rsquo;s what we here at Bear Metal insist on doing at the start of every project. I think you should, too.</p>
 
 <hr />
 
-<p><em>We at Bear Metal have some availability open for short and mid-term projects. If you’re looking for help building, running, scaling or marketing your web app,  <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#105;&#110;&#102;&#111;&#064;&#098;&#101;&#097;&#114;&#109;&#101;&#116;&#097;&#108;&#046;&#101;&#117;">get in touch</a>.</em></p>
-
+<p><em>We at Bear Metal have some availability open for short and mid-term projects. If you&rsquo;re looking for help building, running, scaling or marketing your web app,  <a href="mailto:info@bearmetal.eu">get in touch</a>.</em></p>
 <div class="footnotes">
-  <ol>
-    <li id="fn:many-horses">
-      <p>It’s surprising how often the same people actually represent both the buyer and the seller. This happens all the time e.g. in the patient care systems projects.<a href="#fnref:many-horses" rel="reference">&#8617;</a></p>
-    </li>
-    <li id="fn:nevermind">
-      <p>Nevermind that the cheapest initial bid almost always balloons to something completely different in the end.<a href="#fnref:nevermind" rel="reference">&#8617;</a></p>
-    </li>
-  </ol>
+<hr/>
+<ol>
+<li id="fn:1">
+<p>It&rsquo;s surprising how often the same people actually represent both the buyer and the seller. This happens all the time e.g. in the patient care systems projects.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+<li id="fn:2">
+<p>Nevermind that the cheapest initial bid almost always balloons to something completely different in the end.<a href="#fnref:2" rev="footnote">&#8617;</a></p></li>
+</ol>
 </div>
+
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
+    <title type="html"><![CDATA[It’s Not About Us, It’s About You (and Not Really About You, Either)]]></title>
     <link href="http://bearmetal.eu/theden/its-not-about-us-its-about-you/"/>
     <updated>2013-08-14T15:51:00+03:00</updated>
     <id>http://bearmetal.eu/theden/its-not-about-us-its-about-you</id>
-    <content type="html"><![CDATA[<figure>
-  <p><a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
+    <content type="html"><![CDATA[<p><figure markdown="1">
+  <a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a></p>
 
-  <figcaption>
-    <p>Photo by <a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/">Ron Cogswell</a></p>
-  </figcaption>
-</figure>
+<p><figcaption markdown="1">
+Photo by <a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/">Ron Cogswell</a>
+</figcaption>
+</figure></p>
 
-<p>One of the saddest things to happen online was in 2007 when my all-time favorite author and presenter, Kathy Sierra, received death threaths and thus retreated from the public web. It also meant that she stopped writing her <a href="http://headrush.typepad.com">Creating Passionate Users</a> weblog, which had been a great inspiration for me for quite some time. Thank god she didn’t <a href="http://ejohn.org/blog/eulogy-to-_why/">pull a _why</a> on it.</p>
+<p>One of the saddest things to happen online was in 2007 when my all-time favorite author and presenter, Kathy Sierra, received death threaths and thus retreated from the public web. It also meant that she stopped writing her <a href="http://headrush.typepad.com">Creating Passionate Users</a> weblog, which had been a great inspiration for me for quite some time. Thank god she didn&rsquo;t <a href="http://ejohn.org/blog/eulogy-to-_why/">pull a _why</a> on it.</p>
 
-<p>While it’s more than six years since Kathy’s last blog post (is it really that long?), there is no reason we shouldn’t apply her lessons even in today’s online world.</p>
+<p>While it’s more than six years since Kathy’s last blog post (is it really that long?), there is no reason we shouldn’t apply her lessons even in today&rsquo;s online world.</p>
 
 <p>Maybe the most famous mantra of Sierra was that in order to create passionate users you should make <em>them</em> kick ass. Sure, it’s nice if your UI boasts übercool 3D CSS transformations but if it doesn’t help your users shine, no one (well, except for some web geeks) will give a flying fuck.</p>
 
-<p>She demonstrated this with the fact that very often companies spend a huge amount of effort and money to hone the living daylights off their marketing materials but don’t really put that much time into what actually helps their users: tutorials and user manuals. Of course this had helped her immensively by creating a market for the visual <a href="http://www.headfirstlabs.com">Head First</a> book series on O’Reilly that she curated.</p>
+<p>She demonstrated this with the fact that very often companies spend a huge amount of effort and money to hone the living daylights off their marketing materials but don&rsquo;t really put that much time into what actually helps their users: tutorials and user manuals. Of course this had helped her immensively by creating a market for the visual <a href="http://www.headfirstlabs.com">Head First</a> book series on O&#8217;Reilly that she curated.</p>
 
-<p>Apple has for a long time been a good example of helping its users kick ass. The user manual of the old Final Cut Pro 7 was also a great introduction to the art of video editing<sup id="fnref:unfortunately"><a href="#fn:unfortunately" rel="footnote">1</a></sup>. Likewise, most of Apple ads show things you can do and <em>create</em> with their products, not just random people dancing around the pool.</p>
+<p>Apple has for a long time been a good example of helping its users kick ass. The user manual of the old Final Cut Pro 7 was also a great introduction to the art of video editing<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. Likewise, most of Apple ads show things you can do and <em>create</em> with their products, not just random people dancing around the pool.</p>
 
 <p>People care about how they can kick ass <em>themselves</em> and they need to be able to learn it to capitalize on it. Nowadays it seems that companies are much more interested in giving people free apps and then using psychological tricks to milk money out of them than helping them shine. Which, coincidentally, brings us back to Kathy Sierra.</p>
 
 <p>To my pleasant surprise, I last week learned that Kathy is back with the pseudonym <a href="https://twitter.com/seriouspony">Serious Pony</a>, and <a href="http://seriouspony.com/blog/">a new blog</a> of the same name. The first article, <a href="http://seriouspony.com/blog/2013/7/24/your-app-makes-me-fat">Your app makes me fat</a>, is of the same awesome quality as her old pieces. In it, she tackles head-on the aforementioned gamification trend and the <a href="http://youarenotsosmart.com/2012/04/17/ego-depletion/">ego depletion</a> tax it puts on us as app users.</p>
 
-<p>To honor Kathy, we wanted to start this blog off by not talking about us ourselves, because <a href="http://youarenotsosmart.com/2012/04/17/ego-depletion/">Bear Metal</a> isn’t really about us, but you. And – assuming you are a developer, entrepreneur or content provider – not really about you either. It’s about who we (you and us) serve. Because without them there is no market, no audience, no need, no problems to solve, no pains to relieve. Your customers should be the ones that matter to you. And they don’t care about you or us. They care about whether your product can make them shine.</p>
+<p>To honor Kathy, we wanted to start this blog off by not talking about us ourselves, because <a href="http://youarenotsosmart.com/2012/04/17/ego-depletion/">Bear Metal</a> isn&rsquo;t really about us, but you. And – assuming you are a developer, entrepreneur or content provider – not really about you either. It&rsquo;s about who we (you and us) serve. Because without them there is no market, no audience, no need, no problems to solve, no pains to relieve. Your customers should be the ones that matter to you. And they don&rsquo;t care about you or us. They care about whether your product can make them shine.</p>
 
 <p>Can your product help <em>them kick ass</em>? <em>Does it</em>? Are you <em>communicating that effectively</em> to your current and potential customers? That is all that should matter.</p>
-
 <div class="footnotes">
-  <ol>
-    <li id="fn:unfortunately">
-      <p>Unfortunately this can’t be said about the manual of the new version, Final Cut Pro X.<a href="#fnref:unfortunately" rel="reference">&#8617;</a></p>
-    </li>
-  </ol>
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Unfortunately this can&rsquo;t be said about the manual of the new version, Final Cut Pro X.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
 </div>
+
 ]]></content>
   </entry>
   
