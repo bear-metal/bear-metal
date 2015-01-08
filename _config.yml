@@ -27,7 +27,7 @@ email:
 # ----------------------- #
 
 # If publishing to a subdirectory as in http://site.com/project set 'root: /project'
-root: ''
+root: /
 blog_root: ''
 permalink: '/theden/:title/'
 source: source
@@ -38,7 +38,8 @@ code_dir: downloads/code
 category_dir: theden/categories
 
 paginate: 10          # Posts per page on the blog index
-pagination_dir: theden  # Directory base for pagination URLs eg. /blog/page/2/
+#pagination_dir: theden  # Directory base for pagination URLs eg. /blog/page/2/
+paginate_path: "theden/:num"
 markdown: rdiscount
 rdiscount:
   extensions:
