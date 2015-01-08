@@ -394,6 +394,14 @@ figure {
   padding-top: 1em;
 }
 
+#breadcrumbs {
+  @include crumb-container;
+  border-width: 0;
+  a {
+    @include crumbs;
+  }
+}
+
 //@import "custom/colors";
 //@import "custom/fonts";
 //@import "custom/layout";
