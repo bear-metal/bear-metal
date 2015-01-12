@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/ruby/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-12T18:01:12+02:00</updated>
+  <updated>2015-01-12T20:14:46+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -53,7 +53,7 @@
 <ol>
 <li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
 <li><a href="/theden/does-rails-scale/">Does Rails Scale?</a></li>
-<li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
 </ol>
 
 
