@@ -43,7 +43,7 @@ We have already posted a couple of articles to start off the series.
 
 1. [Rails Garbage Collection: Naive Defaults](/theden/rails-garbage-collection-naive-defaults/)
 2. [Does Rails Scale?](/theden/does-rails-scale/)
-3. [Rails Garbage Collection: Age Matters](/theden/rails-garbage-collection-naive-defaults/)
+3. [Rails Garbage Collection: Age Matters](/theden/rails-garbage-collection-age-matters/)
 
 This article will serve as kind of a belated intro to the series, introducing our high level principles regarding the subject but without going more to the details.
 
