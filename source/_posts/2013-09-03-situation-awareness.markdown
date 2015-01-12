@@ -9,11 +9,15 @@ categories: [business,operations, process, release]
 ---
 
 <figure markdown="1">
-  [![](https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg)](http://www.flickr.com/photos/robbn1/3391187126/)
+  <a href="http://www.flickr.com/photos/robbn1/3391187126/">
+    <img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg">
+  </a>
 
-<figcaption markdown="1">
-Photo by [Robb North](http://www.flickr.com/photos/robbn1/3391187126/)
-</figcaption>
+  <figcaption>
+    <p>
+      Photo by <a href="http://www.flickr.com/photos/robbn1/3391187126/">Robb North</a>
+    </p>
+  </figcaption>
 </figure>
 
 A few months of work during a sabbatical yielded a product that nailed a problem in the preventative healthcare space. After a freemium window, the product gained good market traction and you spawn a new company with three coworkers. Customers are raving, sales trends are on the up, the engineering team is growing and there are conceptual products in the pipeline.

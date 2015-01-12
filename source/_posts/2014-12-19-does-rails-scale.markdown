@@ -9,11 +9,15 @@ author: Jarkko
 ---
 
 <figure markdown="1">
-  [![](https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg)](https://www.flickr.com/photos/soctech/43279549/)
+  <a href="https://www.flickr.com/photos/soctech/43279549/">
+    <img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg">
+  </a>
 
-<figcaption markdown="1">
-Photo by [Soctech](https://www.flickr.com/photos/soctech/43279549/)
-</figcaption>
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/soctech/43279549/">Soctech</a>
+    </p>
+  </figcaption>
 </figure>
 
 Back when Rails was still not mainstream, a common dismissal by developers using other – more established – technologies was that Rails is cool and stuff, but it will never scale[^marketing]. While the question isn't (compared to Rails' success) as common these days, it still appears in one form or another every once in a while.

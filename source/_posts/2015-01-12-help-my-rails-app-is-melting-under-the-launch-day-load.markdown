@@ -4,10 +4,22 @@ title: "Help! My Rails App Is Melting under the Launch Day Load"
 date: 2015-01-12 13:39
 comments: true
 author: Jarkko
-published: false
+published: true
 keywords: ruby, rails, rails performance
 categories: [ruby, rails, gc, 'rails performance']
 ---
+
+<figure markdown="1">
+  <a href="https://www.flickr.com/photos/pasukaru76/4484360302">
+    <img src="https://farm5.staticflickr.com/4065/4484360302_70ac4b6a8d_o_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/pasukaru76/4484360302">Pascal</a>
+    </p>
+  </figcaption>
+</figure>
 
 It was to be our day. The Finnish championship relay in orienteering was about to be held close to us, in a terrain type we knew inside and out. We had a great team, with both young guns and old champions. My friend Samuli had been fourth in the individual middle distance championships the day before. My only job was to handle the first leg securely and pass the baton to the more experienced and tougher guys who would then take care of our success. And I failed miserably.
 
