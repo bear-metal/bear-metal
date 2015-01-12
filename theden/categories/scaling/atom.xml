@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Scaling | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/scaling/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-08T17:34:55+02:00</updated>
+  <updated>2015-01-12T18:01:12+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -19,11 +19,15 @@
     <updated>2014-12-19T15:22:00+02:00</updated>
     <id>http://bearmetal.eu/theden/does-rails-scale</id>
     <content type="html"><![CDATA[<p><figure markdown="1">
-  <a href="https://www.flickr.com/photos/soctech/43279549/"><img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg" alt="" /></a></p>
+  <a href="https://www.flickr.com/photos/soctech/43279549/">
+    <img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg">
+  </a></p>
 
-<p><figcaption markdown="1">
-Photo by <a href="https://www.flickr.com/photos/soctech/43279549/">Soctech</a>
-</figcaption>
+<p>  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/soctech/43279549/">Soctech</a>
+    </p>
+  </figcaption>
 </figure></p>
 
 <p>Back when Rails was still not mainstream, a common dismissal by developers using other – more established – technologies was that Rails is cool and stuff, but it will never scale<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. While the question isn&rsquo;t (compared to Rails&#8217; success) as common these days, it still appears in one form or another every once in a while.</p>

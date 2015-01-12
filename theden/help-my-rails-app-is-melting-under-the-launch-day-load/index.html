@@ -1,0 +1,307 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Help! My Rails App Is Melting under the Launch Day Load - by Jarkko of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="Help! My Rails App Is Melting Under the Launch Day Load Jarkko wrote this on Jan 12th, 2015 1:39 pm Photo by Pascal It was to be our day. The &hellip;">
+  <meta name="keywords" content="ruby, rails, rails performance">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+  
+    
+  
+
+
+<link rel="author" href="https://plus.google.com/117033765270760829494/">
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  var pluginUrl =
+   '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+  _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+  _gaq.push(['_setAccount', 'UA-40333336-1'], ['_setDomainName', 'bearmetal.eu']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Help! My Rails App Is Melting Under the Launch Day Load</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-12T13:39:00+02:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><figure markdown="1">
+  <a href="https://www.flickr.com/photos/pasukaru76/4484360302">
+    <img src="https://farm5.staticflickr.com/4065/4484360302_70ac4b6a8d_o_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/pasukaru76/4484360302">Pascal</a>
+    </p>
+  </figcaption>
+</figure>
+
+
+<p>It was to be our day. The Finnish championship relay in orienteering was about to be held close to us, in a terrain type we knew inside and out. We had a great team, with both young guns and old champions. My friend Samuli had been fourth in the individual middle distance championships the day before. My only job was to handle the first leg securely and pass the baton to the more experienced and tougher guys who would then take care of our success. And I failed miserably.</p>
+
+<p>My legs were like dough from the beginning. I was supposed to be in good shape, but I couldn&rsquo;t keep up with anyone. I was supposed to take it easy and orienteer cleanly, but I ran like a headless chicken, making a mistake after another. Although I wouldn&rsquo;t learn the term until years later, this was my crash course to <a href="http://en.wikipedia.org/wiki/Ego_depletion">ego depletion</a>.</p>
+
+<hr />
+
+<p>The day before the relay we organized the middle distance Finnish champs in my old hometown Parainen. For obvious reasons, I was the de facto webmaster of our club pages, which also hosted the result service. The site was running on OpenACS, a system running on TCL I had a year or so of work experience with. I was supposed to know it.</p>
+
+<p>After the race was over, I headed back to my friend&rsquo;s place, opened up my laptop… only to find out that the local orienteering forums were ablaze with complaints about our results page being down. Crap.</p>
+
+<p>After hours or hunting down the issue, getting help on the OpenACS IRC channel, serving the results from a static page meanwhile, I finally managed to fix the issue. The app wasn&rsquo;t running enough server processes to keep up with the load. And the most embarrassing thing was that <em>the load wasn&rsquo;t even that high</em> – from high dozens to hundreds of simultaneous users. I headed to bed with my head spinning, hoping to scramble up my self confidence for the next day&rsquo;s race (with well-known results).</p>
+
+<p>What does this have to do with Ruby or Rails? Nothing, really. And yet everything. The point is that most of us have a similar story to share. It&rsquo;s much more common to have a meltdown story with a reasonably low number of users than actually have a slashdotting/hackernewsing/daring fireball hit your app. If you aren&rsquo;t old enough to have gone through something like this, you probably will. But you don&rsquo;t have to.</p>
+
+<hr />
+
+<p>During the dozen or so years since the aforementioned episode, I&rsquo;ve gone through some serious loads. Some of them we have handled badly, but most – including the <a href="http://wildfireapp.blogspot.fi/2009/04/wildfire-runs-facebook-site-governance.html">Facebook terms of service vote campaign</a> – with at least reasonable grace. This series of articles about Rails performance builds upon those war stories.</p>
+
+<p>We have already posted a couple of articles to start off the series.</p>
+
+<ol>
+<li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Age Matters</a></li>
+</ol>
+
+
+<p>This article will serve as kind of a belated intro to the series, introducing our high level principles regarding the subject but without going more to the details.</p>
+
+<h2>The Bear Metal ironclad rules of Rails performance</h2>
+
+<h3>Scalability is not the same as performance</h3>
+
+<p>As I already noted in <a href="/theden/does-rails-scale/">Does Rails Scale?</a>, it&rsquo;s worth pointing out that performance is not the same thing as scalability. They are related for sure. But you can perform similarly poorly from your first to your millionth user and be “scalable”. There is also the difference that performance is right here and now. If your app scales well, you can just throw more hardware (virtual or real) at the problem and solve it by that.</p>
+
+<p>The good news is that Rails scales quite well out of the box for the vast majority of real-world needs. You probably won&rsquo;t be the next Twitter or even Basecamp. In your dreams and VC prospectus maybe, but let&rsquo;s be honest, the odds are stacked against you. So don&rsquo;t sweat about that too much.</p>
+
+<p>Meanwhile, you do want your app to perform well enough for your initial wave of users.</p>
+
+<h3>Perceived performance is what matters</h3>
+
+<p>There are basically three different layers of performance for any web app: the server level (I&rsquo;m bundling everything from the data store to the frontend server here), browser rendering and the performance perceived by the user. The two latter ones are very close to each other but not exactly the same. You can tweak the perceived performance with tricks on the UI level, something that often isn&rsquo;t even considered performance.</p>
+
+<p>The most important lesson here is that the perceived performance is what matters. It makes no difference what your synthetic performance tests on your server say if the UI of the app feels sluggish. There is no panacea to solve this, but make no mistake, it is what matters when the chicken come home to roost.</p>
+
+<h3>Start with quick, large, and obvious wins</h3>
+
+<p>The fact is that even a modest amount of users can make your app painfully slow. The good thing is that you can probably fix that just with hitting the low-hanging fruit. You won&rsquo;t believe how many Rails apps reveal that they&rsquo;re running in the development mode even in production by – when an error occurs – leaking the whole error trace out to the end user.</p>
+
+<p>Other examples of issues that are fairly easy to spot and fix are N+1 query issues with ActiveRecord associations, missing database indeces, and running a single, non-concurrent app server instance, where any longer-running action will block the whole app from other users.</p>
+
+<h3>YAGNI</h3>
+
+<p>Once you have squashed all the low-hanging fruit with your metal-reinforced bat, relax. Tuning app performance shouldn&rsquo;t be your top priority at the moment – unless it is, but in that case you will know for sure. What you should be focusing on is how to get paying customers and how you can make them kick ass. If you have clear performance issues, by all means fix them. However…</p>
+
+<h3>Don&rsquo;t assume, measure</h3>
+
+<p>You probably don&rsquo;t have any idea how many users your app needs to support from the get go. That&rsquo;s fine. The reality will teach you. As long as you don&rsquo;t royally fuck up the share nothing (and 12 factor if you&rsquo;re on a cloud platform such as Heroku) architecture, you should be able to react to issues quickly.</p>
+
+<p>That said, you probably do want to do some baseline load testing with your app if you&rsquo;re opening for a much larger private group or the public. The good news is that it is very cheap to spin up a virtual server instance just for a couple of hours and hit your app hard with it. Heck, you can handle the baseline from your laptop if needed. With that you should be able to get over the initial, frightening launch.</p>
+
+<p>Once your app is up and running under load from real users, your tuning work starts for real. Only now will you be able to measure where the real hot paths and bottlenecks in your app are, based on real usage data, not just assumptions. At this point you&rsquo;ll have a plethora of tools at your disposal, from the good old <a href="https://github.com/wvanbergen/request-log-analyzer">request log analyzer</a> to commercial offerings such as <a href="https://www.skylight.io">Skylight</a>, and <a href="http://newrelic.com">New Relic</a>.</p>
+
+<p>On the frontend most browsers have nowadays developer tools to optimize end-user performance, from Chrome and Safari&rsquo;s built-in developer tools to <a href="http://getfirebug.com">Firebug</a> for Firefox.</p>
+
+<h2>Wrap-up</h2>
+
+<p>In this introductory article to building performant Rails (or any, for that matter) web apps, we took a look at five basic rules of performance optimization:</p>
+
+<ol>
+<li>Scalability is not the same as performance.</li>
+<li>Perceived performance is what matters.</li>
+<li>Start with the low-hanging fruit.</li>
+<li>YAGNI</li>
+<li>Don&rsquo;t assume, measure.</li>
+</ol>
+
+
+<p>We will get (much) more in the details of Rails performance optimization in later articles. At that point we&rsquo;ll enter a territory where one size does not fit all anymore. However, whatever your particular performance problem is, you should keep the five rules above at the top your mind.</p>
+</div>
+
+
+
+  
+    
+      <div id="mc_embed_signup" class="row">
+
+  <div class="small-12 large-12 columns">
+    <p>
+    Still use RSS? Go <a href="/theden/atom.xml">grab it</a>. Not? We neither. Pop your email address in the form below and we&#8217;ll post new posts in the series of Ruby articles straight to your mailbox.
+  </p>
+    <form action="//odesign.us6.list-manage.com/subscribe/post?u=a690c5659c8402fec4cd18592&amp;id=66586d7b9e" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+        <div id="mc_embed_signup_scroll">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-EMAIL">Your Email Address
+          <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-FNAME">Your First Name (optional)
+          <input type="text" value="" name="FNAME" class="" id="mce-FNAME">
+        </label>
+      </div>
+    </div>
+
+      <div id="mce-responses" class="clear">
+        <div class="response" id="mce-error-response" style="display:none"></div>
+        <div class="response" id="mce-success-response" style="display:none"></div>
+      </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+        <div style="position: absolute; left: -5000px;"><input type="text" name="b_a690c5659c8402fec4cd18592_66586d7b9e" tabindex="-1" value=""></div>
+        <div class="clear"><input type="submit" value="Send me those awesome tips" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!--End mc_embed_signup-->
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-01-12T13:39:00+02:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:39 pm</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/gc/'>gc</a>, <a class='category' href='/theden/categories/rails/'>rails</a>, <a class='category' href='/theden/categories/rails-performance/'>rails performance</a>, <a class='category' href='/theden/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/" title="Previous Post: How to install Ruby 2.2.0 on OS X Yosemite with Homebrew and rbenv">&laquo; How to install Ruby 2.2.0 on OS X Yosemite with Homebrew and rbenv</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>

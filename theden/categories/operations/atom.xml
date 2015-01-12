@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Operations | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/operations/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-08T17:34:55+02:00</updated>
+  <updated>2015-01-12T18:01:12+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -19,11 +19,15 @@
     <updated>2013-09-03T16:57:00+03:00</updated>
     <id>http://bearmetal.eu/theden/situation-awareness</id>
     <content type="html"><![CDATA[<p><figure markdown="1">
-  <a href="http://www.flickr.com/photos/robbn1/3391187126/"><img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg" alt="" /></a></p>
+  <a href="http://www.flickr.com/photos/robbn1/3391187126/">
+    <img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg">
+  </a></p>
 
-<p><figcaption markdown="1">
-Photo by <a href="http://www.flickr.com/photos/robbn1/3391187126/">Robb North</a>
-</figcaption>
+<p>  <figcaption>
+    <p>
+      Photo by <a href="http://www.flickr.com/photos/robbn1/3391187126/">Robb North</a>
+    </p>
+  </figcaption>
 </figure></p>
 
 <p>A few months of work during a sabbatical yielded a product that nailed a problem in the preventative healthcare space. After a freemium window, the product gained good market traction and you spawn a new company with three coworkers. Customers are raving, sales trends are on the up, the engineering team is growing and there are conceptual products in the pipeline.</p>

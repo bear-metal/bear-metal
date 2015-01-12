@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails Performance | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/rails-performance/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-08T17:34:55+02:00</updated>
+  <updated>2015-01-12T18:01:12+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,105 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Help! My Rails App Is Melting Under the Launch Day Load]]></title>
+    <link href="http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/"/>
+    <updated>2015-01-12T13:39:00+02:00</updated>
+    <id>http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load</id>
+    <content type="html"><![CDATA[<p><figure markdown="1">
+  <a href="https://www.flickr.com/photos/pasukaru76/4484360302">
+    <img src="https://farm5.staticflickr.com/4065/4484360302_70ac4b6a8d_o_d.jpg">
+  </a></p>
+
+<p>  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/pasukaru76/4484360302">Pascal</a>
+    </p>
+  </figcaption>
+</figure></p>
+
+<p>It was to be our day. The Finnish championship relay in orienteering was about to be held close to us, in a terrain type we knew inside and out. We had a great team, with both young guns and old champions. My friend Samuli had been fourth in the individual middle distance championships the day before. My only job was to handle the first leg securely and pass the baton to the more experienced and tougher guys who would then take care of our success. And I failed miserably.</p>
+
+<p>My legs were like dough from the beginning. I was supposed to be in good shape, but I couldn&rsquo;t keep up with anyone. I was supposed to take it easy and orienteer cleanly, but I ran like a headless chicken, making a mistake after another. Although I wouldn&rsquo;t learn the term until years later, this was my crash course to <a href="http://en.wikipedia.org/wiki/Ego_depletion">ego depletion</a>.</p>
+
+<hr />
+
+<p>The day before the relay we organized the middle distance Finnish champs in my old hometown Parainen. For obvious reasons, I was the de facto webmaster of our club pages, which also hosted the result service. The site was running on OpenACS, a system running on TCL I had a year or so of work experience with. I was supposed to know it.</p>
+
+<p>After the race was over, I headed back to my friend&rsquo;s place, opened up my laptop… only to find out that the local orienteering forums were ablaze with complaints about our results page being down. Crap.</p>
+
+<p>After hours or hunting down the issue, getting help on the OpenACS IRC channel, serving the results from a static page meanwhile, I finally managed to fix the issue. The app wasn&rsquo;t running enough server processes to keep up with the load. And the most embarrassing thing was that <em>the load wasn&rsquo;t even that high</em> – from high dozens to hundreds of simultaneous users. I headed to bed with my head spinning, hoping to scramble up my self confidence for the next day&rsquo;s race (with well-known results).</p>
+
+<p>What does this have to do with Ruby or Rails? Nothing, really. And yet everything. The point is that most of us have a similar story to share. It&rsquo;s much more common to have a meltdown story with a reasonably low number of users than actually have a slashdotting/hackernewsing/daring fireball hit your app. If you aren&rsquo;t old enough to have gone through something like this, you probably will. But you don&rsquo;t have to.</p>
+
+<hr />
+
+<p>During the dozen or so years since the aforementioned episode, I&rsquo;ve gone through some serious loads. Some of them we have handled badly, but most – including the <a href="http://wildfireapp.blogspot.fi/2009/04/wildfire-runs-facebook-site-governance.html">Facebook terms of service vote campaign</a> – with at least reasonable grace. This series of articles about Rails performance builds upon those war stories.</p>
+
+<p>We have already posted a couple of articles to start off the series.</p>
+
+<ol>
+<li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Age Matters</a></li>
+</ol>
+
+
+<p>This article will serve as kind of a belated intro to the series, introducing our high level principles regarding the subject but without going more to the details.</p>
+
+<h2>The Bear Metal ironclad rules of Rails performance</h2>
+
+<h3>Scalability is not the same as performance</h3>
+
+<p>As I already noted in <a href="/theden/does-rails-scale/">Does Rails Scale?</a>, it&rsquo;s worth pointing out that performance is not the same thing as scalability. They are related for sure. But you can perform similarly poorly from your first to your millionth user and be “scalable”. There is also the difference that performance is right here and now. If your app scales well, you can just throw more hardware (virtual or real) at the problem and solve it by that.</p>
+
+<p>The good news is that Rails scales quite well out of the box for the vast majority of real-world needs. You probably won&rsquo;t be the next Twitter or even Basecamp. In your dreams and VC prospectus maybe, but let&rsquo;s be honest, the odds are stacked against you. So don&rsquo;t sweat about that too much.</p>
+
+<p>Meanwhile, you do want your app to perform well enough for your initial wave of users.</p>
+
+<h3>Perceived performance is what matters</h3>
+
+<p>There are basically three different layers of performance for any web app: the server level (I&rsquo;m bundling everything from the data store to the frontend server here), browser rendering and the performance perceived by the user. The two latter ones are very close to each other but not exactly the same. You can tweak the perceived performance with tricks on the UI level, something that often isn&rsquo;t even considered performance.</p>
+
+<p>The most important lesson here is that the perceived performance is what matters. It makes no difference what your synthetic performance tests on your server say if the UI of the app feels sluggish. There is no panacea to solve this, but make no mistake, it is what matters when the chicken come home to roost.</p>
+
+<h3>Start with quick, large, and obvious wins</h3>
+
+<p>The fact is that even a modest amount of users can make your app painfully slow. The good thing is that you can probably fix that just with hitting the low-hanging fruit. You won&rsquo;t believe how many Rails apps reveal that they&rsquo;re running in the development mode even in production by – when an error occurs – leaking the whole error trace out to the end user.</p>
+
+<p>Other examples of issues that are fairly easy to spot and fix are N+1 query issues with ActiveRecord associations, missing database indeces, and running a single, non-concurrent app server instance, where any longer-running action will block the whole app from other users.</p>
+
+<h3>YAGNI</h3>
+
+<p>Once you have squashed all the low-hanging fruit with your metal-reinforced bat, relax. Tuning app performance shouldn&rsquo;t be your top priority at the moment – unless it is, but in that case you will know for sure. What you should be focusing on is how to get paying customers and how you can make them kick ass. If you have clear performance issues, by all means fix them. However…</p>
+
+<h3>Don&rsquo;t assume, measure</h3>
+
+<p>You probably don&rsquo;t have any idea how many users your app needs to support from the get go. That&rsquo;s fine. The reality will teach you. As long as you don&rsquo;t royally fuck up the share nothing (and 12 factor if you&rsquo;re on a cloud platform such as Heroku) architecture, you should be able to react to issues quickly.</p>
+
+<p>That said, you probably do want to do some baseline load testing with your app if you&rsquo;re opening for a much larger private group or the public. The good news is that it is very cheap to spin up a virtual server instance just for a couple of hours and hit your app hard with it. Heck, you can handle the baseline from your laptop if needed. With that you should be able to get over the initial, frightening launch.</p>
+
+<p>Once your app is up and running under load from real users, your tuning work starts for real. Only now will you be able to measure where the real hot paths and bottlenecks in your app are, based on real usage data, not just assumptions. At this point you&rsquo;ll have a plethora of tools at your disposal, from the good old <a href="https://github.com/wvanbergen/request-log-analyzer">request log analyzer</a> to commercial offerings such as <a href="https://www.skylight.io">Skylight</a>, and <a href="http://newrelic.com">New Relic</a>.</p>
+
+<p>On the frontend most browsers have nowadays developer tools to optimize end-user performance, from Chrome and Safari&rsquo;s built-in developer tools to <a href="http://getfirebug.com">Firebug</a> for Firefox.</p>
+
+<h2>Wrap-up</h2>
+
+<p>In this introductory article to building performant Rails (or any, for that matter) web apps, we took a look at five basic rules of performance optimization:</p>
+
+<ol>
+<li>Scalability is not the same as performance.</li>
+<li>Perceived performance is what matters.</li>
+<li>Start with the low-hanging fruit.</li>
+<li>YAGNI</li>
+<li>Don&rsquo;t assume, measure.</li>
+</ol>
+
+
+<p>We will get (much) more in the details of Rails performance optimization in later articles. At that point we&rsquo;ll enter a territory where one size does not fit all anymore. However, whatever your particular performance problem is, you should keep the five rules above at the top your mind.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Age Matters]]></title>
@@ -212,11 +311,15 @@ irb(main):010:0&gt; GC.count
     <updated>2014-12-19T15:22:00+02:00</updated>
     <id>http://bearmetal.eu/theden/does-rails-scale</id>
     <content type="html"><![CDATA[<p><figure markdown="1">
-  <a href="https://www.flickr.com/photos/soctech/43279549/"><img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg" alt="" /></a></p>
+  <a href="https://www.flickr.com/photos/soctech/43279549/">
+    <img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg">
+  </a></p>
 
-<p><figcaption markdown="1">
-Photo by <a href="https://www.flickr.com/photos/soctech/43279549/">Soctech</a>
-</figcaption>
+<p>  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/soctech/43279549/">Soctech</a>
+    </p>
+  </figcaption>
 </figure></p>
 
 <p>Back when Rails was still not mainstream, a common dismissal by developers using other – more established – technologies was that Rails is cool and stuff, but it will never scale<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>. While the question isn&rsquo;t (compared to Rails&#8217; success) as common these days, it still appears in one form or another every once in a while.</p>

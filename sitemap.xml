@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/</loc>
+    <lastmod>2015-01-12T13:39:00+02:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/</loc>
     <lastmod>2015-01-06T16:15:00+02:00</lastmod>
     <priority>0.8</priority>
@@ -47,73 +52,73 @@
   </url>
   <url>
     <loc>http://bearmetal.eu/services/index-old.html</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/services/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/theden/archives/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/services/ruby-and-rails/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/theden/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/zeromq/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/team/lourens/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/team/erkki/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/team/jarkko/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/team/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://bearmetal.eu/team/tarmo/</loc>
-    <lastmod>2015-01-08T17:34:55+02:00</lastmod>
+    <lastmod>2015-01-12T18:01:12+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
