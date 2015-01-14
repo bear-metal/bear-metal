@@ -1,6 +1,5 @@
 .bundle
 .DS_Store
-Gemfile.lock
 *.sw[mnop]
 *~
 /.sass-cache
@@ -22,4 +21,3 @@ node_modules
 # diff rbenv versions use diff namings
 .rbenv-version
 .ruby-version
-Gemfile.lock
