@@ -1,0 +1,176 @@
+---
+layout: blank
+title: Ruby C extension development
+---
+
+<div class="row">
+  <nav id="breadcrumbs">
+    <a href="../">Home</a>
+    <a href="../services/">Services</a>
+    <a class="current">Ruby C extensions</a>
+  </nav>
+</div>
+
+<div class="row">
+  <div class="large-3 medium-4 columns">
+    <div class="sidebar">
+      <nav>
+        <ul class="side-nav">
+          <li><a href="#expertise">Our expertise</a></li>
+          <li><a href="#debugging">Debugging</a></li>
+          <li><a href="#development">Development</a></li>
+          <li><a href="#consulting">Consulting</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <div class="large-9 medium-8 columns">
+    <h1>Ruby C extensions</h1>
+
+    <div id="expertise">
+      <h2>
+        Our expertise
+      </h2>
+      <h3>We've been around the block. MANY times</h3>
+
+      <p>
+        We have advanced knowledge of MRI Ruby internals, the extensions interface and how to make everything work nicely on various platforms and with the Ruby Garbage Collector and virtual machine.
+      </p>
+
+      <h3>Some of our work - a MQTT client</h3>
+
+      <p><a href="http://www.xively.com">Xively</a> reached out to us for a stable Ruby client for their "internet of things" platform. We opted for wrapping <a href="http://mosquitto.org/man/libmosquitto-3.html">libmosquitto</a>, a performant and well maintained <a href="http://mqtt.org/">MQTT protocol</a> client - it now lives at <a href="https://github.com/xively/mosquitto">xively/mosquitto</a></p>.
+
+      <p>Other Open Source efforts</p>
+
+      <ul>
+        <li></li>
+        <li><a href="https://github.com/brianmario/mysql2">mysql2</a> (contributed to)</li>
+        <li><a href="https://github.com/oldmoe/mysqlplus">mysqlplus</a> (contributed to)</li>
+        <li><a href="https://github.com/bear-metal/tunemygc">tunemygc</a> (developed and maintain)</li>
+        <li><a href="https://github.com/methodmissing/rbczmq">rbczmq</a> (developed and maintain)</li>
+        <li><a href="https://github.com/methodmissing/eio">eio</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/majordomo_ruby">majordomo_ruby</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/type_array">type_array</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/jio">jio</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/relp">relp</a> (developed)</li>
+      </ul>
+
+      <h3>Presentations and talks</h3>
+
+      <p>We presented on extensions best practices and the Ruby VM at various conferences.</p>
+
+      <ul>
+        <li><a href="https://speakerdeck.com/methodmissing/native-extensions-how-do-they-work">Native Extensions: How do they work?</a></li>
+        <li><a href="http://www.slideshare.net/methodmissing/inside-ruby-sapo-codebits-2009">Dynamic Language VMs: Inside Ruby</a></li>
+        <li><a href="http://www.slideshare.net/methodmissing/railswaycon-inside-matz-ruby">Inside Matz Ruby</a></li>
+      </ul>
+
+    <div id="debugging">
+      <h2>
+        Debugging
+      </h2>
+      <h3>ERROR: Failed to build gem native extension.</h3>
+
+      <p>
+        Ever had your bundle blow up with a C extension failing to compile? Or you could not upgrade to the latest mainline Ruby version due to incompatibility issues?
+      </p>
+
+      <h4>We can help identify:</h4>
+
+      <ul>
+        <li></li>
+        <li>any missing dependencies</li>
+        <li>issues with your build environment</li>
+        <li>issues with the gem's configuration</li>
+        <li>compatibility issues with the current Ruby version</li>
+      </ul>
+
+      <h3>[BUG] Segmentation fault</h3>
+
+      <p>
+        Or does your Rails backends or console sessions sometimes kamikaze with segfaults?
+      </p>
+
+      <h4>We can help:</h4>
+
+      <ul>
+        <li></li>
+        <li>identify any integration issues with the Garbage Collector</li>
+        <li>debug threading issues</li>
+        <li>track down memory allocation problems and dangling pointers</li>
+        <li>identify any changes to the core extension API for the current Ruby version</li>
+        <li>ditto for runtime semantics and other changes</li>
+      </ul>
+
+      <h3>dyld: Symbol not found</h3>
+
+      <p>
+        Upgraded system libs, ran "gem pristine" and now not ABI compatible with the current version of the wrapped library?
+      </p>
+
+      <h4>We can help:</h4>
+
+      <ul>
+        <li></li>
+        <li>package and build the correct library for your platform</li>
+        <li>by wrapping the new library release (ABI violations)</li>
+        <li>working better with shared system libraries</li>
+      </ul>
+    </div>
+
+    <div id="development">
+      <h2>
+        Development
+      </h2>
+      <h3>We've developed a fair amount of extensions</h3>
+
+      <p>
+        We're interested in working with vendors to expose proprietary shared libraries or other Open Source C(++) libraries to the Ruby language. Using something niche in your stack that you need to expose to your in house development team? We're happy to help.
+      </p>
+
+      <ul>
+        <li></li>
+        <li>Interoperate properly with threads by releasing the GIL (Global Interpreter Lock) when not needed</li>
+        <li>Mapping library interfaces to an elegant Ruby API</li>
+        <li>Plugging seamlessly into the Ruby GC</li>
+        <li>Supporting bundling and building libraries in a gem alongside system wide installations</li>
+        <li>Security analysis</li>
+        <li>Memory analysis</li>
+        <li>Performance testing and improvements</li>
+        <li>Compliance with a variety of Ruby versions</li>
+        <li>Exposing VM specific features such as tracepoints and other callbacks</li>
+        <li>Getting a build matrix going at <a href="http://www.travis-ci.org">Travis CI</a> for different Ruby and library versions</li>
+      </ul>
+    </div>
+
+    <div id="consulting">
+      <h2>
+        Consulting
+      </h2>
+      <h3>Alreading busy wrapping a library?</h3>
+
+      <p>
+        We provide consulting and training with all aspects of extension development.
+      </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="small-12 columns" id="consultation-form">
+    <div class="row">
+      <div id="emblem">
+        <img src="../../images/satisfaction-badge.png">
+      </div>
+      <div class="small-9 columns">
+        <p><em>You're done with gambling on app developers, and you want to hire a team of experts who understand your business.</em></p>
+      </div>
+      <div class="small-12 large-9 columns">
+        {% include custom/_consultation-form.html %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include custom/footer.html %}
