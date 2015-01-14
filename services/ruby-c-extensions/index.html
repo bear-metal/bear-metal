@@ -6,11 +6,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Ruby and Rails services - Bear Metal</title>
+  <title>Ruby C extension development - Bear Metal</title>
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="Home Services Ruby and Rails Development Consulting Training Coaching Operations Ruby and Rails Services Development For when there's a deadline to &hellip;">
+  <meta name="description" content="Home Services Ruby C extensions Our expertise Debugging Development Consulting Ruby C extensions Our expertise We've been around the block. MANY &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://bearmetal.eu/services/ruby-and-rails">
+  <link rel="canonical" href="http://bearmetal.eu/services/ruby-c-extensions">
   <link href="/images/favicon.ico" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
@@ -107,7 +107,7 @@ ga('send', 'pageview');
   <nav id="breadcrumbs">
     <a href="../">Home</a>
     <a href="../services/">Services</a>
-    <a class="current">Ruby and Rails</a>
+    <a class="current">Ruby C extensions</a>
   </nav>
 </div>
 
@@ -116,133 +116,144 @@ ga('send', 'pageview');
     <div class="sidebar">
       <nav>
         <ul class="side-nav">
+          <li><a href="#expertise">Our expertise</a></li>
+          <li><a href="#debugging">Debugging</a></li>
           <li><a href="#development">Development</a></li>
           <li><a href="#consulting">Consulting</a></li>
-          <li><a href="#training">Training</a></li>
-          <li><a href="#coaching">Coaching</a></li>
-          <li><a href="#operations">Operations</a></li>
         </ul>
       </nav>
     </div>
   </div>
 
   <div class="large-9 medium-8 columns">
-    <h1>Ruby and Rails Services</h1>
-    
+    <h1>Ruby C extensions</h1>
+
+    <div id="expertise">
+      <h2>
+        Our expertise
+      </h2>
+      <h3>We&#8217;ve been around the block. MANY times</h3>
+
+      <p>
+        We have advanced knowledge of MRI Ruby internals, the extensions interface and how to make everything work nicely on various platforms and with the Ruby Garbage Collector and virtual machine.
+      </p>
+
+      <h3>Some of our work - a MQTT client</h3>
+
+      <p><a href="http://www.xively.com">Xively</a> reached out to us for a stable Ruby client for their &#8220;internet of things&#8221; platform. We opted for wrapping <a href="http://mosquitto.org/man/libmosquitto-3.html">libmosquitto</a>, a performant and well maintained <a href="http://mqtt.org/">MQTT protocol</a> client - it now lives at <a href="https://github.com/xively/mosquitto">xively/mosquitto</a></p>.
+
+      <p>Other Open Source efforts</p>
+
+      <ul>
+        <li></li>
+        <li><a href="https://github.com/brianmario/mysql2">mysql2</a> (contributed to)</li>
+        <li><a href="https://github.com/oldmoe/mysqlplus">mysqlplus</a> (contributed to)</li>
+        <li><a href="https://github.com/bear-metal/tunemygc">tunemygc</a> (developed and maintain)</li>
+        <li><a href="https://github.com/methodmissing/rbczmq">rbczmq</a> (developed and maintain)</li>
+        <li><a href="https://github.com/methodmissing/eio">eio</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/majordomo_ruby">majordomo_ruby</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/type_array">type_array</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/jio">jio</a> (developed)</li>
+        <li><a href="https://github.com/methodmissing/relp">relp</a> (developed)</li>
+      </ul>
+
+      <h3>Presentations and talks</h3>
+
+      <p>We presented on extensions best practices and the Ruby VM at various conferences.</p>
+
+      <ul>
+        <li><a href="https://speakerdeck.com/methodmissing/native-extensions-how-do-they-work">Native Extensions: How do they work?</a></li>
+        <li><a href="http://www.slideshare.net/methodmissing/inside-ruby-sapo-codebits-2009">Dynamic Language VMs: Inside Ruby</a></li>
+        <li><a href="http://www.slideshare.net/methodmissing/railswaycon-inside-matz-ruby">Inside Matz Ruby</a></li>
+      </ul>
+
+    <div id="debugging">
+      <h2>
+        Debugging
+      </h2>
+      <h3>ERROR: Failed to build gem native extension.</h3>
+
+      <p>
+        Ever had your bundle blow up with a C extension failing to compile? Or you could not upgrade to the latest mainline Ruby version due to incompatibility issues?
+      </p>
+
+      <h4>We can help identify:</h4>
+
+      <ul>
+        <li></li>
+        <li>any missing dependencies</li>
+        <li>issues with your build environment</li>
+        <li>issues with the gem&#8217;s configuration</li>
+        <li>compatibility issues with the current Ruby version</li>
+      </ul>
+
+      <h3>[BUG] Segmentation fault</h3>
+
+      <p>
+        Or does your Rails backends or console sessions sometimes kamikaze with segfaults?
+      </p>
+
+      <h4>We can help:</h4>
+
+      <ul>
+        <li></li>
+        <li>identify any integration issues with the Garbage Collector</li>
+        <li>debug threading issues</li>
+        <li>track down memory allocation problems and dangling pointers</li>
+        <li>identify any changes to the core extension API for the current Ruby version</li>
+        <li>ditto for runtime semantics and other changes</li>
+      </ul>
+
+      <h3>dyld: Symbol not found</h3>
+
+      <p>
+        Upgraded system libs, ran &#8220;gem pristine&#8221; and now not ABI compatible with the current version of the wrapped library?
+      </p>
+
+      <h4>We can help:</h4>
+
+      <ul>
+        <li></li>
+        <li>package and build the correct library for your platform</li>
+        <li>by wrapping the new library release (ABI violations)</li>
+        <li>working better with shared system libraries</li>
+      </ul>
+    </div>
+
     <div id="development">
       <h2>
         Development
       </h2>
-      <h3>For when there&#8217;s a deadline to hit</h3>
+      <h3>We&#8217;ve developed a fair amount of extensions</h3>
 
       <p>
-        We do custom Ruby development in both greenfield and legacy projects. We can handle either the full stack of a web application – from databases to backend to frontend – or any part of them. We have vast experience in Ruby and Rails development, web frontend development (HTML, CSS, Javascript), and other development with Ruby.
+        We&#8217;re interested in working with vendors to expose proprietary shared libraries or other Open Source C(++) libraries to the Ruby language. Using something niche in your stack that you need to expose to your in house development team? We&#8217;re happy to help.
       </p>
+
+      <ul>
+        <li></li>
+        <li>Interoperate properly with threads by releasing the GIL (Global Interpreter Lock) when not needed</li>
+        <li>Mapping library interfaces to an elegant Ruby API</li>
+        <li>Plugging seamlessly into the Ruby GC</li>
+        <li>Supporting bundling and building libraries in a gem alongside system wide installations</li>
+        <li>Security analysis</li>
+        <li>Memory analysis</li>
+        <li>Performance testing and improvements</li>
+        <li>Compliance with a variety of Ruby versions</li>
+        <li>Exposing VM specific features such as tracepoints and other callbacks</li>
+        <li>Getting a build matrix going at <a href="http://www.travis-ci.org">Travis CI</a> for different Ruby and library versions</li>
+      </ul>
     </div>
 
     <div id="consulting">
       <h2>
         Consulting
       </h2>
-      <h3>When you need to crack a tough nut</h3>
+      <h3>Alreading busy wrapping a library?</h3>
 
       <p>
-        We provide consulting in all the steps of the Bear Metal Treadmill.
+        We provide consulting and training with all aspects of extension development.
       </p>
-
-      <h4>Development</h4>
-
-      <ul>
-        <li>Refactoring and untangling legacy Rails and Ruby apps.</li>
-        <li>Code reviews</li>
-        <li>Integrations with 3rd party applications and external APIs such as Marketo and Salesforce</li>
-        <li>Migration and integration of legacy applications</li>
-        <li>Platform migrations (to and from Amazo AWS, Heroku, etc.)</li>
-        <li>Security analysis</li>
-        <li>Performance testing and improvements</li>
-      </ul>
-
-      <h4>Deployment and Operations</h4>
-
-      <ul>
-        <li>Continuous deployment and integration</li>
-        <li>Capistrano</li>
-        <li>Chef</li>
-        <li>Amazon Web Services</li>
-        <li>Docker</li>
-        <li>Flynn</li>
-      </ul>
-
-      <h4>Learning and teaching</h4>
-
-      How does your app perform technically? What about the user experience? Is it making your users kick ass or leave in frustration? Let&#8217;s find out together.
-
-      The only way to improve your app is to measure how well the app stacks up with real users. We can help you set up performance monitoring, A/B testing setup, or run usability tests for you.
-
-      <h4>Marketing</h4>
-
-      Is your app making your users kick ass? What about your marketing efforts? Customer support? User onboarding? The best way to market your product is through ecstatic users, and to produce them you have to make them kick ass – not just with your product itself but with all the material surrounding it. Because it&#8217;s not about your product, it&#8217;s about its users.
-
-      <h4>Planning</h4>
-
-      <p>Should you go with a single Rails app or perhaps split it up in a more service-oriented style? We have lots of experience with both and are happy to share it with you.</p>
-    </div>
-
-    <div id="training">
-      <h2>
-        Training
-      </h2>
-      <h3>When you need to get your team up to speed quickly</h3>
-
-      <p>
-        We have given diverse Rails related training for a decade. We have taught Ruby and Rails at major clients, from Fortune 500 companies to top universities and large conferences. There are few things we love more than people excited about learning new things.
-      </p>
-
-      <p>We give tailor-made training classes among other about the following subjects:</p>
-
-      <ul>
-        <li>
-          Ruby – from the very basics to the most advanced metaprogramming.
-        </li>
-
-        <li>
-          Ruby on Rails – From introduction to Rails internals.
-        </li>
-
-        <li>
-          Test-Driven Development (TDD) and Behavior-Driven Development (BDD) using Ruby, Rails, RSpec, Capybara, and Cucumber.
-        </li>
-
-        <li>
-          Ajax on Rails
-        </li>
-
-        <li>Ember.js on Rails API</li>
-      </ul>
-    </div>
-
-    <div id="coaching">
-      <h2>
-        Coaching
-      </h2>
-      <h3>When you could use some hand-holding</h3>
-
-      <p>
-        You&#8217;ve learned the craft but still feel a bit unsure of the practice. Or maybe you hired a new programmer and want him to get started on the right foot. Or maybe you want you onboard an in-house team to an existing Rails project. We&#8217;ll help you get up to speed with virtual or in-person pair programming. There are few better ways to get from a journeyman to master than to work together with a more experienced developer.
-      </p>
-    </div>
-
-    <div id="operations">
-      <h2>
-        Operations
-      </h2>
-      <h3>Because your app doesn&#8217;t run itself</h3>
-
-      <p>
-        Do you need someone to make sure your application stays up even in the case you get hit by the perfect Reddit storm? Give us a call. We&#8217;ve operated large virtual server clusters and are experts in Chef.
-      </p>
-    </div>
-
   </div>
 </div>
 

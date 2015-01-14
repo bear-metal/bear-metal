@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Generational Gc | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/generational-gc/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-12T20:14:46+02:00</updated>
+  <updated>2015-01-15T00:00:07+07:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Age Matters]]></title>
     <link href="http://bearmetal.eu/theden/rails-garbage-collection-age-matters/"/>
-    <updated>2014-12-22T20:26:00+02:00</updated>
+    <updated>2014-12-22T20:26:00+07:00</updated>
     <id>http://bearmetal.eu/theden/rails-garbage-collection-age-matters</id>
     <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
 
