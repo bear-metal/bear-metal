@@ -125,14 +125,13 @@ ga('send', 'pageview');
         We have advanced knowledge of MRI Ruby internals, the extensions interface and how to make everything work nicely on various platforms and with the Ruby Garbage Collector and virtual machine.
       </p>
 
-      <h3>Some of our work - a MQTT client</h3>
+      <h5>Some of our work - a MQTT client</h5>
 
-      <p><a href="http://www.xively.com">Xively</a> reached out to us for a stable Ruby client for their &#8220;internet of things&#8221; platform. We opted for wrapping <a href="http://mosquitto.org/man/libmosquitto-3.html">libmosquitto</a>, a performant and well maintained <a href="http://mqtt.org/">MQTT protocol</a> client - it now lives at <a href="https://github.com/xively/mosquitto">xively/mosquitto</a></p>.
+      <p><a href="http://www.xively.com">Xively</a> reached out to us for a stable Ruby client for their &#8220;internet of things&#8221; platform. We opted for wrapping <a href="http://mosquitto.org/man/libmosquitto-3.html">libmosquitto</a>, a performant and well maintained <a href="http://mqtt.org/">MQTT protocol</a> client - it now lives at <a href="https://github.com/xively/mosquitto">xively/mosquitto</a></p>
 
-      <p>Other Open Source efforts</p>
+      <h5>Other Open Source efforts:</h5>
 
       <ul>
-        <li></li>
         <li><a href="https://github.com/brianmario/mysql2">mysql2</a> (contributed to)</li>
         <li><a href="https://github.com/oldmoe/mysqlplus">mysqlplus</a> (contributed to)</li>
         <li><a href="https://github.com/bear-metal/tunemygc">tunemygc</a> (developed and maintain)</li>
@@ -144,7 +143,7 @@ ga('send', 'pageview');
         <li><a href="https://github.com/methodmissing/relp">relp</a> (developed)</li>
       </ul>
 
-      <h3>Presentations and talks</h3>
+      <h5>Presentations and talks</h5>
 
       <p>We presented on extensions best practices and the Ruby VM at various conferences.</p>
 
@@ -164,10 +163,9 @@ ga('send', 'pageview');
         Ever had your bundle blow up with a C extension failing to compile? Or you could not upgrade to the latest mainline Ruby version due to incompatibility issues?
       </p>
 
-      <h4>We can help identify:</h4>
+      <h5>We can help identify:</h5>
 
       <ul>
-        <li></li>
         <li>any missing dependencies</li>
         <li>issues with your build environment</li>
         <li>issues with the gem&#8217;s configuration</li>
@@ -180,10 +178,9 @@ ga('send', 'pageview');
         Or does your Rails backends or console sessions sometimes kamikaze with segfaults?
       </p>
 
-      <h4>We can help:</h4>
+      <h5>We can help:</h5>
 
       <ul>
-        <li></li>
         <li>identify any integration issues with the Garbage Collector</li>
         <li>debug threading issues</li>
         <li>track down memory allocation problems and dangling pointers</li>
@@ -197,10 +194,9 @@ ga('send', 'pageview');
         Upgraded system libs, ran &#8220;gem pristine&#8221; and now not ABI compatible with the current version of the wrapped library?
       </p>
 
-      <h4>We can help:</h4>
+      <h5>We can help:</h5>
 
       <ul>
-        <li></li>
         <li>package and build the correct library for your platform</li>
         <li>by wrapping the new library release (ABI violations)</li>
         <li>working better with shared system libraries</li>
@@ -211,14 +207,13 @@ ga('send', 'pageview');
       <h2>
         Development
       </h2>
-      <h3>We&#8217;ve developed a fair amount of extensions</h3>
+      <h5>We&#8217;ve developed a fair amount of extensions</h5>
 
       <p>
         We&#8217;re interested in working with vendors to expose proprietary shared libraries or other Open Source C(++) libraries to the Ruby language. Using something niche in your stack that you need to expose to your in house development team? We&#8217;re happy to help.
       </p>
 
       <ul>
-        <li></li>
         <li>Interoperate properly with threads by releasing the GIL (Global Interpreter Lock) when not needed</li>
         <li>Mapping library interfaces to an elegant Ruby API</li>
         <li>Plugging seamlessly into the Ruby GC</li>
