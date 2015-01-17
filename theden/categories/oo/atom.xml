@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Oo | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/oo/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-15T11:27:51+07:00</updated>
+  <updated>2015-01-17T08:59:01+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Metaprogramming Ruby for Greater Good]]></title>
     <link href="http://bearmetal.eu/theden/metaprogramming-ruby-for-greater-good/"/>
-    <updated>2014-09-29T11:43:00+07:00</updated>
+    <updated>2014-09-29T11:43:00+03:00</updated>
     <id>http://bearmetal.eu/theden/metaprogramming-ruby-for-greater-good</id>
     <content type="html"><![CDATA[<p><em>This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014.</em></p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Troubleshooting | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/troubleshooting/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-15T11:27:51+07:00</updated>
+  <updated>2015-01-17T08:59:01+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[How to Install Ruby 2.2.0 on OS X Yosemite With Homebrew and Rbenv]]></title>
     <link href="http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
-    <updated>2015-01-06T16:15:00+07:00</updated>
+    <updated>2015-01-06T16:15:00+02:00</updated>
     <id>http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
     <content type="html"><![CDATA[<p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
 

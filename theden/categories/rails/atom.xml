@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/categories/rails/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-15T11:27:51+07:00</updated>
+  <updated>2015-01-17T08:59:01+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[Help! My Rails App Is Melting Under the Launch Day Load]]></title>
     <link href="http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/"/>
-    <updated>2015-01-12T13:39:00+07:00</updated>
+    <updated>2015-01-12T13:39:00+02:00</updated>
     <id>http://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load</id>
     <content type="html"><![CDATA[<p><figure markdown="1">
   <a href="https://www.flickr.com/photos/pasukaru76/4484360302">
@@ -115,7 +115,7 @@
   <entry>
     <title type="html"><![CDATA[How to Install Ruby 2.2.0 on OS X Yosemite With Homebrew and Rbenv]]></title>
     <link href="http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
-    <updated>2015-01-06T16:15:00+07:00</updated>
+    <updated>2015-01-06T16:15:00+02:00</updated>
     <id>http://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
     <content type="html"><![CDATA[<p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
 
@@ -309,7 +309,7 @@ Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Age Matters]]></title>
     <link href="http://bearmetal.eu/theden/rails-garbage-collection-age-matters/"/>
-    <updated>2014-12-22T20:26:00+07:00</updated>
+    <updated>2014-12-22T20:26:00+02:00</updated>
     <id>http://bearmetal.eu/theden/rails-garbage-collection-age-matters</id>
     <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
 
@@ -502,7 +502,7 @@ irb(main):010:0&gt; GC.count
   <entry>
     <title type="html"><![CDATA[Does Rails Scale?]]></title>
     <link href="http://bearmetal.eu/theden/does-rails-scale/"/>
-    <updated>2014-12-19T15:22:00+07:00</updated>
+    <updated>2014-12-19T15:22:00+02:00</updated>
     <id>http://bearmetal.eu/theden/does-rails-scale</id>
     <content type="html"><![CDATA[<p><figure markdown="1">
   <a href="https://www.flickr.com/photos/soctech/43279549/">
@@ -615,7 +615,7 @@ irb(main):010:0&gt; GC.count
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Naive Defaults]]></title>
     <link href="http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/"/>
-    <updated>2014-12-04T17:27:00+07:00</updated>
+    <updated>2014-12-04T17:27:00+02:00</updated>
     <id>http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults</id>
     <content type="html"><![CDATA[<p><a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1"><img src="https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg" alt="" /></a></p>
 
