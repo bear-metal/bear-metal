@@ -7,7 +7,7 @@ layout: null
   <title><![CDATA[{% if site.titlecase %}{{ page.title | titlecase | cdata_escape }}{% else %}{{ page.title | cdata_escape }}{% endif %} | {{ site.title | cdata_escape }}]]></title>
   <link href="{{ site.url }}/{{ page.feed_url }}" rel="self"/>
   <link href="{{ site.url }}/"/>
-  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <updated>{% category_last_modified %}</updated>
   <id>{{ site.url }}/</id>
   <author>
     <name><![CDATA[{{ site.author | strip_html }}]]></name>
