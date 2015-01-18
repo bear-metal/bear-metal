@@ -103,6 +103,10 @@ disqus_show_comment_count: false
 # Facebook Like
 facebook_like: false
 
+gems:
+  - jekyll-last-modified-at
+  - jekyll-sitemap
+
 navigation:
 - text: Team
   url: /team
