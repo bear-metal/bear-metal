@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="http://bearmetal.eu/"/>
-  <updated>2015-01-19T16:03:01+02:00</updated>
+  <updated>2015-02-02T16:13:07+02:00</updated>
   <id>http://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,41 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Of course you may eat your own food here]]></title>
+    <link href="http://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here/"/>
+    <updated>2015-02-02T16:00:18+02:00</updated>
+    <id>http://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here</id>
+    <content type="html"><![CDATA[<p>Are you with or against your customers?</p>
+
+<p>Do your signs read like those “Private property. Keep out!” signs? “No eating of own food”. “Food may not be taken out of the restaurant!” Don&rsquo;t you have more important things to care about, like, whether your customers love you?</p>
+
+<p>I recently saw this sign on the outside wall of a small roadside restaurant<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>:</p>
+
+<p><img src="http://bearmetal.eu/images/IMG_2928.JPG" alt="" /></p>
+
+<p>It reads: “You may of course eat your own food here as well.”</p>
+
+<p>So, why should you be more like Tiinan Tupa and less like ABC?</p>
+
+<p>First of all, very few people will probably abuse it. Even if someone eats their own lunch packs there, they will probably reciprocate and buy something as a favor to the place.</p>
+
+<p>Second, it is the ultimate <a href="http://www.sethgodin.com/purple/">purple cow</a>. It is something unexpected, something remarkable people will pay attention to. People are so accustomed to passive-aggressive notes forbidding this and that that a sign being actually nice will be noticed and talked about.</p>
+
+<p>Lastly, and most importantly, it&rsquo;s just plain being nice. So stop just using glorious and empty words about how you care about your customers and actually walk the walk.</p>
+
+<p>For these three reasons, being ridiculously admitting with your customers will probably also be good for you in the long term. So stop picking nickels in front of bulldozers. Make sure people will give you money <em>because they love you</em>, not because they <em>have to</em>.</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Coincidentally, I found it on Vaihtoehto ABC:lle, a site and an app dedicated to finding alternatives to the ubiquitous, generic and boring ABC gas station chain that seems to have infiltrated the whole country in just a couple of years. ABC specifically forbids eating food bought from its own supermarket in the cafeteria of the same gas station.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Help! My Rails App Is Melting under the Launch Day Load]]></title>
