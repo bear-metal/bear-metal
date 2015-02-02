@@ -5,6 +5,9 @@ date: 2015-02-02 16:00:18 +0200
 comments: true
 categories: [business, philosophy]
 author: Jarkko
+description: "Are you with or against your customers?
+
+Do your signs read like those “Private property. Keep out!” signs? “No eating of own food”. “Food may not be taken out of the restaurant!”"
 ---
 
 Are you with or against your customers?

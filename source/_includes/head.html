@@ -28,8 +28,31 @@
   <link href="{{ root_url }}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="{{ site.subscribe_rss }}" rel="alternate" title="{{site.title}}" type="application/atom+xml">
 
+    <meta property="og:site_name"
+    content="Bear Metal" />
   {% if author %}
     {% include custom/google_plus.html %}
+
+    <meta property="og:title"
+    content="{{ page.title }}" />
+    <meta property="og:description"
+    content="{{ page.description }}" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="{{ canonical }}" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    {% if author == "Jarkko" %}
+      <meta property="article:author"
+      content="https://www.facebook.com/jarkko.m.laine" />
+    {% endif %}
+
+    {% if author == "Lourens" %}
+      <meta property="article:author"
+      content="https://www.facebook.com/methodmissing" />
+    {% endif %}
   {% endif %}
 
   {% include custom/head.html %}
