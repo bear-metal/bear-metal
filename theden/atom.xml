@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Bear Metal]]></title>
-  <link href="http://bearmetal.eu/theden/atom.xml" rel="self"/>
-  <link href="http://bearmetal.eu/"/>
-  <updated>2015-02-02T16:17:46+02:00</updated>
-  <id>http://bearmetal.eu/</id>
+  <link href="https://bearmetal.eu/theden/atom.xml" rel="self"/>
+  <link href="https://bearmetal.eu/"/>
+  <updated>2015-02-02T16:33:49+02:00</updated>
+  <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
     
@@ -15,16 +15,16 @@
   
   <entry>
     <title type="html"><![CDATA[Of course you may eat your own food here]]></title>
-    <link href="http://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here/"/>
+    <link href="https://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here/"/>
     <updated>2015-02-02T16:00:18+02:00</updated>
-    <id>http://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here</id>
+    <id>https://bearmetal.eu//theden/of-course-you-may-eat-your-own-food-here</id>
     <content type="html"><![CDATA[<p>Are you with or against your customers?</p>
 
 <p>Do your signs read like those “Private property. Keep out!” signs? “No eating of own food”. “Food may not be taken out of the restaurant!” Don&rsquo;t you have more important things to care about, like, whether your customers love you?</p>
 
 <p>I recently saw this sign on the outside wall of a small roadside restaurant<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>:</p>
 
-<p><img src="http://bearmetal.eu/images/IMG_2928.JPG" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/IMG_2928.JPG" alt="" /></p>
 
 <p>It reads: “You may of course eat your own food here as well.”</p>
 
@@ -50,9 +50,9 @@
   
   <entry>
     <title type="html"><![CDATA[Help! My Rails App Is Melting under the Launch Day Load]]></title>
-    <link href="http://bearmetal.eu//theden/help-my-rails-app-is-melting-under-the-launch-day-load/"/>
+    <link href="https://bearmetal.eu//theden/help-my-rails-app-is-melting-under-the-launch-day-load/"/>
     <updated>2015-01-12T13:39:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/help-my-rails-app-is-melting-under-the-launch-day-load</id>
+    <id>https://bearmetal.eu//theden/help-my-rails-app-is-melting-under-the-launch-day-load</id>
     <content type="html"><![CDATA[<figure markdown="1">
   <a href="https://www.flickr.com/photos/pasukaru76/4484360302">
     <img src="https://farm5.staticflickr.com/4065/4484360302_70ac4b6a8d_o_d.jpg">
@@ -87,9 +87,9 @@
 <p>We have already posted a couple of articles to start off the series.</p>
 
 <ol>
-<li><a href="http://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
-<li><a href="http://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
-<li><a href="http://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
 </ol>
 
 
@@ -99,7 +99,7 @@
 
 <h3>Scalability is not the same as performance</h3>
 
-<p>As I already noted in <a href="http://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a>, it&rsquo;s worth pointing out that performance is not the same thing as scalability. They are related for sure. But you can perform similarly poorly from your first to your millionth user and be “scalable”. There is also the difference that performance is right here and now. If your app scales well, you can just throw more hardware (virtual or real) at the problem and solve it by that.</p>
+<p>As I already noted in <a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a>, it&rsquo;s worth pointing out that performance is not the same thing as scalability. They are related for sure. But you can perform similarly poorly from your first to your millionth user and be “scalable”. There is also the difference that performance is right here and now. If your app scales well, you can just throw more hardware (virtual or real) at the problem and solve it by that.</p>
 
 <p>The good news is that Rails scales quite well out of the box for the vast majority of real-world needs. You probably won&rsquo;t be the next Twitter or even Basecamp. In your dreams and VC prospectus maybe, but let&rsquo;s be honest, the odds are stacked against you. So don&rsquo;t sweat about that too much.</p>
 
@@ -150,9 +150,9 @@
   
   <entry>
     <title type="html"><![CDATA[How to install Ruby 2.2.0 on OS X Yosemite with Homebrew and rbenv]]></title>
-    <link href="http://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
+    <link href="https://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error/"/>
     <updated>2015-01-06T16:15:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
+    <id>https://bearmetal.eu//theden/install-ruby-2-dot-2-0-yosemite-openssl-error</id>
     <content type="html"><![CDATA[<p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -491,14 +491,14 @@
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: age matters]]></title>
-    <link href="http://bearmetal.eu//theden/rails-garbage-collection-age-matters/"/>
+    <link href="https://bearmetal.eu//theden/rails-garbage-collection-age-matters/"/>
     <updated>2014-12-22T20:26:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/rails-garbage-collection-age-matters</id>
-    <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="http://bearmetal.eu/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
+    <id>https://bearmetal.eu//theden/rails-garbage-collection-age-matters</id>
+    <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="https://bearmetal.eu/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
 
 <p>As a prerequisite of this and subsequent posts, basic understanding of a <em>mark and sweep</em><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> collector is assumed.</p>
 
-<p><img src="http://bearmetal.eu/images/gc_mark_sweep.png" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/gc_mark_sweep.png" alt="" /></p>
 
 <p>A somewhat simplified mark and sweep cycle goes like this:</p>
 
@@ -654,11 +654,11 @@
 
 <p>The following diagram represents a minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) that identifies and promotes some objects to old.</p>
 
-<p><img src="http://bearmetal.eu/images/gc_first_minor.png" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/gc_first_minor.png" alt="" /></p>
 
 <p>A subsequent minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) ignores old objects during the mark phase.</p>
 
-<p><img src="http://bearmetal.eu/images/gc_second_minor.png" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/gc_second_minor.png" alt="" /></p>
 
 <p>Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. The current generation of an object is the number of major GC cycles it has survived.</p>
 
@@ -745,9 +745,9 @@
   
   <entry>
     <title type="html"><![CDATA[Does Rails Scale?]]></title>
-    <link href="http://bearmetal.eu//theden/does-rails-scale/"/>
+    <link href="https://bearmetal.eu//theden/does-rails-scale/"/>
     <updated>2014-12-19T15:22:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/does-rails-scale</id>
+    <id>https://bearmetal.eu//theden/does-rails-scale</id>
     <content type="html"><![CDATA[<figure markdown="1">
   <a href="https://www.flickr.com/photos/soctech/43279549/">
     <img src="https://farm1.staticflickr.com/24/43279549_465d50976e_b_d.jpg">
@@ -859,9 +859,9 @@
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: naive defaults]]></title>
-    <link href="http://bearmetal.eu//theden/rails-garbage-collection-naive-defaults/"/>
+    <link href="https://bearmetal.eu//theden/rails-garbage-collection-naive-defaults/"/>
     <updated>2014-12-04T17:27:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/rails-garbage-collection-naive-defaults</id>
+    <id>https://bearmetal.eu//theden/rails-garbage-collection-naive-defaults</id>
     <content type="html"><![CDATA[<p><a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1"><img src="https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg" alt="" /></a></p>
 
 <p><small>Photo by <a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1">martin</a>, used under the Creative Commons license.</small></p>
@@ -973,9 +973,9 @@
   
   <entry>
     <title type="html"><![CDATA[Metaprogramming Ruby for Greater Good]]></title>
-    <link href="http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good/"/>
+    <link href="https://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good/"/>
     <updated>2014-09-29T11:43:00+03:00</updated>
-    <id>http://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good</id>
+    <id>https://bearmetal.eu//theden/metaprogramming-ruby-for-greater-good</id>
     <content type="html"><![CDATA[<p><em>This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014.</em></p>
 
 <script async class="speakerdeck-embed" data-id="89eb608027ae01321e4c624b84330d5d" data-ratio="1.77777777777778" src="//speakerdeck.com/assets/embed.js"></script>
@@ -1277,7 +1277,7 @@
 
 <h3>Ruby method lookup</h3>
 
-<p><img src="http://bearmetal.eu/images/c3ba7a9122156b8a63f17a9ea1744800.png" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/c3ba7a9122156b8a63f17a9ea1744800.png" alt="" /></p>
 
 <p>Above is a simple (and pretty, huh?) diagram of Ruby method lookup. Methods reside in the object&rsquo;s class, right of the object in the image. But where do singleton methods live? They can&rsquo;t sit in the class, since then they&rsquo;d be shared by all the objects of the same class. Neither can they be in the Object class, for the same reason.</p>
 
@@ -1285,7 +1285,7 @@
 
 <h3>Singleton class</h3>
 
-<p><img src="http://bearmetal.eu/images/1900b9d0d3a8368f8e56c39d8fc8ebc1.png" alt="Singleton classes in Ruby" /></p>
+<p><img src="https://bearmetal.eu/images/1900b9d0d3a8368f8e56c39d8fc8ebc1.png" alt="Singleton classes in Ruby" /></p>
 
 <p>Singleton class, a.k.a ghost class, metaclass, or eigenclass, is a special case of a class. It&rsquo;s a regular class except for a couple of details:</p>
 
@@ -1298,7 +1298,7 @@
 
 <p>So, what are class methods? They&rsquo;re simply singleton methods for the class object itself. And like all singleton methods, they live in the singleton class of the object in question – in this case, the class object. <em>Because classes are just objects themselves</em>.</p>
 
-<p><img src="http://bearmetal.eu/images/05cdd010de1fdf3005147e905f3c9ed7.png" alt="" /></p>
+<p><img src="https://bearmetal.eu/images/05cdd010de1fdf3005147e905f3c9ed7.png" alt="" /></p>
 
 <p>This has an interesting corollary. Singleton classes are classes, and classes are objects, so…</p>
 
@@ -1807,9 +1807,9 @@
   
   <entry>
     <title type="html"><![CDATA[Do you know the biggest reason for why enterprise software sucks?]]></title>
-    <link href="http://bearmetal.eu//theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks/"/>
+    <link href="https://bearmetal.eu//theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks/"/>
     <updated>2014-01-15T11:43:00+02:00</updated>
-    <id>http://bearmetal.eu//theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks</id>
+    <id>https://bearmetal.eu//theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks</id>
     <content type="html"><![CDATA[<p><em>We all know the story. Your company was going to get this big new shiny ERP software. It was going to replace a third of the workforce in the company, cut the costs in half and make everyone happy. In reality the project went two years over schedule, cost three times as much as envisioned, and the end result was a steaming pile of shit.</em></p>
 
 <p><a href="http://www.flickr.com/photos/53326337@N00/8043877054/"><img src="https://farm9.staticflickr.com/8453/8043877054_883963cf80_c.jpg" alt="" /></a></p>
@@ -1848,9 +1848,9 @@
   
   <entry>
     <title type="html"><![CDATA[Let Your Data Tell a Story]]></title>
-    <link href="http://bearmetal.eu//theden/let-your-data-tell-a-story/"/>
+    <link href="https://bearmetal.eu//theden/let-your-data-tell-a-story/"/>
     <updated>2013-09-24T16:57:00+03:00</updated>
-    <id>http://bearmetal.eu//theden/let-your-data-tell-a-story</id>
+    <id>https://bearmetal.eu//theden/let-your-data-tell-a-story</id>
     <content type="html"><![CDATA[<script async class="speakerdeck-embed" data-id="39c500c005dc01314f705605cd4f70bc" data-ratio="1.37081659973226" src="//speakerdeck.com/assets/embed.js"></script>
 
 
@@ -2041,9 +2041,9 @@
   
   <entry>
     <title type="html"><![CDATA[Are you flying blind – How to Regain Control of Production Systems with the Help of Situation Awareness?]]></title>
-    <link href="http://bearmetal.eu//theden/situation-awareness/"/>
+    <link href="https://bearmetal.eu//theden/situation-awareness/"/>
     <updated>2013-09-03T16:57:00+03:00</updated>
-    <id>http://bearmetal.eu//theden/situation-awareness</id>
+    <id>https://bearmetal.eu//theden/situation-awareness</id>
     <content type="html"><![CDATA[<figure markdown="1">
   <a href="http://www.flickr.com/photos/robbn1/3391187126/">
     <img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg">
@@ -2130,9 +2130,9 @@
   
   <entry>
     <title type="html"><![CDATA[It’s not about us, it’s about you (and not really about you, either)]]></title>
-    <link href="http://bearmetal.eu//theden/its-not-about-us-its-about-you/"/>
+    <link href="https://bearmetal.eu//theden/its-not-about-us-its-about-you/"/>
     <updated>2013-08-14T15:51:00+03:00</updated>
-    <id>http://bearmetal.eu//theden/its-not-about-us-its-about-you</id>
+    <id>https://bearmetal.eu//theden/its-not-about-us-its-about-you</id>
     <content type="html"><![CDATA[<figure markdown="1">
   <a href="http://www.flickr.com/photos/22711505@N05/8987537991/in/photolist-eGctVz-Rw9Az-RVB46-d1oXub-3od3r2-5maP4G-d1pEjS-2z4E45-7zg9zD-dk9TPx-dk9ViL-62gdUK-cbhisA-dk9VoE-6sjCDX-6sjCQ4-8EcAxc-d1pPAm-aSuUEX-7WR5Va-9SMEDS-mzFjV-9SrEU9-5bvnMg-bbvqpn-6S8uV4-6ScRvQ-8ypVzY-bbvqoz-7YzNHn-eecQ8W-d1pDv9-6QYGRg-62QwZR-fbZJU2-bXZ3iw-hZ9cW-hZ9cX-hZa5p-hZa5q-5iHQyg-4SnuGn-g5GYQ-9dbkFa-b5vRQc-d1pF7C-5oG5br-bcHysn-c3QYZW-c3QYiN-749XSZ/"><img src="https://farm3.staticflickr.com/2859/8987537991_795f7568ca_h.jpg" alt="" /></a>
 

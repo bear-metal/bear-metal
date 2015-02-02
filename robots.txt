@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://bearmetal.eu/sitemap.xml 
+Sitemap: https://bearmetal.eu/sitemap.xml 
