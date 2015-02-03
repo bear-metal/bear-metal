@@ -42,7 +42,7 @@ This also means that AWS is leaps and bounds above its competitors when it comes
 
 This of course gives AWS a huge benefit compared to its competitors. It can run larger datacenters both close and far from each others; they can get sweetheart deals and custom-made components from Intel for servers, just like Apple does with laptops and desktops. And they can afford to design their own network gear, the one field where the progress hasn't followed the Moore's law. There the only other companies who do the same are other internet giants like Google and Facebook, but they're not in the same business as AWS[^1].
 
-All this is leading to a situation where **AWS is becoming the IBM of the 21st century**, for better or for worse. Just like no one ever got fired for buying IBM in the 80's, few will likely get fired for choosing AWS in the years to come. This will be a tough, tough nut to crack for Amazon's customers.
+All this is leading to a situation where **AWS is becoming the IBM of the 21st century**, for better or for worse. Just like no one ever got fired for buying IBM in the 80's, few will likely get fired for choosing AWS in the years to come. This will be a tough, tough nut to crack for Amazon's competitors.
 
 So far the situation doesn't seem to have slowed down Amazon's rate of innovation, and perhaps they have learned the lessons of the big blue. Only future will tell.
 
