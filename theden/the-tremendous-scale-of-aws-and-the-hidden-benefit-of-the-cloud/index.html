@@ -1,0 +1,297 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>The Tremendous Scale of AWS and the Hidden Benefit of the Cloud - by Jarkko of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="A sad tale of vendor lock-in, and a hopeful future.">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/the-tremendous-scale-of-aws-and-the-hidden-benefit-of-the-cloud">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+  
+
+
+<link rel="author" href="https://plus.google.com/117033765270760829494/">
+
+    <meta property="og:title"
+    content="The Tremendous Scale of AWS and the Hidden Benefit of the Cloud" />
+    <meta property="og:description"
+    content="A sad tale of vendor lock-in, and a hopeful future." />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/the-tremendous-scale-of-aws-and-the-hidden-benefit-of-the-cloud" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+      <meta property="article:author"
+      content="https://www.facebook.com/jarkko.m.laine" />
+    
+
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">The Tremendous Scale of AWS and the Hidden Benefit of the Cloud</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-03T15:14:35+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:14 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><figure markdown="1">
+  <a href="https://www.flickr.com/photos/infomastern/14852324010/">
+    <img src="https://farm4.staticflickr.com/3918/14852324010_9a0d2d1887_b.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/infomastern/14852324010/">Susanne Nilsson</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
+
+
+<p>Finland, 2013. Vantaa, the second largest municipality in Finland buys a new web form for welfare applications from CGI (née Logica, née WM-Data) for a whopping €1.9 million. The story doesn&rsquo;t end there, though. A month later it turns out, that Helsinki has bought the exact same form from CGI as well, for €1.85 million.</p>
+
+<p>Now, you can argue about what is a fair value for a single web form, especially when it has to be integrated to an existing information system. What is clear though, that it is not almost 2 million Euros, twice.</p>
+
+<p>“How on earth was that possible,” I hear you ask. Surely someone would have offered to do that form for, say, 1 million a pop. Heck, even the Finnish law for public procurements mandates public competitive bidding for such projects.</p>
+
+<p>Vendor lock-in. CGI was administering the information system on which the form was to be built. And since they held the key, they could pretty much ask for as much as the municipalities could potentially pay for the form.</p>
+
+<p>Now hold that thought.</p>
+
+<hr />
+
+<p>Over at <a href="http://highscalability.com/blog/2015/1/12/the-stunning-scale-of-aws-and-what-it-means-for-the-future-o.html">High Scalability</a>, Todd Hoff writes about James Hamilton&rsquo;s talk at the AWS re:Invent conference last November. It reveals how gigantic the scale of Amazon Web Services really is:</p>
+
+<blockquote><p>Every day, AWS adds enough new server capacity to support all of Amazon’s global infrastructure when it was a $7B annual revenue enterprise (in 2004).</p></blockquote>
+
+<p>This also means that AWS is leaps and bounds above its competitors when it comes to capacity:</p>
+
+<blockquote><p>All 14 other cloud providers combined have 1/5th the aggregate capacity of AWS (estimate by Gartner)</p></blockquote>
+
+<p>This of course gives AWS a huge benefit compared to its competitors. It can run larger datacenters both close and far from each others; they can get sweetheart deals and custom-made components from Intel for servers, just like Apple does with laptops and desktops. And they can afford to design their own network gear, the one field where the progress hasn&rsquo;t followed the Moore&rsquo;s law. There the only other companies who do the same are other internet giants like Google and Facebook, but they&rsquo;re not in the same business as AWS<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+
+<p>All this is leading to a situation where <strong>AWS is becoming the IBM of the 21st century</strong>, for better or for worse. Just like no one ever got fired for buying IBM in the 80&rsquo;s, few will likely get fired for choosing AWS in the years to come. This will be a tough, tough nut to crack for Amazon&rsquo;s customers.</p>
+
+<p>So far the situation doesn&rsquo;t seem to have slowed down Amazon&rsquo;s rate of innovation, and perhaps they have learned the lessons of the big blue. Only future will tell.</p>
+
+<p>From a customer&rsquo;s perspective, a cloud platform like AWS brings lots and lots of benefits – well listed in the article above – but of course also downsides. Computing power is still much cheaper when bought in physical servers. You can rent a monster Xeon server with basically unlimited bandwidth for less than €100/month. AWS or platforms built on it such as Heroku can&rsquo;t compete with that on price. So if you&rsquo;re very constrained on cash and have the sysadmin chops to operate the server, you will get a better deal.</p>
+
+<p>Of course we&rsquo;re comparing apples and oranges here. You won&rsquo;t get similar redundancy and flexibility with physical servers as you can with AWS for any money – except when you do. The second group where using a commercial cloud platform doesn&rsquo;t make sense is when your scale merits a cloud platform of your own. Open source software for such platforms – such as Docker and Flynn – are slowly at a point where you can rent your own servers and basically build your own AWS on them<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>. Of course this will take a lot more knowledge from your operations team, especially if you want to attain similar redundancy and high availability that you can with AWS Availability Zones.</p>
+
+<p>There is – however – one hidden benefit of going with a commercial cloud platform such as AWS, that you might not have thought about: <em>going with AWS will lessen your vendor lock-in a lot</em>. Of course you can still shoot yourself in the foot by handing off the intellectual property rights of the software to your vendor or some other braindead move. But given that you won&rsquo;t, hosting is another huge lock-in mechanism large IT houses use to screw their clients. It not only effectively locks the client to the vendor, but it also massively slows down any modifications made by other projects that need to integrate with the existing system, since everything needs to be handled through the vendor. They can, and will, block any progress you could make yourself.</p>
+
+<p>With AWS, you can skip all of that. You are not tied to a particular vendor to develop, operate, and extend your system. While running apps on PaaS platforms requires some specific knowledge, it is widely available and standard. If you want to take your systems to another provider, you can. If you want to build your own cloud platform, you can do it and move your system over bit by bit.</p>
+
+<p>It is thus no wonder that large IT consultancies are racing to build their own platforms, to hit all the necessary buzzword checkboxes. However, I would be very wary of their offerings. I&rsquo;m fairly certain the savings they get from better utilization of their servers by virtualization are not passed on to the customer. And even if some of them are, the lock-in is still there. They have absolutely no incentive to make their platform compatible with the existing ones, quite the contrary. Lock-in is on their side. It is not on your side. Beware.</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Apart from Google Computing Engine, but even it doesn&rsquo;t provide a similar generic cloud platform that AWS does.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+<li id="fn:2">
+<p>If you’re at such a state, we can <a href="https://bearmetal.eu/services/">help</a>, by the way. The same goes for building a server environment on AWS, of course.<a href="#fnref:2" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+</div>
+
+
+
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+      <div id="ck_embed_form" class="ck_embed_form row">
+  <div class="small-12 large-6 columns" id="ck_form_content">
+    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
+    <div class="ck_embed_description">
+      <span class="ck_image">
+
+      </span>
+        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
+    </div>
+  </div>
+<div id='ck_success_msg' class='fade' style='display:none;'>
+  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
+</div>
+  <!--  Form starts here  -->
+  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
+    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
+    <p class="ck_errorArea"></p>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_firstNameField">First Name</label>
+      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
+    </div>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_emailField">Email Address</label>
+        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
+    </div>
+    <label class="ck_checkbox">
+      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
+      I&#8217;d like to receive a free 30 day course by email.
+    </label>
+
+    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
+      Claim my spot on the course
+    </button>
+    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
+  </form>
+</div>
+
+<script src="https://convertkit.com/assets/CKJS4.js"></script>
+
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-02-03T15:14:35+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:14 pm</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/amazon/'>amazon</a>, <a class='category' href='/theden/categories/business/'>business</a>, <a class='category' href='/theden/categories/cloud/'>cloud</a>, <a class='category' href='/theden/categories/deployment/'>deployment</a>, <a class='category' href='/theden/categories/devops/'>devops</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/of-course-you-may-eat-your-own-food-here/" title="Previous Post: Of course you may eat your own food here">&laquo; Of course you may eat your own food here</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>

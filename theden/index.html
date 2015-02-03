@@ -10,7 +10,7 @@
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="Are you with or against your customers? Do your signs read like those “Private property. Keep out!” signs? “No eating of own food”. “Food may not be &hellip;">
+  <meta name="description" content="Photo by Susanne Nilsson, used under a Creative Commons license. Finland, 2013. Vantaa, the second largest municipality in Finland buys a new web &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,138 @@ ga('send', 'pageview');
   <section class="row">
 <div class="blog-index small-12 large-8 columns small-centered">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/theden/the-tremendous-scale-of-aws-and-the-hidden-benefit-of-the-cloud/">The Tremendous Scale of AWS and the Hidden Benefit of the Cloud</a></h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-03T15:14:35+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>3:14 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure markdown="1">
+  <a href="https://www.flickr.com/photos/infomastern/14852324010/">
+    <img src="https://farm4.staticflickr.com/3918/14852324010_9a0d2d1887_b.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/infomastern/14852324010/">Susanne Nilsson</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
+
+
+<p>Finland, 2013. Vantaa, the second largest municipality in Finland buys a new web form for welfare applications from CGI (née Logica, née WM-Data) for a whopping €1.9 million. The story doesn&rsquo;t end there, though. A month later it turns out, that Helsinki has bought the exact same form from CGI as well, for €1.85 million.</p>
+
+<p>Now, you can argue about what is a fair value for a single web form, especially when it has to be integrated to an existing information system. What is clear though, that it is not almost 2 million Euros, twice.</p>
+
+<p>“How on earth was that possible,” I hear you ask. Surely someone would have offered to do that form for, say, 1 million a pop. Heck, even the Finnish law for public procurements mandates public competitive bidding for such projects.</p>
+
+<p>Vendor lock-in. CGI was administering the information system on which the form was to be built. And since they held the key, they could pretty much ask for as much as the municipalities could potentially pay for the form.</p>
+
+<p>Now hold that thought.</p>
+
+<hr />
+
+<p>Over at <a href="http://highscalability.com/blog/2015/1/12/the-stunning-scale-of-aws-and-what-it-means-for-the-future-o.html">High Scalability</a>, Todd Hoff writes about James Hamilton&rsquo;s talk at the AWS re:Invent conference last November. It reveals how gigantic the scale of Amazon Web Services really is:</p>
+
+<blockquote><p>Every day, AWS adds enough new server capacity to support all of Amazon’s global infrastructure when it was a $7B annual revenue enterprise (in 2004).</p></blockquote>
+
+<p>This also means that AWS is leaps and bounds above its competitors when it comes to capacity:</p>
+
+<blockquote><p>All 14 other cloud providers combined have 1/5th the aggregate capacity of AWS (estimate by Gartner)</p></blockquote>
+
+<p>This of course gives AWS a huge benefit compared to its competitors. It can run larger datacenters both close and far from each others; they can get sweetheart deals and custom-made components from Intel for servers, just like Apple does with laptops and desktops. And they can afford to design their own network gear, the one field where the progress hasn&rsquo;t followed the Moore&rsquo;s law. There the only other companies who do the same are other internet giants like Google and Facebook, but they&rsquo;re not in the same business as AWS<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup>.</p>
+
+<p>All this is leading to a situation where <strong>AWS is becoming the IBM of the 21st century</strong>, for better or for worse. Just like no one ever got fired for buying IBM in the 80&rsquo;s, few will likely get fired for choosing AWS in the years to come. This will be a tough, tough nut to crack for Amazon&rsquo;s customers.</p>
+
+<p>So far the situation doesn&rsquo;t seem to have slowed down Amazon&rsquo;s rate of innovation, and perhaps they have learned the lessons of the big blue. Only future will tell.</p>
+
+<p>From a customer&rsquo;s perspective, a cloud platform like AWS brings lots and lots of benefits – well listed in the article above – but of course also downsides. Computing power is still much cheaper when bought in physical servers. You can rent a monster Xeon server with basically unlimited bandwidth for less than €100/month. AWS or platforms built on it such as Heroku can&rsquo;t compete with that on price. So if you&rsquo;re very constrained on cash and have the sysadmin chops to operate the server, you will get a better deal.</p>
+
+<p>Of course we&rsquo;re comparing apples and oranges here. You won&rsquo;t get similar redundancy and flexibility with physical servers as you can with AWS for any money – except when you do. The second group where using a commercial cloud platform doesn&rsquo;t make sense is when your scale merits a cloud platform of your own. Open source software for such platforms – such as Docker and Flynn – are slowly at a point where you can rent your own servers and basically build your own AWS on them<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup>. Of course this will take a lot more knowledge from your operations team, especially if you want to attain similar redundancy and high availability that you can with AWS Availability Zones.</p>
+
+<p>There is – however – one hidden benefit of going with a commercial cloud platform such as AWS, that you might not have thought about: <em>going with AWS will lessen your vendor lock-in a lot</em>. Of course you can still shoot yourself in the foot by handing off the intellectual property rights of the software to your vendor or some other braindead move. But given that you won&rsquo;t, hosting is another huge lock-in mechanism large IT houses use to screw their clients. It not only effectively locks the client to the vendor, but it also massively slows down any modifications made by other projects that need to integrate with the existing system, since everything needs to be handled through the vendor. They can, and will, block any progress you could make yourself.</p>
+
+<p>With AWS, you can skip all of that. You are not tied to a particular vendor to develop, operate, and extend your system. While running apps on PaaS platforms requires some specific knowledge, it is widely available and standard. If you want to take your systems to another provider, you can. If you want to build your own cloud platform, you can do it and move your system over bit by bit.</p>
+
+<p>It is thus no wonder that large IT consultancies are racing to build their own platforms, to hit all the necessary buzzword checkboxes. However, I would be very wary of their offerings. I&rsquo;m fairly certain the savings they get from better utilization of their servers by virtualization are not passed on to the customer. And even if some of them are, the lock-in is still there. They have absolutely no incentive to make their platform compatible with the existing ones, quite the contrary. Lock-in is on their side. It is not on your side. Beware.</p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Apart from Google Computing Engine, but even it doesn&rsquo;t provide a similar generic cloud platform that AWS does.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+<li id="fn:2">
+<p>If you’re at such a state, we can <a href="https://bearmetal.eu/services/">help</a>, by the way. The same goes for building a server environment on AWS, of course.<a href="#fnref:2" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+    <div id="ck_embed_form" class="ck_embed_form row">
+  <div class="small-12 large-6 columns" id="ck_form_content">
+    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
+    <div class="ck_embed_description">
+      <span class="ck_image">
+
+      </span>
+        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
+    </div>
+  </div>
+<div id='ck_success_msg' class='fade' style='display:none;'>
+  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
+</div>
+  <!--  Form starts here  -->
+  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
+    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
+    <p class="ck_errorArea"></p>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_firstNameField">First Name</label>
+      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
+    </div>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_emailField">Email Address</label>
+        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
+    </div>
+    <label class="ck_checkbox">
+      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
+      I&#8217;d like to receive a free 30 day course by email.
+    </label>
+
+    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
+      Claim my spot on the course
+    </button>
+    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
+  </form>
+</div>
+
+<script src="https://convertkit.com/assets/CKJS4.js"></script>
+
+
+
   
   
     <article>
@@ -2639,161 +2771,6 @@ ga('send', 'pageview');
 </ol>
 </div>
 
-</div>
-  
-  
-
-
-    </article>
-    <div id="ck_embed_form" class="ck_embed_form row">
-  <div class="small-12 large-6 columns" id="ck_form_content">
-    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
-    <div class="ck_embed_description">
-      <span class="ck_image">
-
-      </span>
-        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
-    </div>
-  </div>
-<div id='ck_success_msg' class='fade' style='display:none;'>
-  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
-</div>
-  <!--  Form starts here  -->
-  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
-    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
-    <p class="ck_errorArea"></p>
-    <div class="ck_control_group">
-      <label class="ck_label" for="ck_firstNameField">First Name</label>
-      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
-    </div>
-    <div class="ck_control_group">
-      <label class="ck_label" for="ck_emailField">Email Address</label>
-        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
-    </div>
-    <label class="ck_checkbox">
-      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
-      I&#8217;d like to receive a free 30 day course by email.
-    </label>
-
-    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
-      Claim my spot on the course
-    </button>
-    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
-  </form>
-</div>
-
-<script src="https://convertkit.com/assets/CKJS4.js"></script>
-
-
-
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/theden/situation-awareness/">Are You Flying Blind – How to Regain Control of Production Systems With the Help of Situation Awareness?</a></h1>
-    
-    
-      <p class="meta">
-        
-  
-
-<span class="byline author vcard"><span class="fn"><a href="/team/lourens/" rel="author">Lourens</a></span> wrote this on </span>
-
-        
-
-
-
-
-<time class='entry-date' datetime='2013-09-03T16:57:00+03:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2013</span></span> <span class='time'>4:57 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><figure markdown="1">
-  <a href="http://www.flickr.com/photos/robbn1/3391187126/">
-    <img src="https://farm4.staticflickr.com/3454/3391187126_4e62f6a374_b.jpg">
-  </a>
-
-  <figcaption>
-    <p>
-      Photo by <a href="http://www.flickr.com/photos/robbn1/3391187126/">Robb North</a>
-    </p>
-  </figcaption>
-</figure>
-
-
-<p>A few months of work during a sabbatical yielded a product that nailed a problem in the preventative healthcare space. After a freemium window, the product gained good market traction and you spawn a new company with three coworkers. Customers are raving, sales trends are on the up, the engineering team is growing and there are conceptual products in the pipeline.</p>
-
-<p>Three months down the line, there are 4 production applications, hordes of paying customers, a few big contracts with strict SLAs (service-level agreements) and enough resources to spin off a presence in Europe. A new feature that combines these products into a suite is slated for release. Engineering hauled ass for 2 months and sales is super stoked to be able to pitch it to customers.</p>
-
-<h2>Shipping</h2>
-
-<p>A few days before the feature release a set of new servers is provisioned to buffer against the upcoming marketing push. Due diligence on various fronts was completed, mostly through static analysis of the current production stack by various individuals. Saturday morning at 1am PST they deploy during a window with a historically low transaction volume. Representatives of a few departments sign off on the release, although admittedly there are still dark corners and the OK is mostly based off a few QA passes. Champagne pops, drinks are being had and everyone calls it a day. But then&hellip;</p>
-
-<h2>When things go south</h2>
-
-<p>At 9am PST various alerts flood the European operations team - only 25% of the platform&rsquo;s available, support is overwhelmed and stress levels go up across the board. Some public facing pages load intermittently, MySQL read load is sky high and application log streams are blank. This deployment, as with most naive releases, was flying blind. A snapshot of a working system prior to release isn&rsquo;t of much value if it can&rsquo;t be easily reproduced after rollout for comparison.</p>
-
-<p>Based on assumptions about time, space and other variables there was a total lack of <strong>situation awareness</strong> and thus no visibility into expected impact of these changes. Running software that pays the bills is today more important than a flashy new feature. However, one must move forward and there are processes and tools available for mitigating risk.</p>
-
-<h2>What is situation awareness?</h2>
-
-<p>Situation awareness can be defined as an engineering team&rsquo;s knowledge of both the internal and external states of their production systems, as well as the environment in which it is operating. Internal states refer to health checks, statistics and other monitoring info. The external environment refers to things we generally can&rsquo;t directly control: Humans and their reactions; hosting providers and their networks; acts of god and other environmental issues.</p>
-
-<p>It&rsquo;s thus <em>a snapshot in time of system status that provides the primary basis for decision making and operation of complex systems</em>. Experience with a given system gives team members the ability to remain aware of everything that is happening concurrently and to integrate that sense of awareness into what they&rsquo;re doing at any moment.</p>
-
-<h2>How situation awareness could have helped?</h2>
-
-<p>The new feature created a dependency tree between 4 existing applications, a lightweight data synchronization service (Redis) and the new nodes that were spun up. Initial investigation and root cause analysis revealed that the following went wrong:</p>
-
-<ul>
-<li>The Redis server was configured for only 1024 connections and it tanked over when backends warmed up as the client connection was lazily initialized.</li>
-<li>Initial data synchronization (cache warmup) put excessive load on MySQL and other data stores also used for customer facing reporting.</li>
-<li>The data payloads used for synchronization were often very large for outlier customers, effectively blocking the Redis server&rsquo;s event loop, also causing memory pressure.</li>
-<li>The new nodes were spun up with a wrong Ruby major version and also missed critical packages required for normal operations.</li>
-<li>A new feature that rolls the &ldquo;logger&rdquo; utility into some core init scripts piggybacked on this release. A syntax error fubar&#8217;ed output redirection and thus there weren&rsquo;t any log streams.</li>
-</ul>
-
-
-<p>Without much runtime introspection in place, it was very difficult to predict what the release impact would be. Although not everything could be covered ahead of time for this release, even with basic runtime analysis, monitoring and good logging it would have been possible to spot trends and avoid issues bubbling up systematically many hours later.</p>
-
-<p>Another core issue here is the &ldquo;low traffic&rdquo; release window. It&rsquo;s often considered good practice to release during such times to minimize fallout for the worst case, however it&rsquo;s sort of akin to commercial Boeing pilots only training on Cessnas. Any residual and overlooked issues tend to also only surface hours later when traffic ramps up again. This divide between cause and effect complicates root cause analysis immensely. You&rsquo;d want to be able to infer errors from the system state, worst case QA or an employee and most definitely not customers interacting with your product at 9am.</p>
-
-<p>One also cannot overlook the fact that suddenly each team now had a direct link with at least 3 other applications, new (misconfigured) backends and Redis at this point in time. Each team however only still mostly had a mental model of a single isolated application.</p>
-
-<h2>Why situation awareness is so important?</h2>
-
-<p>We at Bear Metal have been through a few technology stacks in thriving businesses and noticed a recurring theme and problem. Three boxes become fifty, ad-hoc nodes are spun up for testing, special slaves are provisioned for data analysis, applications are careless with resources and a new service quickly becomes a platform-wide single point of failure. Moving parts increase exponentially and so do potential points of failure.</p>
-
-<p>Engineering, operations and support teams often have no clue what runs where, or what the dependencies are between them. This is especially true for fast growing businesses that reach a  critical mass - teams tend to become more specialized, information silos are common and thus total system visibility is also quite narrow. Having good knowledge of your runtime (or even just a perception) is instrumental in making informed decisions for releases, maintenance, capacity planning and discovering potential problems ahead of time. Prediction only makes sense once there&rsquo;s a good perception of &ldquo;current state&rdquo; in place to minimize the rendering of fail whales.</p>
-
-<h2>Web operations and awareness</h2>
-
-<p>Operations isn&rsquo;t about individuals, but teams. The goal is to have information exchange between team members and other teams being as passive as possible. Monitoring, alerting and other push based systems help a lot with passive learning about deployments. It&rsquo;s mostly effortless and easy for individuals to build up knowledge and trends over time.</p>
-
-<p>However, when we actively need to search for information, we can only search for what we already know exists. It&rsquo;s impossible to find anything we&rsquo;re not aware of. Given the primary goal of an operations team is platform stability in the face of changes, time to resolution (TTR) is always critical and actively seeking out information when under pressure is a luxury.</p>
-
-<p>Historically a systemwide view has always been the territory of the CTO, operations team and perhaps a handful of platform or integration engineers. Inline with devops culture, we need to acknowledge this disconnect and explore solutions for raising situation awareness of critical systems for all concerned.</p>
-
-<h2>And now</h2>
-
-<p>Take a minute and ponder the following :</p>
-
-<ul>
-<li>How well do you think you know your systems?</li>
-<li>Are developers able to infer potential release risks themselves?</li>
-<li>When things go south, how well informed is your support team and what information can they give customers?</li>
-<li>Are you comfortable releasing at any time?</li>
-</ul>
-
-
-<p>In our next post, we&rsquo;ll explore some common components, variables and events required for being &ldquo;on top&rdquo; of your stack. In the meantime, what causes you the most pain when trying to keep up with your production systems? What would you write a blank cheque for? :-)</p>
-
-<p><a href="https://news.ycombinator.com/item?id=6332734">Discuss on Hacker News</a>.</p>
 </div>
   
   
