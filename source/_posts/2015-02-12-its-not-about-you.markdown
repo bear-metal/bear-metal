@@ -128,6 +128,11 @@ It’s about the users.
 
 It’s about empathy.
 
+---
+
+Discuss on [Hacker News](https://news.ycombinator.com/item?id=9038804).
+
+
 [^1]:	Well, let’s just say it’s a tie with learning about the [growth mindset](http://mindsetonline.com).
 
 [^2]:	If not, go back to the Business Ideas part above. Do not  – and I can’t stress this enough – start building a product before you are sure it solves a problem people have, know they have, and are willing to pay for.
