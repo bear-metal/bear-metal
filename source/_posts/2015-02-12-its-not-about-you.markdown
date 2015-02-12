@@ -8,6 +8,8 @@ description: “How realizing a simple rule made me a better writer, entrepreneu
 author: Jarkko
 ---
 
+*This is a slightly expanded version of a talk I gave in [Rails Girls Helsinki](http://railsgirls.com/helsinki) in February 2015.*
+
 <figure markdown="1">
   <a href="https://www.flickr.com/photos/smemon/11984559914/">
     <img src="https://farm4.staticflickr.com/3728/11984559914_be77fb9031_o_d.png">
