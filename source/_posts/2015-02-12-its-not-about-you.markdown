@@ -76,7 +76,7 @@ Ideas are all about you. How to get into business _you_ should – apparently th
 
 Instead, find an audience you can relate to and sell to. Then, find about their pains, problems, and ways to help them make more money. Then solve that pain and you’ll do well.
 
-Because – to quote Peter Drucker – the purpose of business is to create and keep a customer. It’s that customer, not you, who is going to decide the faith of your business.
+Because – to quote Peter Drucker – the purpose of business is to create and keep a customer. It’s that customer, not you, who is going to decide the fate of your business.
 
 _Because successful business isn’t about you._
 
