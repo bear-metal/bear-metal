@@ -99,16 +99,16 @@ def test_add_to_cart
   cart = carts(:empty)
   cart << products(:butter)
   assert_equal 1, cart.items.size
-end_
+end
 ```
 
-The default GC behavior isn't optimal for all of these execution paths within the same project and neither is [throwing](http://www.reddit.com/r/ruby/comments/2m663d/ruby_21_gc_settings) a single set of <code>RUBY_GC_*</code> environment variables at it.
+The default GC behavior isn't optimal for all of these execution paths within the same project and neither is [throwing](http://www.reddit.com/r/ruby/comments/2m663d/ruby_21_gc_settings) a single set of `RUBY_GC_*` environment variables at it.
 
 We'd like to refer to processing in these different contexts as "units of work".
 
 ### Fast development cycles
 
-During the lifetime and development cycle of a project, it's very likely that Garbage Collector settings that was valid yesterday isn't optimal anymore after the next two sprints. Changes to your Gemfile, rolling out new features and bumping the Ruby interpreter all affect the Garbage Collector.
+During the lifetime and development cycle of a project, it's very likely that garbage collector settings that were valid yesterday aren't optimal anymore after the next two sprints. Changes to your Gemfile, rolling out new features, and bumping the Ruby interpreter all affect the garbage collector.
 
 ```ruby
 source 'https://rubygems.org'
@@ -120,19 +120,25 @@ gem 'mail' # slots galore
 
 ## Process lifecycle events
 
-A few events are important during the lifetime of a process for the tuner to gain valuable insights into how well the Garbage Collector is working and how to further optimise it. They all hint at how the heap changes and what triggered a GC cycle. How many mutations happened for example while processing a request, between booting the app and processing a request, during the lifetime of the application etc.
+Let's have a look at a few events that are important during the lifetime of a process. They help the tuner to gain valuable insights into how well the garbage collector is working and how to further optimize it. They all hint at how the heap changes and what triggered a GC cycle.
+
+How many mutations happened for example while
+
+* processing a request
+* between booting the app and processing a request
+* during the lifetime of the application?
 
 ### When it booted
 
-When the application is ready to start doing work. For Rails application, this is typically when the  app has been fully loaded in Production, ready to serve requests, to accept background work etc. All source files have been loaded and most resources acquired.
+*When the application is ready to start doing work.* For Rails application, this is typically when the app has been fully loaded in production, ready to serve requests, ready to accept background work, etc. All source files have been loaded and most resources acquired.
 
 ### When processing started
 
-At the start of a unit of work. Typically the start of a HTTP request, when a background job has been popped off a queue, the start of a test case or any other type of processing that is the primary purpose of running the process.
+*At the start of a unit of work.* Typically the start of an HTTP request, when a background job has been popped off a queue, the start of a test case or any other type of processing that is the primary purpose of running the process.
 
 ### When processing ended
 
-At the end of a unit of work. Typically the end of a HTTP request, when a background job has been popped off a queue, the end of a test case or any other type of processing that is the primary purpose of running the process.
+*At the end of a unit of work.* Typically the end of a HTTP request, when a background job has been popped off a queue, the end of a test case or any other type of processing that is the primary purpose of running the process.
 
 ### When it terminated
 
@@ -140,17 +146,17 @@ Triggered when the application terminates.
 
 ## Knowing when and why GC happens
 
-Tracking GC cycles interleaved with the above mentioned application events yield insights into why a particular GC cycle happens. The progression from BOOTED to TERMINATED and everything else is important because mutations that happen during the 5th HTTP request of a new Rails process also contributes to a GC cycle during request number 8.
+Tracking GC cycles interleaved with the aforementioned application events yield insights into why a particular GC cycle happens. The progression from BOOTED to TERMINATED and everything else is important because mutations that happen during the fifth HTTP request of a new Rails process also contribute to a GC cycle during request number eight.
 
 ## On tuning
 
-Primarily the Garbage Collector exposes tuning variables in these 3 categories:
+Primarily the garbage collector exposes tuning variables in these three categories:
 
 * Heap slot values: where Ruby objects live
-* Malloc limits: off heap storage for large Strings, Arrays and other structures
+* Malloc limits: off heap storage for large strings, arrays and other structures
 * Growth factors: by how much to grow slots, malloc limits etc.
 
-It's generally a tradeoff between either turning for speed, but sacrificing memory usage other being more frugal with memory and slow processing down somewhat with GC pauses. We think it's possible to infer a reasonable set of defaults from observing the application at runtime that's conservative with memory, yet maintain reasonable throughput.
+Tuning GC parameters is generally a tradeoff between tuning for speed (thus using more memory) and tuning for low memory usage while giving up speed. We think it's possible to infer a reasonable set of defaults from observing the application at runtime that's conservative with memory, yet maintain reasonable throughput.
 
 ## A solution
 
@@ -162,9 +168,9 @@ We've been working on a product, [TuneMyGC](https://tunemygc.com) for a few week
 * Deliver reasonable memory footprints with better runtime performance
 * Provide better insights into GC characteristics both for app owners and possibly also ruby-core
 
-Here's an example of [Discourse](http://www.discourse.org) being automatically tuned for better 99 percentile throughput. Response times in milliseonds, 200 requests:
+Here's an example of [Discourse](http://www.discourse.org) being automatically tuned for better 99th percentile throughput. Response times in milliseconds, 200 requests:
 
-| Controller  | [GC defaults](https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08) | [Tuned GC](https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798) |
+| *Controller*  | *[GC defaults](https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08)* | *[Tuned GC](https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798)* |
 | ----------- | ------------ | -------------- |
 | categories  |     227      |    160         |
 | home        |     163      |    113         |
@@ -176,6 +182,7 @@ Here's an example of [Discourse](http://www.discourse.org) being automatically t
 ```bash
 $ RUBY_GC_TUNE=1 RUBY_GC_TOKEN=a5a672761b25265ec62a1140e21fc81f ruby script/bench.rb -m -i 200
 ```
+
 Raw GC stats from Discourse's bench.rb script:
 
 ```bash 
@@ -209,7 +216,7 @@ oldmalloc_increase_bytes_limit: 30286118
 
 ```
 
-### [TuneMyGC reccommendations](https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798)
+### [TuneMyGC recommendations](https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798)
 
 ```bash
 $ RUBY_GC_TUNE=1 RUBY_GC_TOKEN=a5a672761b25265ec62a1140e21fc81f RUBY_GC_HEAP_INIT_SLOTS=997339 RUBY_GC_HEAP_FREE_SLOTS=626600 RUBY_GC_HEAP_GROWTH_FACTOR=1.03 RUBY_GC_HEAP_GROWTH_MAX_SLOTS=88792 RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=2.4 RUBY_GC_MALLOC_LIMIT=34393793 RUBY_GC_MALLOC_LIMIT_MAX=41272552 RUBY_GC_MALLOC_LIMIT_GROWTH_FACTOR=1.32 RUBY_GC_OLDMALLOC_LIMIT=39339204 RUBY_GC_OLDMALLOC_LIMIT_MAX=47207045 RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR=1.2 ruby script/bench.rb -m -i 200
@@ -247,21 +254,28 @@ oldmalloc_increase_bytes: 4736
 oldmalloc_increase_bytes_limit: 39339204
 ```
 
-Much less GC activity, decent slot buffers for high throughput and malloc limits and growth factors inline with actual app usage.
+We can see a couple of interesting points here:
+
+* There is much less GC activity – only 44 rounds instead of 106.
+* Slot buffers are still decent for high throughput. (TODO: explain what this means and what data reveals it)
+* Malloc limits and growth factors are in line with actual app usage (TODO: what does this mean, how do you know they are inline?)
+
+Now it's your turn.
 
 ## Feel free to take your Rails app for a spin too!
 
-### 1. Add to your Gemfile
+### 1. Add to your Gemfile.
+
 ```bash
 gem 'tunemygc'
 ```
 
-### 2. Register your Rails application
+### 2. Register your Rails application.
 ```bash
 $ bundle exec tunemygc -r email@yourdomain.com
       Application registered. Use RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 in your environment.
 ```
-### 3. Boot your App, we reccommend an optimal GC config when it ends
+### 3. Boot your app. We recommend an optimal GC configuration when it ends
 ```bash
 $ RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 RUBY_GC_TUNE=1 bundle exec rails s
 ```
