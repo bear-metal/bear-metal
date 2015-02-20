@@ -257,7 +257,7 @@ oldmalloc_increase_bytes_limit: 39339204
 We can see a couple of interesting points here:
 
 * There is much less GC activity – only 44 rounds instead of 106.
-* Slot buffers are still decent for high throughput. There are 718247 free slots (`heap_free_slots`) of 1179182 available slots (`heap_available_slots`), which is 64% of the current live objects (`heap_live_slots`). This value however is slightly skewed because the [Discourse](http://www.discourse.org) benchmark script forces a major GC before dumping these stats - swept slots are almost equal to free slots (`heap_swept_slots`).
+* Slot buffers are still decent for high throughput. There are 718247 free slots (`heap_free_slots`) of 1179182 available slots (`heap_available_slots`), which is 64% of the current live objects (`heap_live_slots`). This value however is slightly skewed because the [Discourse](http://www.discourse.org) benchmark script forces a major GC before dumping these stats - there are about as many swept slots as free slots (`heap_swept_slots`).
 * Malloc limits (`malloc_increase_bytes_limit` and `oldmalloc_increase_bytes_limit`) and growth factors (`old_objects_limit` and `remembered_wb_unprotected_objects_limit`) are in line with actual app usage. The TuneMyGC service considers when limits and growth factors are bumped during the app lifecycle and attempts to raise limits via environment variables slightly higher to prevent excessive GC activity.
 
 Now it's your turn.
