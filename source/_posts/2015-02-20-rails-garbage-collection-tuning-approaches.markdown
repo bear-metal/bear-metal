@@ -138,7 +138,7 @@ How many mutations happened for example while
 
 ### When processing ended
 
-*At the end of a unit of work.* Typically the end of a HTTP request, when a background job has been popped off a queue, the end of a test case or any other type of processing that is the primary purpose of running the process.
+*At the end of a unit of work.* Typically the end of a HTTP request, when a background job has finished processing, the end of a test case or any other type of processing that is the primary purpose of running the process.
 
 ### When it terminated
 
@@ -257,8 +257,8 @@ oldmalloc_increase_bytes_limit: 39339204
 We can see a couple of interesting points here:
 
 * There is much less GC activity – only 44 rounds instead of 106.
-* Slot buffers are still decent for high throughput. (TODO: explain what this means and what data reveals it)
-* Malloc limits and growth factors are in line with actual app usage (TODO: what does this mean, how do you know they are inline?)
+* Slot buffers are still decent for high throughput. There's 718247 free slots (<code>heap_free_slots</code>) of 1179182 available slots (<cpde>heap_available_slots</code>), which is 64% of the current live objects (<code>heap_live_slots</code>). This value however is slightly skewed because the [Discourse](http://www.discourse.org) benchmark script forces a major GC before dumping these stats - swept slots is almost equal to free slots (<code>heap_swept_slots</code>).
+* Malloc limits (<code>malloc_increase_bytes_limit</code> and <code>oldmalloc_increase_bytes_limit</code>) and growth factors (<code>old_objects_limit</code> and <code>remembered_wb_unprotected_objects_limit</code>) are in line with actual app usage. The TuneMyGC service considers when limits and growth factors are bumped during the app lifecycle and attempts to raise limits via environment variables slightly higher to prevent excessive GC activity.
 
 Now it's your turn.
 
