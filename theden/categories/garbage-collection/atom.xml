@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Garbage Collection | Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/categories/garbage-collection/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2014-12-22T20:26:00+02:00</updated>
+  <updated>2015-02-20T09:19:02+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,336 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rails Garbage Collection: Tuning Approaches]]></title>
+    <link href="https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches/"/>
+    <updated>2015-02-20T09:19:02+02:00</updated>
+    <id>https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches</id>
+    <content type="html"><![CDATA[<p><em>MRI maintainers have put a tremendous amount of work into improving the garbage collector in Ruby 2.0 through 2.2. The engine has thus gained a lot more horsepower. However, it&rsquo;s still not trivial to get the most out of it. In this post we&rsquo;re going to gain a better understanding of how and what to tune for.</em></p>
+
+<p><figure markdown="1">
+  <a href="https://www.flickr.com/photos/stevoarnold/2862901152">
+    <img src="https://farm3.staticflickr.com/2218/2862901152_b6b39592bd_o_d.jpg">
+  </a></p>
+
+<p>  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/stevoarnold/2862901152">Steve Arnold</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure></p>
+
+<p>Koichi Sasada (_ko1, Ruby MRI maintainer) famously mentioned in a <a href="http://www.atdot.net/~ko1/activities/2014_rubyconf_ph_pub.pdf">presentation (slide 89)</a>:</p>
+
+<blockquote><p> <strong>Try GC parameters</strong></p>
+
+<ul>
+<li>There is no silver bullet
+
+<ul>
+<li>No one answer for all applications</li>
+<li>You should not believe other applications settings easily</li>
+</ul>
+</li>
+<li>Try and try and try!</li>
+</ul>
+</blockquote>
+
+<p>This is true in theory but a <em>whole lot harder</em> to pull off in practice due to three primary problems:</p>
+
+<ul>
+<li>Interpreter GC semantics and configuration change over time.</li>
+<li>One GC config isn&rsquo;t optimal for all app runtime contexts: tests, requests, background jobs, rake tasks, etc.</li>
+<li>During the lifetime and development cycles of a project, it&rsquo;s very likely that existing GC settings are invalidated quickly.</li>
+</ul>
+
+
+<h3>An evolving Garbage Collector</h3>
+
+<p>The garbage collector has frequently changed in the latest MRI Ruby releases. The changes have also broken many existing assumptions and environment variables that tune the GC. Compare <code>GC.stat</code> on Ruby 2.1:</p>
+
+<pre><code class="ruby">{ :count=&gt;7, :heap_used=&gt;66, :heap_length=&gt;66, :heap_increment=&gt;0,
+  :heap_live_slot=&gt;26397, :heap_free_slot=&gt;507, :heap_final_slot=&gt;0,
+  :heap_swept_slot=&gt;10698, :heap_eden_page_length=&gt;66, :heap_tomb_page_length=&gt;0,
+  :total_allocated_object=&gt;75494, :total_freed_object=&gt;49097,
+  :malloc_increase=&gt;465840, :malloc_limit=&gt;16777216, :minor_gc_count=&gt;5,
+  :major_gc_count=&gt;2, :remembered_shady_object=&gt;175,
+  :remembered_shady_object_limit=&gt;322, :old_object=&gt;9109, :old_object_limit=&gt;15116,
+  :oldmalloc_increase=&gt;1136080, :oldmalloc_limit=&gt;16777216 }
+</code></pre>
+
+<p>…with Ruby 2.2:</p>
+
+<pre><code class="ruby">{ :count=&gt;6, :heap_allocated_pages=&gt;74, :heap_sorted_length=&gt;75,
+  :heap_allocatable_pages=&gt;0, :heap_available_slots=&gt;30162, :heap_live_slots=&gt;29729,
+  :heap_free_slots=&gt;433, :heap_final_slots=&gt;0, :heap_marked_slots=&gt;14752,
+  :heap_swept_slots=&gt;11520, :heap_eden_pages=&gt;74, :heap_tomb_pages=&gt;0,
+  :total_allocated_pages=&gt;74, :total_freed_pages=&gt;0,
+  :total_allocated_objects=&gt;76976, :total_freed_objects=&gt;47247,
+  :malloc_increase_bytes=&gt;449520, :malloc_increase_bytes_limit=&gt;16777216,
+  :minor_gc_count=&gt;4, :major_gc_count=&gt;2, :remembered_wb_unprotected_objects=&gt;169,
+  :remembered_wb_unprotected_objects_limit=&gt;278, :old_objects=&gt;9337,
+  :old_objects_limit=&gt;10806, :oldmalloc_increase_bytes=&gt;1147760,
+  :oldmalloc_increase_bytes_limit=&gt;16777216 }
+</code></pre>
+
+<p>In Ruby 2.2 we can see a lot more to introspect and tune, but this also comes with a steep learning curve which is (and should be) out of scope for most developers.</p>
+
+<h3>One codebase, different roles</h3>
+
+<p>A modern Rails application is typically used day to day in different contexts:</p>
+
+<ul>
+<li>Running tests</li>
+<li>rake tasks</li>
+<li>database migrations</li>
+<li>background jobs</li>
+</ul>
+
+
+<p>They all start pretty much the same way with the VM compiling code to instruction sequences. Different roles affect the Ruby heap and the garbage collector in very different ways, however.</p>
+
+<p>This job typically runs for 13 minutes, triggers 133 GC cycles and allocates a metric ton of objects. Allocations are very bursty and in batches.</p>
+
+<pre><code class="ruby">class CartCleanupJob &lt; ActiveJob::Base
+  queue_as :default
+
+  def perform(*args)
+    Cart.cleanup(Time.now)
+  end
+end
+</code></pre>
+
+<p>This controller action allocates 24 555 objects. Allocator throughput isn&rsquo;t very variable.</p>
+
+<pre><code class="ruby">class CartsController &lt; ApplicationController
+  def show
+    @cart = Cart.find(params[:id])
+  end
+end
+</code></pre>
+
+<p>Our test case contributes 175 objects to the heap. Test cases generally are very variable and bursty in allocation patterns.</p>
+
+<pre><code class="ruby">def test_add_to_cart
+  cart = carts(:empty)
+  cart &lt;&lt; products(:butter)
+  assert_equal 1, cart.items.size
+end
+</code></pre>
+
+<p>The default GC behavior isn&rsquo;t optimal for all of these execution paths within the same project and neither is <a href="http://www.reddit.com/r/ruby/comments/2m663d/ruby_21_gc_settings">throwing</a> a single set of <code>RUBY_GC_*</code> environment variables at it.</p>
+
+<p>We&rsquo;d like to refer to processing in these different contexts as &ldquo;units of work&rdquo;.</p>
+
+<h3>Fast development cycles</h3>
+
+<p>During the lifetime and development cycle of a project, it&rsquo;s very likely that garbage collector settings that were valid yesterday aren&rsquo;t optimal anymore after the next two sprints. Changes to your Gemfile, rolling out new features, and bumping the Ruby interpreter all affect the garbage collector.</p>
+
+<pre><code class="ruby">source 'https://rubygems.org'
+
+ruby '2.2.0' # Invalidates most existing RUBY_GC_* variables
+
+gem 'mail' # slots galore
+</code></pre>
+
+<h2>Process lifecycle events</h2>
+
+<p>Let&rsquo;s have a look at a few events that are important during the lifetime of a process. They help the tuner to gain valuable insights into how well the garbage collector is working and how to further optimize it. They all hint at how the heap changes and what triggered a GC cycle.</p>
+
+<p>How many mutations happened for example while</p>
+
+<ul>
+<li>processing a request</li>
+<li>between booting the app and processing a request</li>
+<li>during the lifetime of the application?</li>
+</ul>
+
+
+<h3>When it booted</h3>
+
+<p><em>When the application is ready to start doing work.</em> For Rails application, this is typically when the app has been fully loaded in production, ready to serve requests, ready to accept background work, etc. All source files have been loaded and most resources acquired.</p>
+
+<h3>When processing started</h3>
+
+<p><em>At the start of a unit of work.</em> Typically the start of an HTTP request, when a background job has been popped off a queue, the start of a test case or any other type of processing that is the primary purpose of running the process.</p>
+
+<h3>When processing ended</h3>
+
+<p><em>At the end of a unit of work.</em> Typically the end of a HTTP request, when a background job has finished processing, the end of a test case or any other type of processing that is the primary purpose of running the process.</p>
+
+<h3>When it terminated</h3>
+
+<p>Triggered when the application terminates.</p>
+
+<h2>Knowing when and why GC happens</h2>
+
+<p>Tracking GC cycles interleaved with the aforementioned application events yield insights into why a particular GC cycle happens. The progression from BOOTED to TERMINATED and everything else is important because mutations that happen during the fifth HTTP request of a new Rails process also contribute to a GC cycle during request number eight.</p>
+
+<h2>On tuning</h2>
+
+<p>Primarily the garbage collector exposes tuning variables in these three categories:</p>
+
+<ul>
+<li>Heap slot values: where Ruby objects live</li>
+<li>Malloc limits: off heap storage for large strings, arrays and other structures</li>
+<li>Growth factors: by how much to grow slots, malloc limits etc.</li>
+</ul>
+
+
+<p>Tuning GC parameters is generally a tradeoff between tuning for speed (thus using more memory) and tuning for low memory usage while giving up speed. We think it&rsquo;s possible to infer a reasonable set of defaults from observing the application at runtime that&rsquo;s conservative with memory, yet maintain reasonable throughput.</p>
+
+<h2>A solution</h2>
+
+<p>We&rsquo;ve been working on a product, <a href="https://tunemygc.com">TuneMyGC</a> for a few weeks that attempts to do just that. Our goals and objectives are:</p>
+
+<ul>
+<li>A repeatable and systematic tuning process that respects fast development cycles</li>
+<li>It should have awareness of runtime profiles being different for HTTP requests, background job processing etc.</li>
+<li>It should support current mainline Ruby versions without developers having to keep up to date with changes</li>
+<li>Deliver reasonable memory footprints with better runtime performance</li>
+<li>Provide better insights into GC characteristics both for app owners and possibly also ruby-core</li>
+</ul>
+
+
+<p>Here&rsquo;s an example of <a href="http://www.discourse.org">Discourse</a> being automatically tuned for better 99th percentile throughput. Response times in milliseconds, 200 requests:</p>
+
+<table>
+<thead>
+<tr>
+<th> <em>Controller</em>  </th>
+<th> <em><a href="https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08">GC defaults</a></em> </th>
+<th> <em><a href="https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798">Tuned GC</a></em> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> categories  </td>
+<td>     227      </td>
+<td>    160         </td>
+</tr>
+<tr>
+<td> home        </td>
+<td>     163      </td>
+<td>    113         </td>
+</tr>
+<tr>
+<td> topic       </td>
+<td>     55       </td>
+<td>    40          </td>
+</tr>
+<tr>
+<td> user        </td>
+<td>     92       </td>
+<td>    76          </td>
+</tr>
+</tbody>
+</table>
+
+
+<h4><a href="https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08">GC defaults</a>:</h4>
+
+<pre><code class="bash">$ RUBY_GC_TUNE=1 RUBY_GC_TOKEN=a5a672761b25265ec62a1140e21fc81f ruby script/bench.rb -m -i 200
+</code></pre>
+
+<p>Raw GC stats from Discourse&rsquo;s bench.rb script:</p>
+
+<pre><code class="bash ">GC STATS:
+count: 106
+heap_allocated_pages: 2447
+heap_sorted_length: 2455
+heap_allocatable_pages: 95
+heap_available_slots: 997407
+heap_live_slots: 464541
+heap_free_slots: 532866
+heap_final_slots: 0
+heap_marked_slots: 464530
+heap_swept_slots: 532876
+heap_eden_pages: 2352
+heap_tomb_pages: 95
+total_allocated_pages: 2447
+total_freed_pages: 0
+total_allocated_objects: 27169276
+total_freed_objects: 26704735
+malloc_increase_bytes: 4352
+malloc_increase_bytes_limit: 16777216
+minor_gc_count: 91
+major_gc_count: 15
+remembered_wb_unprotected_objects: 11669
+remembered_wb_unprotected_objects_limit: 23338
+old_objects: 435435
+old_objects_limit: 870870
+oldmalloc_increase_bytes: 4736
+oldmalloc_increase_bytes_limit: 30286118 
+</code></pre>
+
+<h3><a href="https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798">TuneMyGC recommendations</a></h3>
+
+<pre><code class="bash">$ RUBY_GC_TUNE=1 RUBY_GC_TOKEN=a5a672761b25265ec62a1140e21fc81f RUBY_GC_HEAP_INIT_SLOTS=997339 RUBY_GC_HEAP_FREE_SLOTS=626600 RUBY_GC_HEAP_GROWTH_FACTOR=1.03 RUBY_GC_HEAP_GROWTH_MAX_SLOTS=88792 RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=2.4 RUBY_GC_MALLOC_LIMIT=34393793 RUBY_GC_MALLOC_LIMIT_MAX=41272552 RUBY_GC_MALLOC_LIMIT_GROWTH_FACTOR=1.32 RUBY_GC_OLDMALLOC_LIMIT=39339204 RUBY_GC_OLDMALLOC_LIMIT_MAX=47207045 RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR=1.2 ruby script/bench.rb -m -i 200
+</code></pre>
+
+<p>Raw GC stats from Discourse&rsquo;s bench.rb script:</p>
+
+<pre><code class="bash">GC STATS:
+count: 44
+heap_allocated_pages: 2893
+heap_sorted_length: 2953
+heap_allocatable_pages: 161
+heap_available_slots: 1179182
+heap_live_slots: 460935
+heap_free_slots: 718247
+heap_final_slots: 0
+heap_marked_slots: 460925
+heap_swept_slots: 718277
+heap_eden_pages: 2732
+heap_tomb_pages: 161
+total_allocated_pages: 2893
+total_freed_pages: 0
+total_allocated_objects: 27167493
+total_freed_objects: 26706558
+malloc_increase_bytes: 4352
+malloc_increase_bytes_limit: 34393793
+minor_gc_count: 34
+major_gc_count: 10
+remembered_wb_unprotected_objects: 11659
+remembered_wb_unprotected_objects_limit: 27981
+old_objects: 431838
+old_objects_limit: 1036411
+oldmalloc_increase_bytes: 4736
+oldmalloc_increase_bytes_limit: 39339204
+</code></pre>
+
+<p>We can see a couple of interesting points here:</p>
+
+<ul>
+<li>There is much less GC activity – only 44 rounds instead of 106.</li>
+<li>Slot buffers are still decent for high throughput. There are 718247 free slots (<code>heap_free_slots</code>) of 1179182 available slots (<code>heap_available_slots</code>), which is 64% of the current live objects (<code>heap_live_slots</code>). This value however is slightly skewed because the <a href="http://www.discourse.org">Discourse</a> benchmark script forces a major GC before dumping these stats - there are about as many swept slots as free slots (<code>heap_swept_slots</code>).</li>
+<li>Malloc limits (<code>malloc_increase_bytes_limit</code> and <code>oldmalloc_increase_bytes_limit</code>) and growth factors (<code>old_objects_limit</code> and <code>remembered_wb_unprotected_objects_limit</code>) are in line with actual app usage. The TuneMyGC service considers when limits and growth factors are bumped during the app lifecycle and attempts to raise limits via environment variables slightly higher to prevent excessive GC activity.</li>
+</ul>
+
+
+<p>Now it&rsquo;s your turn.</p>
+
+<h2>Feel free to take your Rails app for a spin too!</h2>
+
+<h3>1. Add to your Gemfile.</h3>
+
+<pre><code class="bash">gem 'tunemygc'
+</code></pre>
+
+<h3>2. Register your Rails application.</h3>
+
+<pre><code class="bash">$ bundle exec tunemygc -r email@yourdomain.com
+      Application registered. Use RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 in your environment.
+</code></pre>
+
+<h3>3. Boot your app. We recommend an optimal GC configuration when it ends</h3>
+
+<pre><code class="bash">$ RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 RUBY_GC_TUNE=1 bundle exec rails s
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Age Matters]]></title>

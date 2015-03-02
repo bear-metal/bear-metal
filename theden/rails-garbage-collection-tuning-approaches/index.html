@@ -1,0 +1,677 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Rails Garbage Collection: Tuning Approaches - by Lourens of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="Rails Garbage Collection: Tuning Approaches Lourens wrote this on Feb 20th, 2015 9:19 am MRI maintainers have put a tremendous amount of work into &hellip;">
+  <meta name="keywords" content="ruby, rails, gc, garbage collection, generational gc, rails performance">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+  
+
+
+<link rel="author" href="https://plus.google.com/104591869307827419547/">
+
+    <meta property="og:title"
+    content="Rails Garbage Collection: Tuning Approaches" />
+    <meta property="og:description"
+    content="" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+
+    
+      <meta property="article:author"
+      content="https://www.facebook.com/methodmissing" />
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Rails Garbage Collection: Tuning Approaches</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/lourens/" rel="author">Lourens</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-02-20T09:19:02+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:19 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>MRI maintainers have put a tremendous amount of work into improving the garbage collector in Ruby 2.0 through 2.2. The engine has thus gained a lot more horsepower. However, it&rsquo;s still not trivial to get the most out of it. In this post we&rsquo;re going to gain a better understanding of how and what to tune for.</em></p>
+
+<figure markdown="1">
+  <a href="https://www.flickr.com/photos/stevoarnold/2862901152">
+    <img src="https://farm3.staticflickr.com/2218/2862901152_b6b39592bd_o_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/stevoarnold/2862901152">Steve Arnold</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
+
+
+<p>Koichi Sasada (_ko1, Ruby MRI maintainer) famously mentioned in a <a href="http://www.atdot.net/~ko1/activities/2014_rubyconf_ph_pub.pdf">presentation (slide 89)</a>:</p>
+
+<blockquote><p> <strong>Try GC parameters</strong></p>
+
+<ul>
+<li>There is no silver bullet
+
+<ul>
+<li>No one answer for all applications</li>
+<li>You should not believe other applications settings easily</li>
+</ul>
+</li>
+<li>Try and try and try!</li>
+</ul>
+</blockquote>
+
+<p>This is true in theory but a <em>whole lot harder</em> to pull off in practice due to three primary problems:</p>
+
+<ul>
+<li>Interpreter GC semantics and configuration change over time.</li>
+<li>One GC config isn&rsquo;t optimal for all app runtime contexts: tests, requests, background jobs, rake tasks, etc.</li>
+<li>During the lifetime and development cycles of a project, it&rsquo;s very likely that existing GC settings are invalidated quickly.</li>
+</ul>
+
+
+<h3>An evolving Garbage Collector</h3>
+
+<p>The garbage collector has frequently changed in the latest MRI Ruby releases. The changes have also broken many existing assumptions and environment variables that tune the GC. Compare <code>GC.stat</code> on Ruby 2.1:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span> <span class="ss">:count</span><span class="o">=&gt;</span><span class="mi">7</span><span class="p">,</span> <span class="ss">:heap_used</span><span class="o">=&gt;</span><span class="mi">66</span><span class="p">,</span> <span class="ss">:heap_length</span><span class="o">=&gt;</span><span class="mi">66</span><span class="p">,</span> <span class="ss">:heap_increment</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:heap_live_slot</span><span class="o">=&gt;</span><span class="mi">26397</span><span class="p">,</span> <span class="ss">:heap_free_slot</span><span class="o">=&gt;</span><span class="mi">507</span><span class="p">,</span> <span class="ss">:heap_final_slot</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:heap_swept_slot</span><span class="o">=&gt;</span><span class="mi">10698</span><span class="p">,</span> <span class="ss">:heap_eden_page_length</span><span class="o">=&gt;</span><span class="mi">66</span><span class="p">,</span> <span class="ss">:heap_tomb_page_length</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:total_allocated_object</span><span class="o">=&gt;</span><span class="mi">75494</span><span class="p">,</span> <span class="ss">:total_freed_object</span><span class="o">=&gt;</span><span class="mi">49097</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:malloc_increase</span><span class="o">=&gt;</span><span class="mi">465840</span><span class="p">,</span> <span class="ss">:malloc_limit</span><span class="o">=&gt;</span><span class="mi">16777216</span><span class="p">,</span> <span class="ss">:minor_gc_count</span><span class="o">=&gt;</span><span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:major_gc_count</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">,</span> <span class="ss">:remembered_shady_object</span><span class="o">=&gt;</span><span class="mi">175</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:remembered_shady_object_limit</span><span class="o">=&gt;</span><span class="mi">322</span><span class="p">,</span> <span class="ss">:old_object</span><span class="o">=&gt;</span><span class="mi">9109</span><span class="p">,</span> <span class="ss">:old_object_limit</span><span class="o">=&gt;</span><span class="mi">15116</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:oldmalloc_increase</span><span class="o">=&gt;</span><span class="mi">1136080</span><span class="p">,</span> <span class="ss">:oldmalloc_limit</span><span class="o">=&gt;</span><span class="mi">16777216</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>…with Ruby 2.2:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span> <span class="ss">:count</span><span class="o">=&gt;</span><span class="mi">6</span><span class="p">,</span> <span class="ss">:heap_allocated_pages</span><span class="o">=&gt;</span><span class="mi">74</span><span class="p">,</span> <span class="ss">:heap_sorted_length</span><span class="o">=&gt;</span><span class="mi">75</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:heap_allocatable_pages</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span> <span class="ss">:heap_available_slots</span><span class="o">=&gt;</span><span class="mi">30162</span><span class="p">,</span> <span class="ss">:heap_live_slots</span><span class="o">=&gt;</span><span class="mi">29729</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:heap_free_slots</span><span class="o">=&gt;</span><span class="mi">433</span><span class="p">,</span> <span class="ss">:heap_final_slots</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span> <span class="ss">:heap_marked_slots</span><span class="o">=&gt;</span><span class="mi">14752</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:heap_swept_slots</span><span class="o">=&gt;</span><span class="mi">11520</span><span class="p">,</span> <span class="ss">:heap_eden_pages</span><span class="o">=&gt;</span><span class="mi">74</span><span class="p">,</span> <span class="ss">:heap_tomb_pages</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:total_allocated_pages</span><span class="o">=&gt;</span><span class="mi">74</span><span class="p">,</span> <span class="ss">:total_freed_pages</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:total_allocated_objects</span><span class="o">=&gt;</span><span class="mi">76976</span><span class="p">,</span> <span class="ss">:total_freed_objects</span><span class="o">=&gt;</span><span class="mi">47247</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:malloc_increase_bytes</span><span class="o">=&gt;</span><span class="mi">449520</span><span class="p">,</span> <span class="ss">:malloc_increase_bytes_limit</span><span class="o">=&gt;</span><span class="mi">16777216</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:minor_gc_count</span><span class="o">=&gt;</span><span class="mi">4</span><span class="p">,</span> <span class="ss">:major_gc_count</span><span class="o">=&gt;</span><span class="mi">2</span><span class="p">,</span> <span class="ss">:remembered_wb_unprotected_objects</span><span class="o">=&gt;</span><span class="mi">169</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:remembered_wb_unprotected_objects_limit</span><span class="o">=&gt;</span><span class="mi">278</span><span class="p">,</span> <span class="ss">:old_objects</span><span class="o">=&gt;</span><span class="mi">9337</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:old_objects_limit</span><span class="o">=&gt;</span><span class="mi">10806</span><span class="p">,</span> <span class="ss">:oldmalloc_increase_bytes</span><span class="o">=&gt;</span><span class="mi">1147760</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">:oldmalloc_increase_bytes_limit</span><span class="o">=&gt;</span><span class="mi">16777216</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In Ruby 2.2 we can see a lot more to introspect and tune, but this also comes with a steep learning curve which is (and should be) out of scope for most developers.</p>
+
+<h3>One codebase, different roles</h3>
+
+<p>A modern Rails application is typically used day to day in different contexts:</p>
+
+<ul>
+<li>Running tests</li>
+<li>rake tasks</li>
+<li>database migrations</li>
+<li>background jobs</li>
+</ul>
+
+
+<p>They all start pretty much the same way with the VM compiling code to instruction sequences. Different roles affect the Ruby heap and the garbage collector in very different ways, however.</p>
+
+<p>This job typically runs for 13 minutes, triggers 133 GC cycles and allocates a metric ton of objects. Allocations are very bursty and in batches.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CartCleanupJob</span> <span class="o">&lt;</span> <span class="no">ActiveJob</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">queue_as</span> <span class="ss">:default</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">Cart</span><span class="o">.</span><span class="n">cleanup</span><span class="p">(</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This controller action allocates 24 555 objects. Allocator throughput isn&rsquo;t very variable.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">CartsController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="vi">@cart</span> <span class="o">=</span> <span class="no">Cart</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Our test case contributes 175 objects to the heap. Test cases generally are very variable and bursty in allocation patterns.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">test_add_to_cart</span>
+</span><span class='line'>  <span class="n">cart</span> <span class="o">=</span> <span class="n">carts</span><span class="p">(</span><span class="ss">:empty</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">cart</span> <span class="o">&lt;&lt;</span> <span class="n">products</span><span class="p">(</span><span class="ss">:butter</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">assert_equal</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cart</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">size</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The default GC behavior isn&rsquo;t optimal for all of these execution paths within the same project and neither is <a href="http://www.reddit.com/r/ruby/comments/2m663d/ruby_21_gc_settings">throwing</a> a single set of <code>RUBY_GC_*</code> environment variables at it.</p>
+
+<p>We&rsquo;d like to refer to processing in these different contexts as &ldquo;units of work&rdquo;.</p>
+
+<h3>Fast development cycles</h3>
+
+<p>During the lifetime and development cycle of a project, it&rsquo;s very likely that garbage collector settings that were valid yesterday aren&rsquo;t optimal anymore after the next two sprints. Changes to your Gemfile, rolling out new features, and bumping the Ruby interpreter all affect the garbage collector.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">source</span> <span class="s1">&#39;https://rubygems.org&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ruby</span> <span class="s1">&#39;2.2.0&#39;</span> <span class="c1"># Invalidates most existing RUBY_GC_* variables</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">gem</span> <span class="s1">&#39;mail&#39;</span> <span class="c1"># slots galore</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Process lifecycle events</h2>
+
+<p>Let&rsquo;s have a look at a few events that are important during the lifetime of a process. They help the tuner to gain valuable insights into how well the garbage collector is working and how to further optimize it. They all hint at how the heap changes and what triggered a GC cycle.</p>
+
+<p>How many mutations happened for example while</p>
+
+<ul>
+<li>processing a request</li>
+<li>between booting the app and processing a request</li>
+<li>during the lifetime of the application?</li>
+</ul>
+
+
+<h3>When it booted</h3>
+
+<p><em>When the application is ready to start doing work.</em> For Rails application, this is typically when the app has been fully loaded in production, ready to serve requests, ready to accept background work, etc. All source files have been loaded and most resources acquired.</p>
+
+<h3>When processing started</h3>
+
+<p><em>At the start of a unit of work.</em> Typically the start of an HTTP request, when a background job has been popped off a queue, the start of a test case or any other type of processing that is the primary purpose of running the process.</p>
+
+<h3>When processing ended</h3>
+
+<p><em>At the end of a unit of work.</em> Typically the end of a HTTP request, when a background job has finished processing, the end of a test case or any other type of processing that is the primary purpose of running the process.</p>
+
+<h3>When it terminated</h3>
+
+<p>Triggered when the application terminates.</p>
+
+<h2>Knowing when and why GC happens</h2>
+
+<p>Tracking GC cycles interleaved with the aforementioned application events yield insights into why a particular GC cycle happens. The progression from BOOTED to TERMINATED and everything else is important because mutations that happen during the fifth HTTP request of a new Rails process also contribute to a GC cycle during request number eight.</p>
+
+<h2>On tuning</h2>
+
+<p>Primarily the garbage collector exposes tuning variables in these three categories:</p>
+
+<ul>
+<li>Heap slot values: where Ruby objects live</li>
+<li>Malloc limits: off heap storage for large strings, arrays and other structures</li>
+<li>Growth factors: by how much to grow slots, malloc limits etc.</li>
+</ul>
+
+
+<p>Tuning GC parameters is generally a tradeoff between tuning for speed (thus using more memory) and tuning for low memory usage while giving up speed. We think it&rsquo;s possible to infer a reasonable set of defaults from observing the application at runtime that&rsquo;s conservative with memory, yet maintain reasonable throughput.</p>
+
+<h2>A solution</h2>
+
+<p>We&rsquo;ve been working on a product, <a href="https://tunemygc.com">TuneMyGC</a> for a few weeks that attempts to do just that. Our goals and objectives are:</p>
+
+<ul>
+<li>A repeatable and systematic tuning process that respects fast development cycles</li>
+<li>It should have awareness of runtime profiles being different for HTTP requests, background job processing etc.</li>
+<li>It should support current mainline Ruby versions without developers having to keep up to date with changes</li>
+<li>Deliver reasonable memory footprints with better runtime performance</li>
+<li>Provide better insights into GC characteristics both for app owners and possibly also ruby-core</li>
+</ul>
+
+
+<p>Here&rsquo;s an example of <a href="http://www.discourse.org">Discourse</a> being automatically tuned for better 99th percentile throughput. Response times in milliseconds, 200 requests:</p>
+
+<table>
+<thead>
+<tr>
+<th> <em>Controller</em>  </th>
+<th> <em><a href="https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08">GC defaults</a></em> </th>
+<th> <em><a href="https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798">Tuned GC</a></em> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> categories  </td>
+<td>     227      </td>
+<td>    160         </td>
+</tr>
+<tr>
+<td> home        </td>
+<td>     163      </td>
+<td>    113         </td>
+</tr>
+<tr>
+<td> topic       </td>
+<td>     55       </td>
+<td>    40          </td>
+</tr>
+<tr>
+<td> user        </td>
+<td>     92       </td>
+<td>    76          </td>
+</tr>
+</tbody>
+</table>
+
+
+<h4><a href="https://tunemygc.com/configs/c5214cfa00b3bf429badd2161c4b6a08">GC defaults</a>:</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ RUBY_GC_TUNE</span><span class="o">=</span><span class="m">1</span> <span class="nv">RUBY_GC_TOKEN</span><span class="o">=</span>a5a672761b25265ec62a1140e21fc81f ruby script/bench.rb -m -i 200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Raw GC stats from Discourse&rsquo;s bench.rb script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>GC STATS:
+</span><span class='line'>count: 106
+</span><span class='line'>heap_allocated_pages: 2447
+</span><span class='line'>heap_sorted_length: 2455
+</span><span class='line'>heap_allocatable_pages: 95
+</span><span class='line'>heap_available_slots: 997407
+</span><span class='line'>heap_live_slots: 464541
+</span><span class='line'>heap_free_slots: 532866
+</span><span class='line'>heap_final_slots: 0
+</span><span class='line'>heap_marked_slots: 464530
+</span><span class='line'>heap_swept_slots: 532876
+</span><span class='line'>heap_eden_pages: 2352
+</span><span class='line'>heap_tomb_pages: 95
+</span><span class='line'>total_allocated_pages: 2447
+</span><span class='line'>total_freed_pages: 0
+</span><span class='line'>total_allocated_objects: 27169276
+</span><span class='line'>total_freed_objects: 26704735
+</span><span class='line'>malloc_increase_bytes: 4352
+</span><span class='line'>malloc_increase_bytes_limit: 16777216
+</span><span class='line'>minor_gc_count: 91
+</span><span class='line'>major_gc_count: 15
+</span><span class='line'>remembered_wb_unprotected_objects: 11669
+</span><span class='line'>remembered_wb_unprotected_objects_limit: 23338
+</span><span class='line'>old_objects: 435435
+</span><span class='line'>old_objects_limit: 870870
+</span><span class='line'>oldmalloc_increase_bytes: 4736
+</span><span class='line'>oldmalloc_increase_bytes_limit: <span class="m">30286118</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><a href="https://tunemygc.com/configs/e129791f94159a8c75bef3a636c05798">TuneMyGC recommendations</a></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ RUBY_GC_TUNE</span><span class="o">=</span><span class="m">1</span> <span class="nv">RUBY_GC_TOKEN</span><span class="o">=</span>a5a672761b25265ec62a1140e21fc81f <span class="nv">RUBY_GC_HEAP_INIT_SLOTS</span><span class="o">=</span><span class="m">997339</span> <span class="nv">RUBY_GC_HEAP_FREE_SLOTS</span><span class="o">=</span><span class="m">626600</span> <span class="nv">RUBY_GC_HEAP_GROWTH_FACTOR</span><span class="o">=</span>1.03 <span class="nv">RUBY_GC_HEAP_GROWTH_MAX_SLOTS</span><span class="o">=</span><span class="m">88792</span> <span class="nv">RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR</span><span class="o">=</span>2.4 <span class="nv">RUBY_GC_MALLOC_LIMIT</span><span class="o">=</span><span class="m">34393793</span> <span class="nv">RUBY_GC_MALLOC_LIMIT_MAX</span><span class="o">=</span><span class="m">41272552</span> <span class="nv">RUBY_GC_MALLOC_LIMIT_GROWTH_FACTOR</span><span class="o">=</span>1.32 <span class="nv">RUBY_GC_OLDMALLOC_LIMIT</span><span class="o">=</span><span class="m">39339204</span> <span class="nv">RUBY_GC_OLDMALLOC_LIMIT_MAX</span><span class="o">=</span><span class="m">47207045</span> <span class="nv">RUBY_GC_OLDMALLOC_LIMIT_GROWTH_FACTOR</span><span class="o">=</span>1.2 ruby script/bench.rb -m -i 200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Raw GC stats from Discourse&rsquo;s bench.rb script:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>GC STATS:
+</span><span class='line'>count: 44
+</span><span class='line'>heap_allocated_pages: 2893
+</span><span class='line'>heap_sorted_length: 2953
+</span><span class='line'>heap_allocatable_pages: 161
+</span><span class='line'>heap_available_slots: 1179182
+</span><span class='line'>heap_live_slots: 460935
+</span><span class='line'>heap_free_slots: 718247
+</span><span class='line'>heap_final_slots: 0
+</span><span class='line'>heap_marked_slots: 460925
+</span><span class='line'>heap_swept_slots: 718277
+</span><span class='line'>heap_eden_pages: 2732
+</span><span class='line'>heap_tomb_pages: 161
+</span><span class='line'>total_allocated_pages: 2893
+</span><span class='line'>total_freed_pages: 0
+</span><span class='line'>total_allocated_objects: 27167493
+</span><span class='line'>total_freed_objects: 26706558
+</span><span class='line'>malloc_increase_bytes: 4352
+</span><span class='line'>malloc_increase_bytes_limit: 34393793
+</span><span class='line'>minor_gc_count: 34
+</span><span class='line'>major_gc_count: 10
+</span><span class='line'>remembered_wb_unprotected_objects: 11659
+</span><span class='line'>remembered_wb_unprotected_objects_limit: 27981
+</span><span class='line'>old_objects: 431838
+</span><span class='line'>old_objects_limit: 1036411
+</span><span class='line'>oldmalloc_increase_bytes: 4736
+</span><span class='line'>oldmalloc_increase_bytes_limit: 39339204
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see a couple of interesting points here:</p>
+
+<ul>
+<li>There is much less GC activity – only 44 rounds instead of 106.</li>
+<li>Slot buffers are still decent for high throughput. There are 718247 free slots (<code>heap_free_slots</code>) of 1179182 available slots (<code>heap_available_slots</code>), which is 64% of the current live objects (<code>heap_live_slots</code>). This value however is slightly skewed because the <a href="http://www.discourse.org">Discourse</a> benchmark script forces a major GC before dumping these stats - there are about as many swept slots as free slots (<code>heap_swept_slots</code>).</li>
+<li>Malloc limits (<code>malloc_increase_bytes_limit</code> and <code>oldmalloc_increase_bytes_limit</code>) and growth factors (<code>old_objects_limit</code> and <code>remembered_wb_unprotected_objects_limit</code>) are in line with actual app usage. The TuneMyGC service considers when limits and growth factors are bumped during the app lifecycle and attempts to raise limits via environment variables slightly higher to prevent excessive GC activity.</li>
+</ul>
+
+
+<p>Now it&rsquo;s your turn.</p>
+
+<h2>Feel free to take your Rails app for a spin too!</h2>
+
+<h3>1. Add to your Gemfile.</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>gem <span class="s1">&#39;tunemygc&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2. Register your Rails application.</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>bundle <span class="nb">exec </span>tunemygc -r email@yourdomain.com
+</span><span class='line'>      Application registered. Use <span class="nv">RUBY_GC_TOKEN</span><span class="o">=</span>08de9e8822c847244b31290cedfc1d51 in your environment.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3. Boot your app. We recommend an optimal GC configuration when it ends</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ RUBY_GC_TOKEN</span><span class="o">=</span>08de9e8822c847244b31290cedfc1d51 <span class="nv">RUBY_GC_TUNE</span><span class="o">=</span><span class="m">1</span> bundle <span class="nb">exec </span>rails s
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+
+  
+    
+      <div id="mc_embed_signup" class="row">
+
+  <div class="small-12 large-12 columns">
+    <p>
+    Still use RSS? Go <a href="/theden/atom.xml">grab it</a>. Not? We neither. Pop your email address in the form below and we&#8217;ll post new posts in the series of Ruby articles straight to your mailbox.
+  </p>
+    <form action="//odesign.us6.list-manage.com/subscribe/post?u=a690c5659c8402fec4cd18592&amp;id=66586d7b9e" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+        <div id="mc_embed_signup_scroll">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-EMAIL">Your Email Address
+          <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-FNAME">Your First Name (optional)
+          <input type="text" value="" name="FNAME" class="" id="mce-FNAME">
+        </label>
+      </div>
+    </div>
+
+      <div id="mce-responses" class="clear">
+        <div class="response" id="mce-error-response" style="display:none"></div>
+        <div class="response" id="mce-success-response" style="display:none"></div>
+      </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+        <div style="position: absolute; left: -5000px;"><input type="text" name="b_a690c5659c8402fec4cd18592_66586d7b9e" tabindex="-1" value=""></div>
+        <div class="clear"><input type="submit" value="Send me those awesome tips" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!--End mc_embed_signup-->
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/lourens/" rel="author">Lourens</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-02-20T09:19:02+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:19 am</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/garbage-collection/'>garbage collection</a>, <a class='category' href='/theden/categories/gc/'>gc</a>, <a class='category' href='/theden/categories/generational-gc/'>generational gc</a>, <a class='category' href='/theden/categories/rails/'>rails</a>, <a class='category' href='/theden/categories/rails-performance/'>rails performance</a>, <a class='category' href='/theden/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/its-not-about-you/" title="Previous Post: It's not about you">&laquo; It&#8217;s not about you</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>
