@@ -6,10 +6,22 @@ comments: true
 author: Lourens
 keywords: ruby, rails, gc, garbage collection, generational gc, rails performance
 categories: [ruby, rails, gc, garbage collection, generational gc, 'rails performance']
-published: false
+published: true
 ---
 
-MRI maintainers have put a tremendous amount of work into improving the garbage collector in Ruby 2.0 through 2.2. The engine has thus gained a lot more horsepower. However, it's still not trivial to get the most out of it. In this post we're going to gain a better understanding of how and what to tune for.
+*MRI maintainers have put a tremendous amount of work into improving the garbage collector in Ruby 2.0 through 2.2. The engine has thus gained a lot more horsepower. However, it's still not trivial to get the most out of it. In this post we're going to gain a better understanding of how and what to tune for.*
+
+<figure markdown="1">
+  <a href="https://www.flickr.com/photos/stevoarnold/2862901152">
+    <img src="https://farm3.staticflickr.com/2218/2862901152_b6b39592bd_o_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/stevoarnold/2862901152">Steve Arnold</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
 
 Koichi Sasada (_ko1, Ruby MRI maintainer) famously mentioned in a [presentation (slide 89)](http://www.atdot.net/~ko1/activities/2014_rubyconf_ph_pub.pdf):
 
