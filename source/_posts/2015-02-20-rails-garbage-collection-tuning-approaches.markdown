@@ -291,3 +291,12 @@ $ bundle exec tunemygc -r email@yourdomain.com
 ```bash
 $ RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 RUBY_GC_TUNE=1 bundle exec rails s
 ```
+
+## Related articles
+
+*This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:*
+
+* [Rails Garbage Collection: Naive Defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/)
+* [Does Rails Scale?](https://bearmetal.eu/theden/does-rails-scale/)
+* [Rails Garbage Collection: Age Matters](https://bearmetal.eu/theden/rails-garbage-collection-age-matters/)
+* [Help! My Rails App Is Melting Under the Launch Day Load](https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/)
