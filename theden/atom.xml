@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2015-03-05T15:30:02+02:00</updated>
+  <updated>2015-03-06T11:54:58+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -454,6 +454,18 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ RUBY_GC_TOKEN</span><span class="o">=</span>08de9e8822c847244b31290cedfc1d51 <span class="nv">RUBY_GC_TUNE</span><span class="o">=</span><span class="m">1</span> bundle <span class="nb">exec </span>rails s
 </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Related articles</h2>
+
+<p><em>This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:</em></p>
+
+<ul>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+</ul>
 
 ]]></content>
   </entry>

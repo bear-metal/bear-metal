@@ -340,6 +340,18 @@ oldmalloc_increase_bytes_limit: 39339204
 
 <pre><code class="bash">$ RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 RUBY_GC_TUNE=1 bundle exec rails s
 </code></pre>
+
+<h2>Related articles</h2>
+
+<p><em>This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:</em></p>
+
+<ul>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+</ul>
+
 ]]></content>
   </entry>
   
