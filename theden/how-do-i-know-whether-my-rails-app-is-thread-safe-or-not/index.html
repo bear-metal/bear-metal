@@ -1,0 +1,716 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How do I know whether my Rails app is thread-safe or not? - by Jarkko of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="How Do I Know Whether My Rails App Is Thread-safe or Not? Jarkko wrote this on Mar 12th, 2015 4:10 pm In January Heroku started promoting Puma as &hellip;">
+  <meta name="keywords" content="ruby, rails, gc, garbage collection, generational gc, rails performance">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+  
+
+
+<link rel="author" href="https://plus.google.com/117033765270760829494/">
+
+    <meta property="og:title"
+    content="How do I know whether my Rails app is thread-safe or not?" />
+    <meta property="og:description"
+    content="" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+      <meta property="article:author"
+      content="https://www.facebook.com/jarkko.m.laine" />
+    
+
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+  <!-- SumoMe -->
+<script src="//load.sumome.com/" data-sumo-site-id="da3bead8ae8720119247146e18eb0c9c2a039fdce74750d07f835ee40d1a5604" async="async"></script>
+<!-- End SumoMe -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How Do I Know Whether My Rails App Is Thread-safe or Not?</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-12T16:10:58+02:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In January <a href="https://devcenter.heroku.com/changelog-items/594">Heroku started promoting</a> <a href="http://puma.io">Puma</a> as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.</p>
+
+<p>This is obviously good for a client since they can now run more concurrent users with a single Dyno. However, it’s also good for Heroku itself since small apps (probably the vast majority of apps deployed on Heroku) will now consume much fewer resources on its servers.</p>
+
+<p>The recommendation comes with a caveat, however. <em>Your app needs to be thread-safe</em>. The problem with this is that there is no simple way to say with absolute certainty whether an app as a whole is thread-safe. We can get close, however.</p>
+
+<p>Let’s have a look how.</p>
+
+<p>For the purpose of this issue, an app can be split into three parts:</p>
+
+<ol>
+<li>The app code itself.</li>
+<li>Rails the framework.</li>
+<li>Any 3rd party gems used by the app.</li>
+</ol>
+
+
+<p>All three of these need to be thread-safe. Rails and its included gems <a href="http://m.onkey.org/thread-safety-for-your-rails">have been declared thread-safe since 2.2</a>, i.e. since 2008. This alone, however, does <em>not</em> automatically make your app as a whole so. Your own app code and all the gems you use need to be thread-safe as well.</p>
+
+<h2>What is and what isn’t thread-safe in Ruby?</h2>
+
+<p><strong>So when is your app code not thread-safe? Simply put, when you share mutable state between threads in your app.</strong></p>
+
+<p>But what does this even mean?</p>
+
+<p><strong>None of the core data structures (except for Queue) in Ruby are thread-safe</strong>. The structures are mutable, and when shared between threads, there are no guarantees the threads won’t overwrite each others’ changes. Fortunately, this is rarely the case in Rails apps.</p>
+
+<p><strong>Any code that is more than a single operation (as in a single Ruby code call implemented in C) is not thread-safe.</strong> The classic example of this is the <code>+=</code> operator, which is in fact two operations combined, <code>=</code> and <code>+</code>. Thus, the final value of the shared variable in the following code is undetermined:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="vi">@n</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'><span class="mi">3</span><span class="o">.</span><span class="n">times</span> <span class="k">do</span>
+</span><span class='line'>  <span class="no">Thread</span><span class="o">.</span><span class="n">start</span> <span class="p">{</span> <span class="mi">100</span><span class="o">.</span><span class="n">times</span> <span class="p">{</span> <span class="vi">@n</span> <span class="o">+=</span> <span class="mi">1</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, none of the two above things alone makes code thread-unsafe. It only becomes so when it is mated with shared data. Let’s get back to that in a minute, but first…</p>
+
+<h2>Aside: <strong>But what about GIL?</strong></h2>
+
+<p>More informed readers might object at this point and point out that MRI Ruby uses a GIL, a.k.a. Global Interpreter Lock.</p>
+
+<p>The general wisdom on the street is that GIL is bad because it does not let your threads run in parallel (true, in a sense), but good, because it makes your code thread-safe.</p>
+
+<p>Unfortunately, <strong>GIL <em>does not</em> make your code thread-safe</strong>. It only guarantees that two threads can’t run Ruby code at the same time. Thus it does inhibit parallelism. However, threads can still be paused and resumed at any given point, which means that they absolutely can clobber each others’ data.</p>
+
+<p>GIL does accidentally make some operations (such as <code>Array#&lt;&lt;</code>) atomic. However, there are two issues with this:</p>
+
+<ul>
+<li>It only applies to cases where what you’re doing is truly a single Ruby operation. When what you’re doing is multiple operations, context switches can and will happen, and you won’t be happy.</li>
+<li>It only applies to MRI. JRuby and Rubinius support true parallelism and thus don’t use a GIL. I wouldn’t count on GIL being there forever for MRI either, so relying on it guaranteeing your code being thread-safe is irresponsible at best.</li>
+</ul>
+
+
+<p>Go read Jesse Storimer’s <a href="http://www.jstorimer.com/blogs/workingwithcode/8085491-nobody-understands-the-gil">Nobody understands the GIL</a> (also parts <a href="http://www.jstorimer.com/blogs/workingwithcode/8100871-nobody-understands-the-gil-part-2-implementation">2</a> and <a href="http://www.rubyinside.com/does-the-gil-make-your-ruby-code-thread-safe-6051.html">3</a>) for much more detail about it (than you can probably even stomach). But for the love of the flying spaghetti monster, <em>don’t count on it making your app thread-safe</em>.</p>
+
+<h2>Thread-safety in Rails the framework</h2>
+
+<p>A bit of history:</p>
+
+<p>Rails and its dependencies were declared thread-safe already in version 2.2, in 2008. At that point, however, the consensus was that so many third party libraries were not thread-safe that the whole request in Rails was enclosed within a giant mutex lock. This meant that while a request was being processed, no other thread in the same process could be running.</p>
+
+<p>In order to take advantage of threaded execution, you had to declare in your config.rb that you really wanted to ditch the lock:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">threadsafe!</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, en route to Rails 4 <a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html">Aaron Tenderlove Patterson demonstrated</a> that what <code>config.threadsafe!</code> did was</p>
+
+<ul>
+<li>effectively irrelevant in multi-process environments (such as Unicorn), where a single process never processed multiple requests concurrently.</li>
+<li>absolutely necessary every time you used a threaded server such as Puma or Passenger Enterprise.</li>
+</ul>
+
+
+<p>What this meant was that there was no reason for <em>not</em> to have the thread-safe option always on. And that was exactly what was done for Rails 4 in 2012.</p>
+
+<p><strong>Key takeaway: Rails and its dependencies are thread-safe. You don’t have to do anything to “turn that feature on”.</strong></p>
+
+<h2>Making your app code thread-safe</h2>
+
+<p>Good news&colon; Since Rails uses the <a href="http://en.wikipedia.org/wiki/Shared_nothing_architecture">Shared nothing architecture</a>, Rails apps are consequentially very suitable for being thread-safe as well. In general, Rails creates a new controller object of every HTTP request, and everything else flows from there. This isolates most objects in a Rails app from other requests.</p>
+
+<p>Like noted above, built-in Ruby data structures (save for Queue) are not thread-safe. This does not, however, matter, unless you are actually sharing them between threads. Because of the way in which Rails is architectured, this almost never happens in a Rails app.</p>
+
+<p>There are, however, some patterns that can come bite you in the ass when you want to switch to a threaded app server.</p>
+
+<h3>Global variables</h3>
+
+<p>Global variables are, well, global. This means that they are shared between threads. If you weren’t convinced about not using global variables by now, here’s another reason to never touch them. If you really want to share something globally across an app, you are more than likely better served by a constant (but see below), anyway.</p>
+
+<h3>Class variables</h3>
+
+<p>For the purpose of a discussion about threads, class variables are not much different from global variables. They are shared across threads just the same way.</p>
+
+<p>The problem isn’t so much about using class variables, but about mutating them. And if you are not going to mutate a class variable, in many cases a constant is again a better choice.</p>
+
+<h3>Class instance variables</h3>
+
+<p>But maybe you’ve read that you should always use class instance variables instead of class variables in Ruby. Well, maybe you should, but they are just as problematic for threaded programs as class variables.</p>
+
+<p>It’s worth pointing out that both class variables and class instance variables can also be set by class methods. This isn’t such an issue in your own code, but you can easily fall into this trap when calling other apis. Here’s an <a href="http://m.onkey.org/thread-safety-for-your-rails">example from Pratik Naik</a> where the app developer is getting into thread-unsafe territory by just calling Rails class methods:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:set_site</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">set_site</span>
+</span><span class='line'>    <span class="vi">@site</span> <span class="o">=</span> <span class="no">Site</span><span class="o">.</span><span class="n">find_by_subdomain</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">subdomains</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">if</span> <span class="vi">@site</span><span class="o">.</span><span class="n">layout?</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="vi">@site</span><span class="o">.</span><span class="n">layout_name</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s1">&#39;default_lay&#39;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this case, calling the <code>layout</code> method causes Rails to set the class instance variable <code>@_layout</code> for the controller class. If two concurrent requests (serve by two threads) hit this code simultaneously, they might end up in a race condition and overwrite each others’ layout.</p>
+
+<p>In this case, the correct way to set the layout is to use a symbol with the layout call:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:set_site</span>
+</span><span class='line'>  <span class="n">layout</span> <span class="ss">:site_layout</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">set_site</span>
+</span><span class='line'>    <span class="vi">@site</span> <span class="o">=</span> <span class="no">Site</span><span class="o">.</span><span class="n">find_by_subdomain</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">subdomains</span><span class="o">.</span><span class="n">first</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">site_layout</span>
+</span><span class='line'>    <span class="k">if</span> <span class="vi">@site</span><span class="o">.</span><span class="n">layout?</span>
+</span><span class='line'>      <span class="vi">@site</span><span class="o">.</span><span class="n">layout_name</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="s1">&#39;default_lay&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>However, this is besides the point. The point is, you might end up using class variables and class instance variables by accident, thus making your app thread-unsafe.</p>
+
+<h3>Memoization</h3>
+
+<p>Memoization is a technique where you lazily set a variable if it is not already set. It is a common technique used where the original functionality is at least moderately expensive and the resulting variable is used several times within a request.</p>
+
+<p>A common case would be to set the current user in a controller:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">SekritController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:set_user</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">set_user</span>
+</span><span class='line'>    <span class="vi">@current_user</span> <span class="o">||=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="ss">:user_id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Memoization can be an issue for thread safety for a couple of reasons:</p>
+
+<ul>
+<li>It is often used to store data in class variables or class instance variables (see above).</li>
+<li>The <code>||=</code> operator is in fact two operations, so there is a potential context switch happening in the middle of it, causing a race condition between threads.</li>
+</ul>
+
+
+<p>It would be easy to dismiss memoization as the cause of the issue, and tell people just to avoid class variables and class instance variables. However, the issue is more complex than that.</p>
+
+<p>In <a href="https://github.com/rails/rails/pull/9789">this issue</a>, Evan Phoenix squashes a really tricky race condition bug in the Rails codebase caused by calling <code>super</code> in a memoization function. So even though you would only be using instance variables, you might end up with race conditions with memoization.</p>
+
+<p>What’s a developer to do, then?</p>
+
+<ul>
+<li>Make sure memoization makes sense and a difference in your case. In many cases Rails actually caches the result anyway, so that you are not saving a whole lot if any resources with your memoization method.</li>
+<li>Don’t memoize to class variables or class instance variables. If you need to memoize something on the class level, use thread local variables (<code>Thread.current[:baz]</code>) instead. Be aware, though, that it is still kind of a global variable. So while it&rsquo;s thread-safe, it still might not be good coding practice.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">set_expensive_var</span>
+</span><span class='line'>  <span class="no">Thread</span><span class="o">.</span><span class="n">current</span><span class="o">[</span><span class="ss">:expensive_var</span><span class="o">]</span> <span class="o">||=</span> <span class="no">MyModel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">session</span><span class="o">[</span><span class="ss">:goo_id</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>If you absolutely think you must be able to share the result across threads, use a <a href="http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html">mutex</a> to synchronize the memoizing part of your code. Keep in mind, though, that you’re kinda breaking the Shared nothing model of Rails with that. It’s kind of a half-assed sharing method anyway, since it only works across threads, not across processes.</p>
+
+<p>Also keep in mind, that a mutex only saves you from race conditions inside itself. So it doesn&rsquo;t help you a whole lot with class variables unless you put the lock around the whole controller action, which was exactly what we wanted to avoid in the first place.</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">GooController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="vc">@@lock</span> <span class="o">=</span> <span class="no">Mutex</span><span class="o">.</span><span class="n">new</span>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:set_expensive_var</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kp">private</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">set_expensive_var</span>
+</span><span class='line'>    <span class="vc">@@lock</span><span class="o">.</span><span class="n">synchronize</span> <span class="k">do</span>
+</span><span class='line'>      <span class="vc">@@stupid_class_var</span> <span class="o">||=</span> <span class="no">Foo</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:subdomain</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Use different instance variable names when you use inheritance and <code>super</code> in memoization methods.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">Foo</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">env_config</span>
+</span><span class='line'>    <span class="vi">@env_config</span> <span class="o">||=</span> <span class="p">{</span><span class="ss">foo</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="ss">bar</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">}</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Bar</span> <span class="o">&lt;</span> <span class="no">Foo</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">env_config</span>
+</span><span class='line'>    <span class="vi">@bar_env_config</span> <span class="o">||=</span> <span class="k">super</span><span class="o">.</span><span class="n">merge</span><span class="p">({</span><span class="ss">foo</span><span class="p">:</span> <span class="s1">&#39;baz&#39;</span><span class="p">})</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Constants</h3>
+
+<p>Yes, constants. <em>You didn’t believe constants are really constant in Ruby, did you?</em> Well, they kinda are:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:008:0&gt; <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1<span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:009:0&gt; <span class="nv">CON</span> <span class="o">=</span> <span class="o">[</span>1,2<span class="o">]</span>
+</span><span class='line'><span class="o">(</span>irb<span class="o">)</span>:9: warning: already initialized constant CON
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So you do get a warning when trying to reassign a constant, but the reassignment still goes through. That’s not the real problem, though. The real issue is that the constancy of constants only applies to the object reference, not the referenced object. And if the referenced object can be mutated, you have a problem.</p>
+
+<p>Yeah, you remember right. <em>All the core data structures in Ruby are mutable</em>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:010:0&gt; <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2<span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:011:0&gt; CON <span class="s">&lt;&lt; 3</span>
+</span><span class='line'><span class="s">=&gt; [1, 2, 3</span><span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:012:0&gt; <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2, 3<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course, you should never, ever do this. And few will. There’s a catch, however. Since Ruby variable assignments also use references, you might end up mutating a constant by accident.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:010:0&gt; <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2<span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:011:0&gt; <span class="nv">arr</span> <span class="o">=</span> <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2<span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:012:0&gt; arr <span class="s">&lt;&lt; 3</span>
+</span><span class='line'><span class="s">=&gt; [1, 2, 3</span><span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:013:0&gt; <span class="nv">CON</span>
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2, 3<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you want to be sure that your constants are never mutated, <a href="http://www.informit.com/articles/article.aspx?p=2251208&amp;seqNum=4">you can freeze</a> them upon creation:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:001:0&gt; <span class="nv">CON</span> <span class="o">=</span> <span class="o">[</span>1,2,3<span class="o">]</span>.freeze
+</span><span class='line'><span class="o">=</span>&gt; <span class="o">[</span>1, 2, 3<span class="o">]</span>
+</span><span class='line'>irb<span class="o">(</span>main<span class="o">)</span>:002:0&gt; CON &lt;&lt; 4
+</span><span class='line'>RuntimeError: can<span class="s1">&#39;t modify frozen Array</span>
+</span><span class='line'><span class="s1">  from (irb):2</span>
+</span><span class='line'><span class="s1">  from /Users/jarkko/.rbenv/versions/2.1.2/bin/irb:11:in `&lt;main&gt;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Keep in mind, though, that freeze is shallow. It only applies to the actual <code>Array</code> object in this case, not its items.</p>
+
+<h3>Environment variables</h3>
+
+<p><code>ENV</code> is really just a hash-like construct referenced by a constant. Thus, everything that applies to constants above, also applies to it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;version&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;1.2&quot;</span> <span class="c1"># Don&#39;t do this</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Making sure 3rd party code is thread-safe</h2>
+
+<p>If you want your app to be thread-safe, all the third-party code it uses also needs to be thread-safe in the context of your app.</p>
+
+<p>The first thing you probably should do with any gem is to read through its documentation and Google for whether it is deemed thread-safe. That said, even if it were, there’s no escaping double-checking yourself. Yes, by reading through the source code.</p>
+
+<p>As a general rule, all that I wrote above about making your own code thread-safe applies here as well. However…</p>
+
+<p><strong>With 3rd party gems and Rails plugins, context matters.</strong></p>
+
+<p>If the third party code you use is just a library that your own code calls, you’re fairly safe (considering you’re using it in a thread-safe way yourself). It can be thread-unsafe just the same way as <code>Array</code> is, but if you don’t share the structures between threads, you’re more or less fine.</p>
+
+<p>However, many Rails plugins actually extend or modify the Rails classes, in which case all bets are off. In this case, you need to scrutinize the library code much, much more thoroughly.</p>
+
+<p>So how do you know which type of the two above a gem or plugin is? Well, you don’t. Until you read the code, that is. But you are reading the code anyway, aren’t you?</p>
+
+<h3>What smells to look for in third party code?</h3>
+
+<p>Everything we mentioned above regarding your own code applies.</p>
+
+<ul>
+<li>Class variables (<code>@@foo</code>)</li>
+<li>Class instance variables (<code>@bar</code>, trickier to find since they look the same as any old ivar)</li>
+<li>Constants, ENV variables, and potential variables through which they can be mutated.</li>
+<li>Memoization, especially when one of the two above points are involved</li>
+<li>Creation of new threads (<code>Thread.new</code>, <code>Thread.start</code>). These obviously aren’t smells just by themselves. However, the risks mentioned above only materialize when shared across threads, so you should at least be familiar with in which cases the library is spawning new threads.</li>
+</ul>
+
+
+<p>Again, context matters. Nothing above alone makes code thread-unsafe. Even sharing data with them doesn’t. But modifying that data does. So pay close attention to whether the libs provide methods that can be used to modify shared data.</p>
+
+<h2>The final bad news</h2>
+
+<p>No matter how thoroughly you read through the code in your application and the gems it uses, you cannot be 100% sure that the whole is thread-safe. Heck, even running and profiling the code in a test environment might not reveal lingering thread safety issues.</p>
+
+<p>This is because many race conditions only appear under serious, concurrent load. That’s why you should both try to squash them from the code and keep a close eye on your production environment on a continual basis. Your app being perfectly thread-safe today does not guarantee the same is true a couple of sprints later.</p>
+
+<h2>Recap</h2>
+
+<p>To make a Rails app thread-safe, you have to make sure the code is thread-safe on three different levels:</p>
+
+<ul>
+<li>Rails framework and its dependencies.</li>
+<li>Your app code.</li>
+<li>Any third party code you use.</li>
+</ul>
+
+
+<p>The first one of these is handled for you, unless you do stupid shit with it (like the memoization example above). The rest is your responsibility.</p>
+
+<p>The main thing to keep in mind is to never mutate data that is shared across threads. Most often this happens through class variables, class instance variables, or by accidentally mutating objects that are referenced by a constant.</p>
+
+<p>There are, however, some pretty esoteric ways an app can end up thread-unsafe, so be prepared to track down and fix the last remaining threading issues while running in production.</p>
+
+<p>Have fun!</p>
+
+<p><em><strong>Acknowledgments</strong>: Thanks to <a href="https://twitter.com/raggi">James Tucker</a>, <a href="https://twitter.com/evanphx">Evan Phoenix</a>, and the whole <a href="https://bearmetal.eu/team/">Bear Metal gang</a> for providing feedback for the drafts of this article.</em></p>
+
+<h3>Related articles</h3>
+
+<p><em>This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:</em></p>
+
+<ul>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches/">Rails Garbage Collection: Tuning Approaches</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+</ul>
+
+</div>
+
+
+
+  
+    
+      <div id="mc_embed_signup" class="row">
+
+  <div class="small-12 large-12 columns">
+    <p>
+    Still use RSS? Go <a href="/theden/atom.xml">grab it</a>. Not? We neither. Pop your email address in the form below and we&#8217;ll post new posts in the series of Ruby articles straight to your mailbox.
+  </p>
+    <form action="//odesign.us6.list-manage.com/subscribe/post?u=a690c5659c8402fec4cd18592&amp;id=66586d7b9e" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+        <div id="mc_embed_signup_scroll">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-EMAIL">Your Email Address
+          <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-FNAME">Your First Name (optional)
+          <input type="text" value="" name="FNAME" class="" id="mce-FNAME">
+        </label>
+      </div>
+    </div>
+
+      <div id="mce-responses" class="clear">
+        <div class="response" id="mce-error-response" style="display:none"></div>
+        <div class="response" id="mce-success-response" style="display:none"></div>
+      </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+        <div style="position: absolute; left: -5000px;"><input type="text" name="b_a690c5659c8402fec4cd18592_66586d7b9e" tabindex="-1" value=""></div>
+        <div class="clear">
+          <input type="hidden" name="FORMID" id="FORMID" value="the den /theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/">
+          <input type="submit" value="Send me those awesome tips" name="subscribe" id="mc-embedded-subscribe" class="button">
+        </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!--End mc_embed_signup-->
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-12T16:10:58+02:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:10 pm</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/garbage-collection/'>garbage collection</a>, <a class='category' href='/theden/categories/gc/'>gc</a>, <a class='category' href='/theden/categories/generational-gc/'>generational gc</a>, <a class='category' href='/theden/categories/rails/'>rails</a>, <a class='category' href='/theden/categories/rails-performance/'>rails performance</a>, <a class='category' href='/theden/categories/ruby/'>ruby</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/rails-garbage-collection-tuning-approaches/" title="Previous Post: Rails Garbage Collection: Tuning Approaches">&laquo; Rails Garbage Collection: Tuning Approaches</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>

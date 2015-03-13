@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gc | Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/categories/gc/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2015-02-20T09:19:02+02:00</updated>
+  <updated>2015-03-12T16:10:58+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,368 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How Do I Know Whether My Rails App Is Thread-safe or Not?]]></title>
+    <link href="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/"/>
+    <updated>2015-03-12T16:10:58+02:00</updated>
+    <id>https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not</id>
+    <content type="html"><![CDATA[<p>In January <a href="https://devcenter.heroku.com/changelog-items/594">Heroku started promoting</a> <a href="http://puma.io">Puma</a> as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.</p>
+
+<p>This is obviously good for a client since they can now run more concurrent users with a single Dyno. However, it’s also good for Heroku itself since small apps (probably the vast majority of apps deployed on Heroku) will now consume much fewer resources on its servers.</p>
+
+<p>The recommendation comes with a caveat, however. <em>Your app needs to be thread-safe</em>. The problem with this is that there is no simple way to say with absolute certainty whether an app as a whole is thread-safe. We can get close, however.</p>
+
+<p>Let’s have a look how.</p>
+
+<p>For the purpose of this issue, an app can be split into three parts:</p>
+
+<ol>
+<li>The app code itself.</li>
+<li>Rails the framework.</li>
+<li>Any 3rd party gems used by the app.</li>
+</ol>
+
+
+<p>All three of these need to be thread-safe. Rails and its included gems <a href="http://m.onkey.org/thread-safety-for-your-rails">have been declared thread-safe since 2.2</a>, i.e. since 2008. This alone, however, does <em>not</em> automatically make your app as a whole so. Your own app code and all the gems you use need to be thread-safe as well.</p>
+
+<h2>What is and what isn’t thread-safe in Ruby?</h2>
+
+<p><strong>So when is your app code not thread-safe? Simply put, when you share mutable state between threads in your app.</strong></p>
+
+<p>But what does this even mean?</p>
+
+<p><strong>None of the core data structures (except for Queue) in Ruby are thread-safe</strong>. The structures are mutable, and when shared between threads, there are no guarantees the threads won’t overwrite each others’ changes. Fortunately, this is rarely the case in Rails apps.</p>
+
+<p><strong>Any code that is more than a single operation (as in a single Ruby code call implemented in C) is not thread-safe.</strong> The classic example of this is the <code>+=</code> operator, which is in fact two operations combined, <code>=</code> and <code>+</code>. Thus, the final value of the shared variable in the following code is undetermined:</p>
+
+<pre><code class="ruby">@n = 0
+3.times do
+  Thread.start { 100.times { @n += 1 } }
+end
+</code></pre>
+
+<p>However, none of the two above things alone makes code thread-unsafe. It only becomes so when it is mated with shared data. Let’s get back to that in a minute, but first…</p>
+
+<h2>Aside: <strong>But what about GIL?</strong></h2>
+
+<p>More informed readers might object at this point and point out that MRI Ruby uses a GIL, a.k.a. Global Interpreter Lock.</p>
+
+<p>The general wisdom on the street is that GIL is bad because it does not let your threads run in parallel (true, in a sense), but good, because it makes your code thread-safe.</p>
+
+<p>Unfortunately, <strong>GIL <em>does not</em> make your code thread-safe</strong>. It only guarantees that two threads can’t run Ruby code at the same time. Thus it does inhibit parallelism. However, threads can still be paused and resumed at any given point, which means that they absolutely can clobber each others’ data.</p>
+
+<p>GIL does accidentally make some operations (such as <code>Array#&lt;&lt;</code>) atomic. However, there are two issues with this:</p>
+
+<ul>
+<li>It only applies to cases where what you’re doing is truly a single Ruby operation. When what you’re doing is multiple operations, context switches can and will happen, and you won’t be happy.</li>
+<li>It only applies to MRI. JRuby and Rubinius support true parallelism and thus don’t use a GIL. I wouldn’t count on GIL being there forever for MRI either, so relying on it guaranteeing your code being thread-safe is irresponsible at best.</li>
+</ul>
+
+
+<p>Go read Jesse Storimer’s <a href="http://www.jstorimer.com/blogs/workingwithcode/8085491-nobody-understands-the-gil">Nobody understands the GIL</a> (also parts <a href="http://www.jstorimer.com/blogs/workingwithcode/8100871-nobody-understands-the-gil-part-2-implementation">2</a> and <a href="http://www.rubyinside.com/does-the-gil-make-your-ruby-code-thread-safe-6051.html">3</a>) for much more detail about it (than you can probably even stomach). But for the love of the flying spaghetti monster, <em>don’t count on it making your app thread-safe</em>.</p>
+
+<h2>Thread-safety in Rails the framework</h2>
+
+<p>A bit of history:</p>
+
+<p>Rails and its dependencies were declared thread-safe already in version 2.2, in 2008. At that point, however, the consensus was that so many third party libraries were not thread-safe that the whole request in Rails was enclosed within a giant mutex lock. This meant that while a request was being processed, no other thread in the same process could be running.</p>
+
+<p>In order to take advantage of threaded execution, you had to declare in your config.rb that you really wanted to ditch the lock:</p>
+
+<pre><code class="ruby">config.threadsafe!
+</code></pre>
+
+<p>However, en route to Rails 4 <a href="http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html">Aaron Tenderlove Patterson demonstrated</a> that what <code>config.threadsafe!</code> did was</p>
+
+<ul>
+<li>effectively irrelevant in multi-process environments (such as Unicorn), where a single process never processed multiple requests concurrently.</li>
+<li>absolutely necessary every time you used a threaded server such as Puma or Passenger Enterprise.</li>
+</ul>
+
+
+<p>What this meant was that there was no reason for <em>not</em> to have the thread-safe option always on. And that was exactly what was done for Rails 4 in 2012.</p>
+
+<p><strong>Key takeaway: Rails and its dependencies are thread-safe. You don’t have to do anything to “turn that feature on”.</strong></p>
+
+<h2>Making your app code thread-safe</h2>
+
+<p>Good news&colon; Since Rails uses the <a href="http://en.wikipedia.org/wiki/Shared_nothing_architecture">Shared nothing architecture</a>, Rails apps are consequentially very suitable for being thread-safe as well. In general, Rails creates a new controller object of every HTTP request, and everything else flows from there. This isolates most objects in a Rails app from other requests.</p>
+
+<p>Like noted above, built-in Ruby data structures (save for Queue) are not thread-safe. This does not, however, matter, unless you are actually sharing them between threads. Because of the way in which Rails is architectured, this almost never happens in a Rails app.</p>
+
+<p>There are, however, some patterns that can come bite you in the ass when you want to switch to a threaded app server.</p>
+
+<h3>Global variables</h3>
+
+<p>Global variables are, well, global. This means that they are shared between threads. If you weren’t convinced about not using global variables by now, here’s another reason to never touch them. If you really want to share something globally across an app, you are more than likely better served by a constant (but see below), anyway.</p>
+
+<h3>Class variables</h3>
+
+<p>For the purpose of a discussion about threads, class variables are not much different from global variables. They are shared across threads just the same way.</p>
+
+<p>The problem isn’t so much about using class variables, but about mutating them. And if you are not going to mutate a class variable, in many cases a constant is again a better choice.</p>
+
+<h3>Class instance variables</h3>
+
+<p>But maybe you’ve read that you should always use class instance variables instead of class variables in Ruby. Well, maybe you should, but they are just as problematic for threaded programs as class variables.</p>
+
+<p>It’s worth pointing out that both class variables and class instance variables can also be set by class methods. This isn’t such an issue in your own code, but you can easily fall into this trap when calling other apis. Here’s an <a href="http://m.onkey.org/thread-safety-for-your-rails">example from Pratik Naik</a> where the app developer is getting into thread-unsafe territory by just calling Rails class methods:</p>
+
+<pre><code class="ruby">class HomeController &lt; ApplicationController
+  before_filter :set_site
+
+  def index
+  end
+
+  private
+
+  def set_site
+    @site = Site.find_by_subdomain(request.subdomains.first)
+    if @site.layout?
+      self.class.layout(@site.layout_name)
+    else
+      self.class.layout('default_lay')
+    end
+  end
+end
+</code></pre>
+
+<p>In this case, calling the <code>layout</code> method causes Rails to set the class instance variable <code>@_layout</code> for the controller class. If two concurrent requests (serve by two threads) hit this code simultaneously, they might end up in a race condition and overwrite each others’ layout.</p>
+
+<p>In this case, the correct way to set the layout is to use a symbol with the layout call:</p>
+
+<pre><code class="ruby">class HomeController &lt; ApplicationController
+  before_filter :set_site
+  layout :site_layout
+
+  def index
+  end
+
+  private
+
+  def set_site
+    @site = Site.find_by_subdomain(request.subdomains.first)
+  end
+
+  def site_layout
+    if @site.layout?
+      @site.layout_name
+    else
+      'default_lay'
+    end
+  end
+end
+</code></pre>
+
+<p>However, this is besides the point. The point is, you might end up using class variables and class instance variables by accident, thus making your app thread-unsafe.</p>
+
+<h3>Memoization</h3>
+
+<p>Memoization is a technique where you lazily set a variable if it is not already set. It is a common technique used where the original functionality is at least moderately expensive and the resulting variable is used several times within a request.</p>
+
+<p>A common case would be to set the current user in a controller:</p>
+
+<pre><code class="ruby">class SekritController &lt; ApplicationController
+  before_filter :set_user
+
+  private
+
+  def set_user
+    @current_user ||= User.find(session[:user_id])
+  end
+end
+</code></pre>
+
+<p>Memoization can be an issue for thread safety for a couple of reasons:</p>
+
+<ul>
+<li>It is often used to store data in class variables or class instance variables (see above).</li>
+<li>The <code>||=</code> operator is in fact two operations, so there is a potential context switch happening in the middle of it, causing a race condition between threads.</li>
+</ul>
+
+
+<p>It would be easy to dismiss memoization as the cause of the issue, and tell people just to avoid class variables and class instance variables. However, the issue is more complex than that.</p>
+
+<p>In <a href="https://github.com/rails/rails/pull/9789">this issue</a>, Evan Phoenix squashes a really tricky race condition bug in the Rails codebase caused by calling <code>super</code> in a memoization function. So even though you would only be using instance variables, you might end up with race conditions with memoization.</p>
+
+<p>What’s a developer to do, then?</p>
+
+<ul>
+<li>Make sure memoization makes sense and a difference in your case. In many cases Rails actually caches the result anyway, so that you are not saving a whole lot if any resources with your memoization method.</li>
+<li>Don’t memoize to class variables or class instance variables. If you need to memoize something on the class level, use thread local variables (<code>Thread.current[:baz]</code>) instead. Be aware, though, that it is still kind of a global variable. So while it&rsquo;s thread-safe, it still might not be good coding practice.</li>
+</ul>
+
+
+<pre><code class="ruby">def set_expensive_var
+  Thread.current[:expensive_var] ||= MyModel.find(session[:goo_id])
+end
+</code></pre>
+
+<ul>
+<li><p>If you absolutely think you must be able to share the result across threads, use a <a href="http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html">mutex</a> to synchronize the memoizing part of your code. Keep in mind, though, that you’re kinda breaking the Shared nothing model of Rails with that. It’s kind of a half-assed sharing method anyway, since it only works across threads, not across processes.</p>
+
+<p>Also keep in mind, that a mutex only saves you from race conditions inside itself. So it doesn&rsquo;t help you a whole lot with class variables unless you put the lock around the whole controller action, which was exactly what we wanted to avoid in the first place.</p></li>
+</ul>
+
+
+<pre><code class="ruby">class GooController &lt; ApplicationController
+  @@lock = Mutex.new
+  before_filter :set_expensive_var
+
+  private
+
+  def set_expensive_var
+    @@lock.synchronize do
+      @@stupid_class_var ||= Foo.bar(params[:subdomain])
+    end
+  end
+end
+</code></pre>
+
+<ul>
+<li>Use different instance variable names when you use inheritance and <code>super</code> in memoization methods.</li>
+</ul>
+
+
+<pre><code class="ruby">class Foo
+  def env_config
+    @env_config ||= {foo: 'foo', bar: 'bar'}
+  end
+end
+
+class Bar &lt; Foo
+  def env_config
+    @bar_env_config ||= super.merge({foo: 'baz'})
+  end
+end
+</code></pre>
+
+<h3>Constants</h3>
+
+<p>Yes, constants. <em>You didn’t believe constants are really constant in Ruby, did you?</em> Well, they kinda are:</p>
+
+<pre><code class="bash">irb(main):008:0&gt; CON
+=&gt; [1]
+irb(main):009:0&gt; CON = [1,2]
+(irb):9: warning: already initialized constant CON
+</code></pre>
+
+<p>So you do get a warning when trying to reassign a constant, but the reassignment still goes through. That’s not the real problem, though. The real issue is that the constancy of constants only applies to the object reference, not the referenced object. And if the referenced object can be mutated, you have a problem.</p>
+
+<p>Yeah, you remember right. <em>All the core data structures in Ruby are mutable</em>.</p>
+
+<pre><code class="bash">irb(main):010:0&gt; CON
+=&gt; [1, 2]
+irb(main):011:0&gt; CON &lt;&lt; 3
+=&gt; [1, 2, 3]
+irb(main):012:0&gt; CON
+=&gt; [1, 2, 3]
+</code></pre>
+
+<p>Of course, you should never, ever do this. And few will. There’s a catch, however. Since Ruby variable assignments also use references, you might end up mutating a constant by accident.</p>
+
+<pre><code class="bash">irb(main):010:0&gt; CON
+=&gt; [1, 2]
+irb(main):011:0&gt; arr = CON
+=&gt; [1, 2]
+irb(main):012:0&gt; arr &lt;&lt; 3
+=&gt; [1, 2, 3]
+irb(main):013:0&gt; CON
+=&gt; [1, 2, 3]
+</code></pre>
+
+<p>If you want to be sure that your constants are never mutated, <a href="http://www.informit.com/articles/article.aspx?p=2251208&amp;seqNum=4">you can freeze</a> them upon creation:</p>
+
+<pre><code class="bash">irb(main):001:0&gt; CON = [1,2,3].freeze
+=&gt; [1, 2, 3]
+irb(main):002:0&gt; CON &lt;&lt; 4
+RuntimeError: can't modify frozen Array
+  from (irb):2
+  from /Users/jarkko/.rbenv/versions/2.1.2/bin/irb:11:in `&lt;main&gt;'
+</code></pre>
+
+<p>Keep in mind, though, that freeze is shallow. It only applies to the actual <code>Array</code> object in this case, not its items.</p>
+
+<h3>Environment variables</h3>
+
+<p><code>ENV</code> is really just a hash-like construct referenced by a constant. Thus, everything that applies to constants above, also applies to it.</p>
+
+<pre><code class="ruby">ENV['version'] = "1.2" # Don't do this
+</code></pre>
+
+<h2>Making sure 3rd party code is thread-safe</h2>
+
+<p>If you want your app to be thread-safe, all the third-party code it uses also needs to be thread-safe in the context of your app.</p>
+
+<p>The first thing you probably should do with any gem is to read through its documentation and Google for whether it is deemed thread-safe. That said, even if it were, there’s no escaping double-checking yourself. Yes, by reading through the source code.</p>
+
+<p>As a general rule, all that I wrote above about making your own code thread-safe applies here as well. However…</p>
+
+<p><strong>With 3rd party gems and Rails plugins, context matters.</strong></p>
+
+<p>If the third party code you use is just a library that your own code calls, you’re fairly safe (considering you’re using it in a thread-safe way yourself). It can be thread-unsafe just the same way as <code>Array</code> is, but if you don’t share the structures between threads, you’re more or less fine.</p>
+
+<p>However, many Rails plugins actually extend or modify the Rails classes, in which case all bets are off. In this case, you need to scrutinize the library code much, much more thoroughly.</p>
+
+<p>So how do you know which type of the two above a gem or plugin is? Well, you don’t. Until you read the code, that is. But you are reading the code anyway, aren’t you?</p>
+
+<h3>What smells to look for in third party code?</h3>
+
+<p>Everything we mentioned above regarding your own code applies.</p>
+
+<ul>
+<li>Class variables (<code>@@foo</code>)</li>
+<li>Class instance variables (<code>@bar</code>, trickier to find since they look the same as any old ivar)</li>
+<li>Constants, ENV variables, and potential variables through which they can be mutated.</li>
+<li>Memoization, especially when one of the two above points are involved</li>
+<li>Creation of new threads (<code>Thread.new</code>, <code>Thread.start</code>). These obviously aren’t smells just by themselves. However, the risks mentioned above only materialize when shared across threads, so you should at least be familiar with in which cases the library is spawning new threads.</li>
+</ul>
+
+
+<p>Again, context matters. Nothing above alone makes code thread-unsafe. Even sharing data with them doesn’t. But modifying that data does. So pay close attention to whether the libs provide methods that can be used to modify shared data.</p>
+
+<h2>The final bad news</h2>
+
+<p>No matter how thoroughly you read through the code in your application and the gems it uses, you cannot be 100% sure that the whole is thread-safe. Heck, even running and profiling the code in a test environment might not reveal lingering thread safety issues.</p>
+
+<p>This is because many race conditions only appear under serious, concurrent load. That’s why you should both try to squash them from the code and keep a close eye on your production environment on a continual basis. Your app being perfectly thread-safe today does not guarantee the same is true a couple of sprints later.</p>
+
+<h2>Recap</h2>
+
+<p>To make a Rails app thread-safe, you have to make sure the code is thread-safe on three different levels:</p>
+
+<ul>
+<li>Rails framework and its dependencies.</li>
+<li>Your app code.</li>
+<li>Any third party code you use.</li>
+</ul>
+
+
+<p>The first one of these is handled for you, unless you do stupid shit with it (like the memoization example above). The rest is your responsibility.</p>
+
+<p>The main thing to keep in mind is to never mutate data that is shared across threads. Most often this happens through class variables, class instance variables, or by accidentally mutating objects that are referenced by a constant.</p>
+
+<p>There are, however, some pretty esoteric ways an app can end up thread-unsafe, so be prepared to track down and fix the last remaining threading issues while running in production.</p>
+
+<p>Have fun!</p>
+
+<p><em><strong>Acknowledgments</strong>: Thanks to <a href="https://twitter.com/raggi">James Tucker</a>, <a href="https://twitter.com/evanphx">Evan Phoenix</a>, and the whole <a href="https://bearmetal.eu/team/">Bear Metal gang</a> for providing feedback for the drafts of this article.</em></p>
+
+<h3>Related articles</h3>
+
+<p><em>This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:</em></p>
+
+<ul>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches/">Rails Garbage Collection: Tuning Approaches</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></li>
+<li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
+<li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
+<li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rails Garbage Collection: Tuning Approaches]]></title>
