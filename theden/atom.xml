@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2015-03-13T12:02:02+02:00</updated>
+  <updated>2015-03-13T12:10:11+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -956,6 +956,7 @@
 <li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
 <li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
 <li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+<li><a href="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/">How Do I Know Whether My Rails App Is Thread-safe or Not?</a></li>
 </ul>
 
 ]]></content>

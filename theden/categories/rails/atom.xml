@@ -724,6 +724,7 @@ oldmalloc_increase_bytes_limit: 39339204
 <li><a href="https://bearmetal.eu/theden/does-rails-scale/">Does Rails Scale?</a></li>
 <li><a href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></li>
 <li><a href="https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/">Help! My Rails App Is Melting Under the Launch Day Load</a></li>
+<li><a href="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/">How Do I Know Whether My Rails App Is Thread-safe or Not?</a></li>
 </ul>
 
 ]]></content>
