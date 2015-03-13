@@ -3,8 +3,10 @@ layout: post
 title: "How do I know whether my Rails app is thread-safe or not?"
 date: 2015-03-12 16:10:58 +0200
 comments: true
-categories: 
-published: false
+author: Jarkko
+keywords: ruby, rails, gc, garbage collection, generational gc, rails performance
+categories: [ruby, rails, gc, garbage collection, generational gc, 'rails performance']
+published: true
 ---
 
 In January [Heroku started promoting](https://devcenter.heroku.com/changelog-items/594) [Puma](http://puma.io) as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.
@@ -33,10 +35,12 @@ But what does this even mean?
 
 **Any code that is more than a single operation (as in a single Ruby code call implemented in C) is not thread-safe.** The classic example of this is the `+=` operator, which is in fact two operations combined, `=` and `+`. Thus, the final value of the shared variable in the following code is undetermined:
 
-	@n = 0
-	3.times do
-	  Thread.start { 100.times { @n += 1 } }
-	end
+```ruby
+@n = 0
+3.times do
+  Thread.start { 100.times { @n += 1 } }
+end
+```
 
 However, none of the two above things alone makes code thread-unsafe. It only becomes so when it is mated with shared data. Let’s get back to that in a minute, but first…
 
@@ -63,7 +67,9 @@ Rails and its dependencies were declared thread-safe already in version 2.2, in 
 
 In order to take advantage of threaded execution, you had to declare in your config.rb that you really wanted to ditch the lock:
 
-	config.threadsafe!
+```ruby
+config.threadsafe!
+```
 
 However, en route to Rails 4 [Aaron Tenderlove Patterson demonstrated](http://tenderlovemaking.com/2012/06/18/removing-config-threadsafe.html) that what `config.threadsafe!` did was
 
@@ -76,7 +82,7 @@ What this meant was that there was no reason for _not_ to have the thread-safe o
 
 ## Making your app code thread-safe
 
-Good news: Since Rails uses the [Shared nothing architecture](http://en.wikipedia.org/wiki/Shared_nothing_architecture), Rails apps are by definition very suitable for being thread-safe as well. In general, Rails creates a new controller object of every HTTP request, and everything else flows from there. This isolates most objects in a Rails app from other requests.
+Good news&colon; Since Rails uses the [Shared nothing architecture](http://en.wikipedia.org/wiki/Shared_nothing_architecture), Rails apps are consequentially very suitable for being thread-safe as well. In general, Rails creates a new controller object of every HTTP request, and everything else flows from there. This isolates most objects in a Rails app from other requests.
 
 Like noted above, built-in Ruby data structures (save for Queue) are not thread-safe. This does not, however, matter, unless you are actually sharing them between threads. Because of the way in which Rails is architectured, this almost never happens in a Rails app.
 
@@ -98,67 +104,73 @@ But maybe you’ve read that you should always use class instance variables inst
 
 It’s worth pointing out that both class variables and class instance variables can also be set by class methods. This isn’t such an issue in your own code, but you can easily fall into this trap when calling other apis. Here’s an [example from Pratik Naik](http://m.onkey.org/thread-safety-for-your-rails) where the app developer is getting into thread-unsafe territory by just calling Rails class methods:
 
-	class HomeController < ApplicationController
-	  before_filter :set_site
-	  
-	  def index
-	  end
-	  
-	  private
-	  
-	  def set_site
-	    @site = Site.find_by_subdomain(request.subdomains.first)
-	    if @site.layout?
-	      self.class.layout(@site.layout_name)
-	    else
-	      self.class.layout('default_lay')
-	    end
-	  end
-	end
+```ruby
+class HomeController < ApplicationController
+  before_filter :set_site
+  
+  def index
+  end
+  
+  private
+  
+  def set_site
+    @site = Site.find_by_subdomain(request.subdomains.first)
+    if @site.layout?
+      self.class.layout(@site.layout_name)
+    else
+      self.class.layout('default_lay')
+    end
+  end
+end
+```
 
 In this case, calling the `layout` method causes Rails to set the class instance variable `@_layout` for the controller class. If two concurrent requests (serve by two threads) hit this code simultaneously, they might end up in a race condition and overwrite each others’ layout.
 
 In this case, the correct way to set the layout is to use a symbol with the layout call:
 
-	class HomeController < ApplicationController
-	  before_filter :set_site
-	  layout :site_layout
-	
-	  def index
-	  end
-	  
-	  private
-	  
-	  def set_site
-	    @site = Site.find_by_subdomain(request.subdomains.first)
-	  end
-	  
-	  def site_layout
-	    if @site.layout?
-	      @site.layout_name
-	    else
-	      'default_lay'
-	    end
-	  end
-	end
+```ruby
+class HomeController < ApplicationController
+  before_filter :set_site
+  layout :site_layout
+
+  def index
+  end
+  
+  private
+  
+  def set_site
+    @site = Site.find_by_subdomain(request.subdomains.first)
+  end
+  
+  def site_layout
+    if @site.layout?
+      @site.layout_name
+    else
+      'default_lay'
+    end
+  end
+end
+```
 
 However, this is besides the point. The point is, you might end up using class variables and class instance variables by accident, thus making your app thread-unsafe.
 
 ### Memoization
 
-Memorization is a technique where you lazily set a variable if it is not already set. It is a common technique used where the original functionality is at least moderately expensive and the resulting variable is used several times within a request.
+Memoization is a technique where you lazily set a variable if it is not already set. It is a common technique used where the original functionality is at least moderately expensive and the resulting variable is used several times within a request.
 
 A common case would be to set the current user in a controller:
 
-	class SekritController < ApplicationController
-	  before_filter :set_user
-	  
-	  private
-	  
-	  def set_user
-	    @current_user ||= User.find(session[:user_id])
-	  end
-	end
+```ruby
+class SekritController < ApplicationController
+  before_filter :set_user
+  
+  private
+  
+  def set_user
+    @current_user ||= User.find(session[:user_id])
+  end
+end
+```
 
 Memoization can be an issue for thread safety for a couple of reasons:
 
@@ -172,45 +184,106 @@ In [this issue](https://github.com/rails/rails/pull/9789), Evan Phoenix squashes
 What’s a developer to do, then?
 
 * Make sure memoization makes sense and a difference in your case. In many cases Rails actually caches the result anyway, so that you are not saving a whole lot if any resources with your memoization method.
-* Don’t memoize to class variables or class instance variables. If you need to memoize something on the class level, use thread local variables (`Thread.current[:baz]`) instead. If you absolutely think you must be able to share the result across threads, use a mutex to synchronize the memoizing part of your code. Keep in mind, though, that you’re kinda breaking the Shared nothing model of Rails with that. It’s kind of a half-assed sharing method anyway, since it only works across threads, not across processes.
+* Don’t memoize to class variables or class instance variables. If you need to memoize something on the class level, use thread local variables (`Thread.current[:baz]`) instead. Be aware, though, that it is still kind of a global variable. So while it's thread-safe, it still might not be good coding practice.
+  
+```ruby
+def set_expensive_var
+  Thread.current[:expensive_var] ||= MyModel.find(session[:goo_id])
+end
+```
+  
+* If you absolutely think you must be able to share the result across threads, use a [mutex](http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html) to synchronize the memoizing part of your code. Keep in mind, though, that you’re kinda breaking the Shared nothing model of Rails with that. It’s kind of a half-assed sharing method anyway, since it only works across threads, not across processes.
+
+  Also keep in mind, that a mutex only saves you from race conditions inside itself. So it doesn't help you a whole lot with class variables unless you put the lock around the whole controller action, which was exactly what we wanted to avoid in the first place.
+
+```ruby
+class GooController < ApplicationController
+  @@lock = Mutex.new
+  before_filter :set_expensive_var
+  
+  private
+  
+  def set_expensive_var
+    @@lock.synchronize do
+      @@stupid_class_var ||= Foo.bar(params[:subdomain])
+    end
+  end
+end
+```
+
 * Use different instance variable names when you use inheritance and `super` in memoization methods.
+
+```ruby
+class Foo
+  def env_config
+    @env_config ||= {foo: 'foo', bar: 'bar'}
+  end
+end
+
+class Bar < Foo
+  def env_config
+    @bar_env_config ||= super.merge({foo: 'baz'})
+  end
+end
+```
 
 ### Constants
 
 Yes, constants. _You didn’t believe constants are really constant in Ruby, did you?_ Well, they kinda are:
 
-	irb(main):008:0> CON
-	=> [1]
-	irb(main):009:0> CON = [1,2]
-	(irb):9: warning: already initialized constant CON
+```bash
+irb(main):008:0> CON
+=> [1]
+irb(main):009:0> CON = [1,2]
+(irb):9: warning: already initialized constant CON
+```
 
 So you do get a warning when trying to reassign a constant, but the reassignment still goes through. That’s not the real problem, though. The real issue is that the constancy of constants only applies to the object reference, not the referenced object. And if the referenced object can be mutated, you have a problem.
 
 Yeah, you remember right. _All the core data structures in Ruby are mutable_.
 
-	irb(main):010:0> CON
-	=> [1, 2]
-	irb(main):011:0> CON << 3
-	=> [1, 2, 3]
-	irb(main):012:0> CON
-	=> [1, 2, 3]
+```bash
+irb(main):010:0> CON
+=> [1, 2]
+irb(main):011:0> CON << 3
+=> [1, 2, 3]
+irb(main):012:0> CON
+=> [1, 2, 3]
+```
 
 Of course, you should never, ever do this. And few will. There’s a catch, however. Since Ruby variable assignments also use references, you might end up mutating a constant by accident.
 
-	irb(main):010:0> CON
-	=> [1, 2]
-	irb(main):011:0> arr = CON
-	=> [1, 2]
-	irb(main):012:0> arr << 3
-	=> [1, 2, 3]
-	irb(main):013:0> CON
-	=> [1, 2, 3]
+```bash
+irb(main):010:0> CON
+=> [1, 2]
+irb(main):011:0> arr = CON
+=> [1, 2]
+irb(main):012:0> arr << 3
+=> [1, 2, 3]
+irb(main):013:0> CON
+=> [1, 2, 3]
+```
+
+If you want to be sure that your constants are never mutated, [you can freeze](http://www.informit.com/articles/article.aspx?p=2251208&seqNum=4) them upon creation:
+
+```bash
+irb(main):001:0> CON = [1,2,3].freeze
+=> [1, 2, 3]
+irb(main):002:0> CON << 4
+RuntimeError: can't modify frozen Array
+  from (irb):2
+  from /Users/jarkko/.rbenv/versions/2.1.2/bin/irb:11:in `<main>'
+```
+
+Keep in mind, though, that freeze is shallow. It only applies to the actual `Array` object in this case, not its items.
 
 ### Environment variables
 
 `ENV` is really just a hash-like construct referenced by a constant. Thus, everything that applies to constants above, also applies to it.
 
-	ENV['version'] = "1.2" # Don't do this
+```ruby
+ENV['version'] = "1.2" # Don't do this
+```
 
 ## Making sure 3rd party code is thread-safe
 
@@ -261,3 +334,15 @@ The main thing to keep in mind is to never mutate data that is shared across thr
 There are, however, some pretty esoteric ways an app can end up thread-unsafe, so be prepared to track down and fix the last remaining threading issues while running in production.
 
 Have fun!
+
+***Acknowledgments**: Thanks to [James Tucker](https://twitter.com/raggi), [Evan Phoenix](https://twitter.com/evanphx), and the whole [Bear Metal gang](https://bearmetal.eu/team/) for providing feedback for the drafts of this article.*
+
+### Related articles
+
+*This article is a part of a series about Rails performance optimization and GC tuning. Other articles in the series:*
+
+* [Rails Garbage Collection: Tuning Approaches](https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches/)
+* [Rails Garbage Collection: Naive Defaults](https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/)
+* [Does Rails Scale?](https://bearmetal.eu/theden/does-rails-scale/)
+* [Rails Garbage Collection: Age Matters](https://bearmetal.eu/theden/rails-garbage-collection-age-matters/)
+* [Help! My Rails App Is Melting Under the Launch Day Load](https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/)
