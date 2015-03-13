@@ -136,7 +136,7 @@ class HomeController < ApplicationController
 end
 ```
 
-In this case, calling the `layout` method causes Rails to set the class instance variable `@_layout` for the controller class. If two concurrent requests (serve by two threads) hit this code simultaneously, they might end up in a race condition and overwrite each others’ layout.
+In this case, calling the `layout` method causes Rails to set the class instance variable `@_layout` for the controller class. If two concurrent requests (served by two threads) hit this code simultaneously, they might end up in a race condition and overwrite each others’ layout.
 
 In this case, the correct way to set the layout is to use a symbol with the layout call:
 
