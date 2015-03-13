@@ -300,3 +300,4 @@ $ RUBY_GC_TOKEN=08de9e8822c847244b31290cedfc1d51 RUBY_GC_TUNE=1 bundle exec rail
 * [Does Rails Scale?](https://bearmetal.eu/theden/does-rails-scale/)
 * [Rails Garbage Collection: Age Matters](https://bearmetal.eu/theden/rails-garbage-collection-age-matters/)
 * [Help! My Rails App Is Melting Under the Launch Day Load](https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/)
+* [How Do I Know Whether My Rails App Is Thread-safe or Not?](https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/)
