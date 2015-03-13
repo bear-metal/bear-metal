@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails Performance | Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/categories/rails-performance/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2015-03-12T16:10:58+02:00</updated>
+  <updated>2015-03-13T10:10:58+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -16,7 +16,7 @@
   <entry>
     <title type="html"><![CDATA[How Do I Know Whether My Rails App Is Thread-safe or Not?]]></title>
     <link href="https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/"/>
-    <updated>2015-03-12T16:10:58+02:00</updated>
+    <updated>2015-03-13T10:10:58+02:00</updated>
     <id>https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not</id>
     <content type="html"><![CDATA[<p>In January <a href="https://devcenter.heroku.com/changelog-items/594">Heroku started promoting</a> <a href="http://puma.io">Puma</a> as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.</p>
 
