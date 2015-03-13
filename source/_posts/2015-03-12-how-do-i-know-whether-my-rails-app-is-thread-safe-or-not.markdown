@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "How do I know whether my Rails app is thread-safe or not?"
-date: 2015-03-12 16:10:58 +0200
+date: 2015-03-13 10:10:58 +0200
 comments: true
 author: Jarkko
 keywords: ruby, rails, gc, garbage collection, generational gc, rails performance
