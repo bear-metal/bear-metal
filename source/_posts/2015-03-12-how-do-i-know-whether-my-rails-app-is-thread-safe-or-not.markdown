@@ -9,6 +9,18 @@ categories: [ruby, rails, gc, garbage collection, generational gc, 'rails perfor
 published: true
 ---
 
+<figure markdown="1">
+  <a href="https://www.flickr.com/photos/digitalartform/3420918638/">
+    <img src="https://farm4.staticflickr.com/3320/3420918638_36fb1505e5_b_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/digitalartform/3420918638/">Joseph Francis</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
+
 In January [Heroku started promoting](https://devcenter.heroku.com/changelog-items/594) [Puma](http://puma.io) as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.
 
 This is obviously good for a client since they can now run more concurrent users with a single Dyno. However, it’s also good for Heroku itself since small apps (probably the vast majority of apps deployed on Heroku) will now consume much fewer resources on its servers.
