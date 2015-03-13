@@ -184,12 +184,12 @@ class SekritController < ApplicationController
 end
 ```
 
-Memoization can be an issue for thread safety for a couple of reasons:
+Memoization by itself is not a thread safety issue. However, it can easily become one for a couple of reasons:
 
-* It is often used to store data in class variables or class instance variables (see above).
+* It is often used to store data in class variables or class instance variables (see the previous points).
 * The `||=` operator is in fact two operations, so there is a potential context switch happening in the middle of it, causing a race condition between threads.
 
-It would be easy to dismiss memoization as the cause of the issue, and tell people just to avoid class variables and class instance variables. However, the issue is more complex than that.
+It would be easy to dismiss memoization as the cause of the problem, and tell people just to avoid class variables and class instance variables. However, the issue is more complex than that.
 
 In [this issue](https://github.com/rails/rails/pull/9789), Evan Phoenix squashes a really tricky race condition bug in the Rails codebase caused by calling `super` in a memoization function. So even though you would only be using instance variables, you might end up with race conditions with memoization.
 
@@ -206,7 +206,7 @@ end
   
 * If you absolutely think you must be able to share the result across threads, use a [mutex](http://lucaguidi.com/2014/03/27/thread-safety-with-ruby.html) to synchronize the memoizing part of your code. Keep in mind, though, that you’re kinda breaking the Shared nothing model of Rails with that. It’s kind of a half-assed sharing method anyway, since it only works across threads, not across processes.
 
-  Also keep in mind, that a mutex only saves you from race conditions inside itself. So it doesn't help you a whole lot with class variables unless you put the lock around the whole controller action, which was exactly what we wanted to avoid in the first place.
+  Also keep in mind, that a mutex only saves you from race conditions inside itself. It doesn't help you a whole lot with class variables unless you put the lock around the whole controller action, which was exactly what we wanted to avoid in the first place.
 
 ```ruby
 class GooController < ApplicationController
