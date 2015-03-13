@@ -13,7 +13,7 @@
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="How Do I Know Whether My Rails App Is Thread-safe or Not? Jarkko wrote this on Mar 13th, 2015 10:10 am In January Heroku started promoting Puma as &hellip;">
+  <meta name="description" content="How Do I Know Whether My Rails App Is Thread-safe or Not? Jarkko wrote this on Mar 13th, 2015 10:10 am Photo by Joseph Francis, used under a &hellip;">
   <meta name="keywords" content="ruby, rails, gc, garbage collection, generational gc, rails performance">
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,7 +120,20 @@ ga('send', 'pageview');
   </header>
 
 
-<div class="entry-content"><p>In January <a href="https://devcenter.heroku.com/changelog-items/594">Heroku started promoting</a> <a href="http://puma.io">Puma</a> as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.</p>
+<div class="entry-content"><figure markdown="1">
+  <a href="https://www.flickr.com/photos/digitalartform/3420918638/">
+    <img src="https://farm4.staticflickr.com/3320/3420918638_36fb1505e5_b_d.jpg">
+  </a>
+
+  <figcaption>
+    <p>
+      Photo by <a href="https://www.flickr.com/photos/digitalartform/3420918638/">Joseph Francis</a>, used under a Creative Commons license.
+    </p>
+  </figcaption>
+</figure>
+
+
+<p>In January <a href="https://devcenter.heroku.com/changelog-items/594">Heroku started promoting</a> <a href="http://puma.io">Puma</a> as the preferred web server for Rails apps deployed on its hugely successful platform. Puma – as a threaded app server – can better use the scarce resources available for an app running on Heroku.</p>
 
 <p>This is obviously good for a client since they can now run more concurrent users with a single Dyno. However, it’s also good for Heroku itself since small apps (probably the vast majority of apps deployed on Heroku) will now consume much fewer resources on its servers.</p>
 
