@@ -14,17 +14,17 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Getting Vagrant VMWare Plugin Installed on OS X El Capitan and Homebrew]]></title>
+    <title type="html"><![CDATA[Getting Vagrant VMware Plugin Installed on OS X El Capitan and Homebrew]]></title>
     <link href="https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew/"/>
     <updated>2015-10-26T11:18:37+02:00</updated>
     <id>https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew</id>
-    <content type="html"><![CDATA[<p>I finally decided to bite the bullet this morning and install VMWare Fusion 8 and the corresponding Vagrant plugin.</p>
+    <content type="html"><![CDATA[<p>I finally decided to bite the bullet this morning and install VMware Fusion 8 and the corresponding Vagrant plugin.</p>
 
 <p>Both were paid upgrades (41.42€ + $39 from Fusion 7), which was a bit bitter given I had only had the previous versions for a couple of months. Yet, the word on the street was that the new version would be much more stable and less cpu-hungry than the previous generation. So what the heck, maybe I’d again be able to get more than a couple hours of productive work done without draining the battery.</p>
 
-<p>The purchase process itself was painless, as was installing VMWare itself. But when I started installing the plugin, an ugly yak raised its hairy head.</p>
+<p>The purchase process itself was painless, as was installing VMware itself. But when I started installing the plugin, an ugly yak raised its hairy head.</p>
 
-<p>The first thing I tried was to just use the old plugin with the new VMWare version. Would it perhaps work?</p>
+<p>The first thing I tried was to just use the old plugin with the new VMware version. Would it perhaps work?</p>
 
 <pre><code class="bash">    ➜  ~ vagrant suspend
     This provider only works with VMware Fusion 5.x, 6.x, or 7.x. You have
@@ -147,7 +147,7 @@
     Stderr: 
 </code></pre>
 
-<p>Oh well, that wasn’t very helpful. So I tried the proven trick #1: I killed the VMWare app on OS X and even its menubar daemon just to be certain, and sure enough, it did the trick. The vagrant VM is now back on track.</p>
+<p>Oh well, that wasn’t very helpful. So I tried the proven trick #1: I killed the VMware app on OS X and even its menubar daemon just to be certain, and sure enough, it did the trick. The vagrant VM is now back on track.</p>
 ]]></content>
   </entry>
   
