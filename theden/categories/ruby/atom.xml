@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ruby | Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/categories/ruby/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2015-03-13T10:10:58+02:00</updated>
+  <updated>2015-10-26T11:18:37+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,144 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting Vagrant VMWare Plugin Installed on OS X El Capitan and Homebrew]]></title>
+    <link href="https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew/"/>
+    <updated>2015-10-26T11:18:37+02:00</updated>
+    <id>https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew</id>
+    <content type="html"><![CDATA[<p>I finally decided to bite the bullet this morning and install VMWare Fusion 8 and the corresponding Vagrant plugin.</p>
+
+<p>Both were paid upgrades (41.42€ + $39 from Fusion 7), which was a bit bitter given I had only had the previous versions for a couple of months. Yet, the word on the street was that the new version would be much more stable and less cpu-hungry than the previous generation. So what the heck, maybe I’d again be able to get more than a couple hours of productive work done without draining the battery.</p>
+
+<p>The purchase process itself was painless, as was installing VMWare itself. But when I started installing the plugin, an ugly yak raised its hairy head.</p>
+
+<p>The first thing I tried was to just use the old plugin with the new VMWare version. Would it perhaps work?</p>
+
+<pre><code class="bash">    ➜  ~ vagrant suspend
+    This provider only works with VMware Fusion 5.x, 6.x, or 7.x. You have
+    Fusion '8.0.1'. Please install the proper version of VMware
+    Fusion and try again.
+</code></pre>
+
+<p>That sounds like a resounding “No”.</p>
+
+<p>So onwards: bought a license for the plugin as well and tried to install it.</p>
+
+<pre><code class="bash">    ➜  ~ vagrant plugin install vagrant-vmware-fusion
+    Installing the 'vagrant-vmware-fusion' plugin. This can take a few minutes...
+    Bundler, the underlying system Vagrant uses to install plugins,
+    reported an error. The error is shown below. These errors are usually
+    caused by misconfigured plugin installations or transient network
+    issues. The error from Bundler is:
+
+    An error occurred while installing hitimes (1.2.3), and Bundler cannot continue.
+    Make sure that `gem install hitimes -v '1.2.3'` succeeds before bundling.
+
+    Gem::Installer::ExtensionBuildError: ERROR: Failed to build gem native extension.
+
+        /opt/vagrant/embedded/bin/ruby extconf.rb 
+    creating Makefile
+
+    make "DESTDIR="
+
+
+    Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.
+</code></pre>
+
+<p>No biggie, a little Googling revealed what I suspected – I don’t actually need to run this as root, I just need to accept the EULA of the latest XCode version before running the install process again. I popped up XCode, YOLOed the agreement, and was back to the terminal.</p>
+
+<pre><code class="bash">    ➜  ~ vagrant plugin install vagrant-vmware-fusion
+    Installing the 'vagrant-vmware-fusion' plugin. This can take a few minutes...
+    Bundler, the underlying system Vagrant uses to install plugins,
+    reported an error. The error is shown below. These errors are usually
+    caused by misconfigured plugin installations or transient network
+    issues. The error from Bundler is:
+
+    An error occurred while installing eventmachine (1.0.8), and Bundler cannot continue.
+    Make sure that `gem install eventmachine -v '1.0.8'` succeeds before bundling.
+
+    Gem::Installer::ExtensionBuildError: ERROR: Failed to build gem native extension.
+
+    [LOTS OF CRUFT REMOVED FOR BREVITY]
+
+    make "DESTDIR="
+    compiling binder.cpp
+    warning: unknown warning option '-Werror=unused-command-line-argument-hard-error-in-future'; did you mean '-Werror=unused-command-line-argument'? [-Wunknown-warning-option]
+    In file included from binder.cpp:20:
+    ./project.h:116:10: fatal error: 'openssl/ssl.h' file not found
+    #include &lt;openssl/ssl.h&gt;
+             ^
+    1 warning and 1 error generated.
+    make: *** [binder.o] Error 1
+
+
+    Gem files will remain installed in /Users/jarkko/.vagrant.d/gems/gems/eventmachine-1.0.8 for inspection.
+    Results logged to /Users/jarkko/.vagrant.d/gems/gems/eventmachine-1.0.8/ext/gem_make.out
+</code></pre>
+
+<p>Again, the reason is clear: I need to build the gem against proper openssl libs – in this case, <code>-I/usr/local/opt/openssl/include</code>. Thus:</p>
+
+<pre><code class="bash">    ➜  ~  gem install eventmachine -v '1.0.8' -- --with-cppflags=-I/usr/local/opt/openssl/include
+    Fetching: eventmachine-1.0.8.gem (100%)
+    Building native extensions with: '--with-cppflags=-I/usr/local/opt/openssl/include'
+    This could take a while...
+    Successfully installed eventmachine-1.0.8
+    Parsing documentation for eventmachine-1.0.8
+    Installing ri documentation for eventmachine-1.0.8
+    Done installing documentation for eventmachine after 6 seconds
+    1 gem installed
+</code></pre>
+
+<p>Perfect. So I tried to install the Vagrant plugin again – and got the same error. Crap.</p>
+
+<p>It turns out that Vagrant uses its own gem folder, so it’s not picking up what’s installed in one’s primary gem directory. The issue was, how do I tell Vagrant to use the correct cpp flags in its build process?</p>
+
+<p>Fortunately I didn’t have to figure that out, because the end of the error message above gave me enough of a pointer towards a solution: if I only managed to install the eventmachine gem by hand to the correct location with the proper cpp flags, I should be fine. But how?</p>
+
+<p>I dug up to <code>gem -h</code> and the defaults at the end gave the correct option away: with the <code>--install-dir</code> option I could install the gem to wherever I wanted to. Thus:</p>
+
+<pre><code class="bash">    ~  gem install eventmachine -v '1.0.8' --install-dir /Users/jarkko/.vagrant.d/gems  -- --with-cppflags=-I/usr/local/opt/openssl/include
+    Fetching: eventmachine-1.0.8.gem (100%)
+    Building native extensions with: '--with-cppflags=-I/usr/local/opt/openssl/include'
+    This could take a while...
+    Successfully installed eventmachine-1.0.8
+    Parsing documentation for eventmachine-1.0.8
+    Installing ri documentation for eventmachine-1.0.8
+    Done installing documentation for eventmachine after 5 seconds
+    1 gem installed
+</code></pre>
+
+<p>Et voilá. Now one more try:</p>
+
+<pre><code class="bash">    ➜    vagrant plugin install vagrant-vmware-fusion
+    …
+    Installed the plugin 'vagrant-vmware-fusion (4.0.2)'!
+</code></pre>
+
+<p>…and we’re off to the races!</p>
+
+<p>…well, at least almost.</p>
+
+<pre><code class="bash">    ➜  ~ vagrant up
+    Bringing machine 'default' up with 'vmware_fusion' provider...
+    ==&gt; default: Verifying vmnet devices are healthy...
+    ==&gt; default: Preparing network adapters...
+    ==&gt; default: Starting the VMware VM...
+    An error occurred while executing `vmrun`, a utility for controlling
+    VMware machines. The command and output are below:
+
+    Command: ["start", "/Users/jarkko/vmware/955a09a5-f7f6-451e-b565-22f41c8fced0/packer-ubuntu-14.04-amd64.vmx", "nogui", {:notify=&gt;[:stdout, :stderr], :timeout=&gt;45}]
+
+    Stdout: 2015-10-26T11:10:45.943| ServiceImpl_Opener: PID 84443
+    Error: The operation was canceled
+
+    Stderr: 
+</code></pre>
+
+<p>Oh well, that wasn’t very helpful. So I tried the proven trick #1: I killed the VMWare app on OS X and even its menubar daemon just to be certain, and sure enough, it did the trick. The vagrant VM is now back on track.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[How Do I Know Whether My Rails App Is Thread-safe or Not?]]></title>
@@ -1020,199 +1158,6 @@ Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0
 </code></pre>
 
 <p><strong>[UPDATE 1, Jan 7]</strong> The original version of this post told you to <code>rm /usr/bin/openssl</code>, based on the link above. As James Tucker pointed out, this is a horrible idea. I fixed the article so that we now fix the <code>$PATH</code> instead.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rails Garbage Collection: Age Matters]]></title>
-    <link href="https://bearmetal.eu/theden/rails-garbage-collection-age-matters/"/>
-    <updated>2014-12-22T20:26:00+02:00</updated>
-    <id>https://bearmetal.eu/theden/rails-garbage-collection-age-matters</id>
-    <content type="html"><![CDATA[<p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
-
-<p>As a prerequisite of this and subsequent posts, basic understanding of a <em>mark and sweep</em><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> collector is assumed.</p>
-
-<p><img src="/images/gc_mark_sweep.png" alt="" /></p>
-
-<p>A somewhat simplified mark and sweep cycle goes like this:</p>
-
-<ol>
-<li>A mark and sweep collector traverses the object graph.</li>
-<li>It checks which objects are in use (referenced) and which ones are not.</li>
-<li>This is called object marking, aka. the <strong>MARK PHASE</strong>.</li>
-<li>All unused objects are freed, making their memory available.</li>
-<li>This is called sweeping, aka. the <strong>SWEEP PHASE</strong>.</li>
-<li>Nothing changes for used objects.</li>
-</ol>
-
-
-<p>A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all need to be scanned during the <strong>MARK</strong> phase. That usually yields a smaller set to <strong>SWEEP</strong>.</p>
-
-<p>A large percentage of the graph is going to be traversed over and over again but will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.</p>
-
-<h2>Old and young objects</h2>
-
-<p><strong>What generally makes an object old?</strong></p>
-
-<ul>
-<li><em>All new objects are considered to be young</em>.</li>
-<li><em>Old objects survived at least one GC cycle (major or minor)</em> The collector thus reasons that the object will stick around and not become garbage quickly.</li>
-</ul>
-
-
-<p>The idea behind the new generational garbage collector is this:</p>
-
-<blockquote><p><strong>MOST OBJECTS DIE YOUNG.</strong></p></blockquote>
-
-<p>To take advantage of this fact, the new GC classifies objects on the Ruby heap as either <strong>OLD</strong> or <strong>YOUNG</strong>. This segregation now allows the garbage collector to work with two distinct generations, with the <strong>OLD</strong> generation much less likely to yield much improvement towards recovering memory.</p>
-
-<p>For a typical Rails request, some examples of old and new objects would be:</p>
-
-<ul>
-<li><strong>Old:</strong> compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.</li>
-<li><strong>New:</strong> short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.</li>
-</ul>
-
-
-<p>Young objects are more likely to reference old objects than old objects referencing young objects. Old objects also frequently reference other old objects.</p>
-
-<pre><code class="ruby">  u = User.first
-  #&lt;User id: 1, email: "lourens@something.com", encrypted_password: "blahblah...", reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 2, current_sign_in_at: "2014-10-31 11:52:30", last_sign_in_at: "2014-10-29 10:04:01", current_sign_in_ip: "127.0.0.1", last_sign_in_ip: "127.0.0.1", created_at: "2014-10-29 10:04:01", updated_at: "2014-11-30 14:07:15", provider: nil, uid: nil, first_name: "dfdsfds", last_name: "dfdsfds", confirmation_token: nil, confirmed_at: "2014-10-30 10:11:42", confirmation_sent_at: nil, unconfirmed_email: nil, onboarded_at: nil&gt;
-</code></pre>
-
-<p>Notice how the transient attribute keys and names reference the long lived columns here:</p>
-
-<pre><code class="ruby">    {"id"=&gt;
-       #&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Integer:0x007fbe756d1d30&gt;,
-      "email"=&gt;
-       #&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,
-      "encrypted_password"=&gt;
-       #&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,
-      "reset_password_token"=&gt;
-       #&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,
-      "reset_password_sent_at"=&gt;
-       #&lt;ActiveRecord::AttributeMethods::TimeZoneConversion::Type:0x007fbe741f63c0
-        @column=
-         #&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58&gt;&gt;,
-</code></pre>
-
-<p>Age segregation is also just a classification &ndash; old and young objects aren&rsquo;t stored in distinct memory spaces &ndash; they&rsquo;re just conceptional buckets. The generation of an object refers to the amount of GC cycles it survived:</p>
-
-<pre><code class="ruby">irb(main):009:0&gt; ObjectSpace.dump([])
-=&gt; "{\"address\":\"0x007fd24c007668\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":0, \"file\":\"(irb)\", \"line\":9, \"method\":\"irb_binding\", \"generation\":8, \"flags\":{\"wb_protected\":true}}\n"
-irb(main):010:0&gt; GC.count
-=&gt; 8
-</code></pre>
-
-<h2>What the heck is major and minor GC?</h2>
-
-<p>You may have heard, read about or noticed in GC.stat output the terms &ldquo;minor&rdquo; and &ldquo;major&rdquo; GC.</p>
-
-<pre><code class="ruby">    irb(main):003:0&gt; pp GC.stat
-    {:count=&gt;32,
-     :heap_used=&gt;1181,
-     :heap_length=&gt;1233,
-     :heap_increment=&gt;50,
-     :heap_live_slot=&gt;325148,
-     :heap_free_slot=&gt;156231,
-     :heap_final_slot=&gt;0,
-     :heap_swept_slot=&gt;163121,
-     :heap_eden_page_length=&gt;1171,
-     :heap_tomb_page_length=&gt;10,
-     :total_allocated_object=&gt;2050551,
-     :total_freed_object=&gt;1725403,
-     :malloc_increase=&gt;1462784,
-     :malloc_limit=&gt;24750208,
-     :minor_gc_count=&gt;26,
-     :major_gc_count=&gt;6,
-     :remembered_shady_object=&gt;3877,
-     :remembered_shady_object_limit=&gt;4042,
-     :old_object=&gt;304270,
-     :old_object_limit=&gt;259974,
-     :oldmalloc_increase=&gt;23639792,
-     :oldmalloc_limit=&gt;24159190}
-</code></pre>
-
-<p><strong>Minor GC (or &ldquo;partial marking&rdquo;):</strong> This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.</p>
-
-<p>It runs quite often - 26 times for the GC dump of a booted Rails app above.</p>
-
-<p><strong>Major GC:</strong> Triggered by out-of-memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it&rsquo;s thus significantly slower than a minor GC round. Generally when there&rsquo;s a significant increase in old objects, a major GC would be triggered. Every major GC cycle that an object survived bumps its current generation.</p>
-
-<p>It runs much less frequently - six times for the stats dump above.</p>
-
-<p>The following diagram represents a minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) that identifies and promotes some objects to old.</p>
-
-<p><img src="/images/gc_first_minor.png" alt="" /></p>
-
-<p>A subsequent minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) ignores old objects during the mark phase.</p>
-
-<p><img src="/images/gc_second_minor.png" alt="" /></p>
-
-<p>Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. The current generation of an object is the number of major GC cycles it has survived.</p>
-
-<h2>RGenGC</h2>
-
-<p>At a very high level C Ruby 2.1&rsquo;s collector has the following properties:</p>
-
-<ul>
-<li>High throughput - it can sustain a high rate of allocations / collections due to faster minor GC cycles and very rare major GC cycles.</li>
-<li>GC pauses are still long (&ldquo;stop the world&rdquo;) for major GC cycles.</li>
-<li>Generational collectors have much shorter mark cycles as they traverse only the young generation, most of the time.</li>
-</ul>
-
-
-<p>This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a &ldquo;stop the world&rdquo; manner, whereas a more involved incremental implementation (Ruby 2.2) interleaves short steps of mark and sweep cycles between other VM operations.</p>
-
-<h2>Object references</h2>
-
-<p>In this simple example below we create a String array with three elements.</p>
-
-<pre><code class="ruby">    irb(main):001:0&gt; require 'objspace'
-    =&gt; true
-    irb(main):002:0&gt; ObjectSpace.trace_object_allocations_start
-    =&gt; nil
-    irb(main):003:0&gt; ary = %w(a b c)
-    =&gt; ["a", "b", "c"]
-</code></pre>
-
-<p>Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don&rsquo;t have an awareness of (or references back to) the array container.</p>
-
-<pre><code class="ruby">    irb(main):004:0&gt; ObjectSpace.dump(ary)
-    =&gt; "{\"address\":\"0x007fd24b890fd8\", \"type\":\"ARRAY\", \"class\":\"0x007fd24b872038\", \"length\":3, \"embedded\":true, \"references\":[\"0x007fd24b891050\", \"0x007fd24b891028\", \"0x007fd24b891000\"], \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true}}\n"
-    irb(main):004:0&gt; ObjectSpace.reachable_objects_from(ary)
-    =&gt; [Array, "a", "b", "c"]
-    irb(main):006:0&gt; ObjectSpace.reachable_objects_from(ary[1])
-    =&gt; [String]
-    irb(main):007:0&gt; ObjectSpace.dump(ary[1])
-    =&gt; "{\"address\":\"0x007fd24b891028\", \"type\":\"STRING\", \"class\":\"0x007fd24b829658\", \"embedded\":true, \"bytesize\":1, \"value\":\"b\", \"encoding\":\"UTF-8\", \"file\":\"(irb)\", \"line\":3, \"method\":\"irb_binding\", \"generation\":7, \"flags\":{\"wb_protected\":true, \"old\":true, \"marked\":true}}\n"
-</code></pre>
-
-<p>We stated earlier that:</p>
-
-<p><strong>Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently reference other old objects.</strong></p>
-
-<p><em>However</em> it&rsquo;s possible for old objects to reference new objects. What happens when old objects reference new ones?</p>
-
-<p>Old objects with references to new objects are stored in a &ldquo;remembered set&rdquo;. The remembered set is a container of references from old objects to new objects and is a shortcut for preventing heap scans for finding such references.</p>
-
-<h2>Implications for Rails</h2>
-
-<p>As our friend Ezra used to say, &ldquo;no code is faster than no code.&rdquo; The same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there are no free object slots on the Ruby heap and a major GC is triggered as a result.</p>
-
-<p>A major drawback of this limited segregation of OLD vs YOUNG is that <strong>many transient objects are in fact promoted to old during large contexts such as a Rails request</strong>. These long lived objects eventually become unexpected &ldquo;memory leaks&rdquo;. These transient objects can be conceptually classified as of &ldquo;medium lifetime&rdquo; as they need to stick around for the duration of a request. There&rsquo;s however a large probability that a minor GC would run during request lifetime, promoting young objects to old, effectively increasing their lifetime to well beyond the end of a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and young objects.</p>
-
-<p><strong>Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.</strong></p>
-
-<p><em>In our next post we will explore how you&rsquo;d approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory. Leave your email address below and we&rsquo;ll let you know as soon as it&rsquo;s posted.</em></p>
-<div class="footnotes">
-<hr/>
-<ol>
-<li id="fn:1">
-<p>See the Ruby Hacking Guide&rsquo;s <a href="https://ruby-hacking-guide.github.io/gc.html">GC chapter</a> for further context and nitty gritty details. I&rsquo;d recommended scanning the content below the first few headings, until turned off by C.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
-</ol>
-</div>
-
 ]]></content>
   </entry>
   

@@ -10,7 +10,7 @@
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="This is the transcript of the talk I gave in Reaktor Dev Day in Helsinki, September 26, 2014. Thanks, and hi, everyone! It&rsquo;s a real honor to be &hellip;">
+  <meta name="description" content="Photo by martin, used under the Creative Commons license. The vast majority of Ruby on Rails applications deploy to production with the vanilla Ruby &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,186 @@ ga('send', 'pageview');
   <section class="row">
 <div class="blog-index small-12 large-8 columns small-centered">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/theden/rails-garbage-collection-naive-defaults/">Rails Garbage Collection: Naive Defaults</a></h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/lourens/" rel="author">Lourens</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-04T17:27:00+02:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:27 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1"><img src="https://farm8.staticflickr.com/7036/13349077375_36fc92ecce_k_d.jpg" alt="" /></a></p>
+
+<p><small>Photo by <a href="https://www.flickr.com/photos/x1klima/13349077375/in/photolist-mkBvCt-9F5bop-psoHyh-6pkzNo-9uDMLx-85EMnZ-ibSsrK-iog9vf-JtxCJ-iohdxP-ibS242-7RtfVT-k1H87W-jNAG6M-oxaFaw-cR3ow7-gEqUsd-6z6KY5-e1m1pQ-diRWXG-i5md69-iogg32-ibSVHi-ibStrn-ibSVUy-n8CpB1-67QKGw-p3qtEX-4THpny-ebLNCE-nycgpC-6U69md-4yXv5b-pTDf3R-861fmQ-6zABJu-3FKVM-nwzafz-6pgrY2-9ejbm6-QuSM-hvn32M-aomUMi-9eebae-b15Lpi-8tBhZj-6o1Xmn-6z3YKz-5s868-61WvU1">martin</a>, used under the Creative Commons license.</small></p>
+
+<p>The vast majority of <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications deploy to production with the vanilla Ruby GC configuration. A conservative combination of growth factors and accounting that &ldquo;works&rdquo; for a demographic from IRB sessions (still my preferred calculator) to massive monolithic Rails apps (the fate of most successful ones). In practice this doesn&rsquo;t work very well, however. It produces:</p>
+
+<ul>
+<li>Too aggressive growth of Ruby heap slots and pages when thresholds are reached.</li>
+<li>A large ratio of short and medium lived objects in relation to long lived ones for Rails applications.</li>
+<li>Too many intermittent major GC cycles during the request / response cycle.</li>
+<li>Heap fragmentation.</li>
+</ul>
+
+
+<p>Let&rsquo;s use a metaphor most of us can better relate to: <em>dreaded household chores.</em> Your ability and frequency of hosting dinners at home are limited by four things (takeaways and paper plates aside):</p>
+
+<ul>
+<li>How many seats and tables you have</li>
+<li>How many sets of clean cutlery, plates and glasses are available</li>
+<li>Overhead preparing a particular choice of cuisine</li>
+<li>Willingness to clean up and do dishes after</li>
+</ul>
+
+
+<p>This is what you have to work with at home:</p>
+
+<ul>
+<li>4 chairs and a table</li>
+<li>12 plates and equivalent utensils</li>
+<li>83 friends (60 from Facebook, 20 at work, your 2 brothers and then there&rsquo;s Jim)</li>
+<li>3 wine glasses and a beer mug</li>
+<li>1 bottle of wine and 24 beers<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></li>
+<li>3 awesome steaks and a piece of tofu</li>
+<li>Fresh local produce</li>
+</ul>
+
+
+<p>Some of your friends are also vegetarian.</p>
+
+<p>Let&rsquo;s have a look at two different scenarios.</p>
+
+<h4>IRB scenario</h4>
+
+<p>You&rsquo;ve invited and subsequently prepared dinner and the table—seats, plates and cutlery sets—for four, popped open your bottle of wine and fired up the grill. However, only one friend arrives, quite late. You&rsquo;re grilling steak number three, yet he&rsquo;s the vegetarian…and only drinks beer. And even then doesn&rsquo;t talk very much.</p>
+
+<p>In the end, you down the whole bottle of wine and the three steaks. Life&rsquo;s good again. There&rsquo;s plenty to clean up and pack away, still.</p>
+
+<h4>Rails scenario</h4>
+
+<p>17 guests show up at your door. Half of them are heavily intoxicated because Dylan invited the rest of his wine tasting group, too. Only one eats any of your food, yet breaks four plates. Beer disappeared in three minutes. The group members reveal seven new bottles of wine, make your dog drink one and he kernel panics as a result.</p>
+
+<p>You were not f*cking prepared. At all. Marinated steak&rsquo;s now ruined, there&rsquo;s less inventory and 30+ bottles to recycle. You&rsquo;re hungry and now there are no plates left!</p>
+
+<p>In both of these scenarios, from the perspective of your friends it mostly worked out just fine. It wasn&rsquo;t optimal for you or your environment, though. What&rsquo;s important is that you learned a few things:</p>
+
+<ul>
+<li>Next time it&rsquo;s easier to execute optimally, but there may still be a party and some broken plates.</li>
+<li>A barbeque for 17 in your one bedroom flat with a George Foreman grill doesn&rsquo;t scale well.</li>
+</ul>
+
+
+<h2>Cooking with Ruby</h2>
+
+<p>In the same manner, different use cases for the Ruby runtime require different preparations. Let&rsquo;s tie the dinner metaphor back to Ruby land and its memory model.</p>
+
+<h4>Home environment</h4>
+
+<p>The Ruby runtime, with everything else inside. Pages, objects and auxilary object data.</p>
+
+<h4>Guest count</h4>
+
+<p>The number of major features and facets you need to support. Gems and engines are good candidates along with individual models, controllers, views etc. These &ldquo;seats&rdquo; are also connected - different guests mingle together.</p>
+
+<h4>Guest distribution</h4>
+
+<p>Rails provides a framework for building applications, thus should be considered as part of the guest list too. Like some family members that make their way to gettogethers. First and second tier cousins you may hear of once a year and never talk with - they&rsquo;re present (consume memory), yet don&rsquo;t always add much value to the ambient.</p>
+
+<h4>Food and drink</h4>
+
+<p>The amount and distribution of objects required to make a feature or facet work. A mix bag of small entrees (embedded objects like 2-char strings), main dishes (a Rails request and all its context) to cocktails and tequila shots (threads!).</p>
+
+<h4>Plates and glasses</h4>
+
+<p>An object slot on the Ruby heap. One String, Array, Hash or any other object. Keep in mind that they can overflow and be recycled too - a wine glass is good for multiple servings. For buffets, a single plate can go very far too :-)</p>
+
+<h4>Tables</h4>
+
+<p>Ruby pages - containers for objects. All of the plates and glasses on a given table. They&rsquo;re mostly prepared in advance, but you can &ldquo;construct&rdquo; and improvise as needed to.</p>
+
+<h4>Type of cuisine</h4>
+
+<p>Some dishes incur a lot of work to prepare <em>and</em> to clean up. Cooked basmati rice will leave a very very different footprint in your kitchen than a paella or salmon option would.</p>
+
+<p>The GC defaults for most Rails applications assume a reasonable sized home environment, a well defined guest list and just enough food and drinks for each. Everyone can sit at the same table, wine and dine on fine dishes, all with a minimal cleanup burden.</p>
+
+<p><em>In reality, it&rsquo;s a frat party. Gone seriously wrong.</em></p>
+
+<p><em>In the next part of this series, we&rsquo;re going to take a look at how the Ruby runtime can better host Rails applications. And what you can optimize for.</em></p>
+<div class="footnotes">
+<hr/>
+<ol>
+<li id="fn:1">
+<p>Because if there&rsquo;s a promotion, you buy.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+    <div id="ck_embed_form" class="ck_embed_form row">
+  <div class="small-12 large-6 columns" id="ck_form_content">
+    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
+    <div class="ck_embed_description">
+      <span class="ck_image">
+
+      </span>
+        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
+    </div>
+  </div>
+<div id='ck_success_msg' class='fade' style='display:none;'>
+  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
+</div>
+  <!--  Form starts here  -->
+  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
+    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
+    <p class="ck_errorArea"></p>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_firstNameField">First Name</label>
+      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
+    </div>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_emailField">Email Address</label>
+        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
+    </div>
+    <label class="ck_checkbox">
+      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
+      I&#8217;d like to receive a free 30 day course by email.
+    </label>
+
+    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
+      Claim my spot on the course
+    </button>
+    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
+  </form>
+</div>
+
+<script src="https://convertkit.com/assets/CKJS4.js"></script>
+
+
+
   
   
     <article>

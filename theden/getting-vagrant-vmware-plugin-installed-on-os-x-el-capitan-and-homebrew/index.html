@@ -1,0 +1,476 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Getting Vagrant VMWare plugin installed on OS X El Capitan and Homebrew - by Jarkko of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="Getting Vagrant VMWare Plugin Installed on OS X El Capitan and Homebrew Jarkko wrote this on Oct 26th, 2015 11:18 am I finally decided to bite the &hellip;">
+  <meta name="keywords" content="ruby, rails, osx, vagrant, vmware, homebrew, openssl, rubygems">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+  
+
+
+<link rel="author" href="https://plus.google.com/117033765270760829494/">
+
+    <meta property="og:title"
+    content="Getting Vagrant VMWare plugin installed on OS X El Capitan and Homebrew" />
+    <meta property="og:description"
+    content="" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+      <meta property="article:author"
+      content="https://www.facebook.com/jarkko.m.laine" />
+    
+
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+  <!-- SumoMe -->
+<script src="//load.sumome.com/" data-sumo-site-id="da3bead8ae8720119247146e18eb0c9c2a039fdce74750d07f835ee40d1a5604" async="async"></script>
+<!-- End SumoMe -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Getting Vagrant VMWare Plugin Installed on OS X El Capitan and Homebrew</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-26T11:18:37+02:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:18 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I finally decided to bite the bullet this morning and install VMWare Fusion 8 and the corresponding Vagrant plugin.</p>
+
+<p>Both were paid upgrades (41.42€ + $39 from Fusion 7), which was a bit bitter given I had only had the previous versions for a couple of months. Yet, the word on the street was that the new version would be much more stable and less cpu-hungry than the previous generation. So what the heck, maybe I’d again be able to get more than a couple hours of productive work done without draining the battery.</p>
+
+<p>The purchase process itself was painless, as was installing VMWare itself. But when I started installing the plugin, an ugly yak raised its hairy head.</p>
+
+<p>The first thing I tried was to just use the old plugin with the new VMWare version. Would it perhaps work?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜  ~ vagrant <span class="nb">suspend</span>
+</span><span class='line'>This provider only works with VMware Fusion 5.x, 6.x, or 7.x. You have
+</span><span class='line'>Fusion <span class="s1">&#39;8.0.1&#39;</span>. Please install the proper version of VMware
+</span><span class='line'>Fusion and try again.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That sounds like a resounding “No”.</p>
+
+<p>So onwards: bought a license for the plugin as well and tried to install it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜  ~ vagrant plugin install vagrant-vmware-fusion
+</span><span class='line'>Installing the <span class="s1">&#39;vagrant-vmware-fusion&#39;</span> plugin. This can take a few minutes...
+</span><span class='line'>Bundler, the underlying system Vagrant uses to install plugins,
+</span><span class='line'>reported an error. The error is shown below. These errors are usually
+</span><span class='line'>caused by misconfigured plugin installations or transient network
+</span><span class='line'>issues. The error from Bundler is:
+</span><span class='line'>
+</span><span class='line'>An error occurred <span class="k">while</span> installing hitimes <span class="o">(</span>1.2.3<span class="o">)</span>, and Bundler cannot <span class="k">continue</span>.
+</span><span class='line'>Make sure that <span class="sb">`</span>gem install hitimes -v <span class="s1">&#39;1.2.3&#39;</span><span class="sb">`</span> succeeds before bundling.
+</span><span class='line'>
+</span><span class='line'>Gem::Installer::ExtensionBuildError: ERROR: Failed to build gem native extension.
+</span><span class='line'>
+</span><span class='line'>    /opt/vagrant/embedded/bin/ruby extconf.rb
+</span><span class='line'>creating Makefile
+</span><span class='line'>
+</span><span class='line'>make <span class="s2">&quot;DESTDIR=&quot;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Agreeing to the Xcode/iOS license requires admin privileges, please re-run as root via sudo.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No biggie, a little Googling revealed what I suspected – I don’t actually need to run this as root, I just need to accept the EULA of the latest XCode version before running the install process again. I popped up XCode, YOLOed the agreement, and was back to the terminal.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜  ~ vagrant plugin install vagrant-vmware-fusion
+</span><span class='line'>Installing the <span class="s1">&#39;vagrant-vmware-fusion&#39;</span> plugin. This can take a few minutes...
+</span><span class='line'>Bundler, the underlying system Vagrant uses to install plugins,
+</span><span class='line'>reported an error. The error is shown below. These errors are usually
+</span><span class='line'>caused by misconfigured plugin installations or transient network
+</span><span class='line'>issues. The error from Bundler is:
+</span><span class='line'>
+</span><span class='line'>An error occurred <span class="k">while</span> installing eventmachine <span class="o">(</span>1.0.8<span class="o">)</span>, and Bundler cannot <span class="k">continue</span>.
+</span><span class='line'>Make sure that <span class="sb">`</span>gem install eventmachine -v <span class="s1">&#39;1.0.8&#39;</span><span class="sb">`</span> succeeds before bundling.
+</span><span class='line'>
+</span><span class='line'>Gem::Installer::ExtensionBuildError: ERROR: Failed to build gem native extension.
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>LOTS OF CRUFT REMOVED FOR BREVITY<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>make <span class="s2">&quot;DESTDIR=&quot;</span>
+</span><span class='line'>compiling binder.cpp
+</span><span class='line'>warning: unknown warning option <span class="s1">&#39;-Werror=unused-command-line-argument-hard-error-in-future&#39;</span><span class="p">;</span> did you mean <span class="s1">&#39;-Werror=unused-command-line-argument&#39;</span>? <span class="o">[</span>-Wunknown-warning-option<span class="o">]</span>
+</span><span class='line'>In file included from binder.cpp:20:
+</span><span class='line'>./project.h:116:10: fatal error: <span class="s1">&#39;openssl/ssl.h&#39;</span> file not found
+</span><span class='line'><span class="c">#include &lt;openssl/ssl.h&gt;</span>
+</span><span class='line'>         ^
+</span><span class='line'><span class="m">1</span> warning and <span class="m">1</span> error generated.
+</span><span class='line'>make: *** <span class="o">[</span>binder.o<span class="o">]</span> Error 1
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Gem files will remain installed in /Users/jarkko/.vagrant.d/gems/gems/eventmachine-1.0.8 <span class="k">for</span> inspection.
+</span><span class='line'>Results logged to /Users/jarkko/.vagrant.d/gems/gems/eventmachine-1.0.8/ext/gem_make.out
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Again, the reason is clear: I need to build the gem against proper openssl libs – in this case, <code>-I/usr/local/opt/openssl/include</code>. Thus:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜  ~  gem install eventmachine -v <span class="s1">&#39;1.0.8&#39;</span> -- --with-cppflags<span class="o">=</span>-I/usr/local/opt/openssl/include
+</span><span class='line'>Fetching: eventmachine-1.0.8.gem <span class="o">(</span>100%<span class="o">)</span>
+</span><span class='line'>Building native extensions with: <span class="s1">&#39;--with-cppflags=-I/usr/local/opt/openssl/include&#39;</span>
+</span><span class='line'>This could take a <span class="k">while</span>...
+</span><span class='line'>Successfully installed eventmachine-1.0.8
+</span><span class='line'>Parsing documentation <span class="k">for</span> eventmachine-1.0.8
+</span><span class='line'>Installing ri documentation <span class="k">for</span> eventmachine-1.0.8
+</span><span class='line'>Done installing documentation <span class="k">for</span> eventmachine after <span class="m">6</span> seconds
+</span><span class='line'><span class="m">1</span> gem installed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Perfect. So I tried to install the Vagrant plugin again – and got the same error. Crap.</p>
+
+<p>It turns out that Vagrant uses its own gem folder, so it’s not picking up what’s installed in one’s primary gem directory. The issue was, how do I tell Vagrant to use the correct cpp flags in its build process?</p>
+
+<p>Fortunately I didn’t have to figure that out, because the end of the error message above gave me enough of a pointer towards a solution: if I only managed to install the eventmachine gem by hand to the correct location with the proper cpp flags, I should be fine. But how?</p>
+
+<p>I dug up to <code>gem -h</code> and the defaults at the end gave the correct option away: with the <code>--install-dir</code> option I could install the gem to wherever I wanted to. Thus:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>~  gem install eventmachine -v <span class="s1">&#39;1.0.8&#39;</span> --install-dir /Users/jarkko/.vagrant.d/gems  -- --with-cppflags<span class="o">=</span>-I/usr/local/opt/openssl/include
+</span><span class='line'>Fetching: eventmachine-1.0.8.gem <span class="o">(</span>100%<span class="o">)</span>
+</span><span class='line'>Building native extensions with: <span class="s1">&#39;--with-cppflags=-I/usr/local/opt/openssl/include&#39;</span>
+</span><span class='line'>This could take a <span class="k">while</span>...
+</span><span class='line'>Successfully installed eventmachine-1.0.8
+</span><span class='line'>Parsing documentation <span class="k">for</span> eventmachine-1.0.8
+</span><span class='line'>Installing ri documentation <span class="k">for</span> eventmachine-1.0.8
+</span><span class='line'>Done installing documentation <span class="k">for</span> eventmachine after <span class="m">5</span> seconds
+</span><span class='line'><span class="m">1</span> gem installed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Et voilá. Now one more try:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜    vagrant plugin install vagrant-vmware-fusion
+</span><span class='line'>…
+</span><span class='line'>Installed the plugin <span class="s1">&#39;vagrant-vmware-fusion (4.0.2)&#39;</span>!
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>…and we’re off to the races!</p>
+
+<p>…well, at least almost.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜  ~ vagrant up
+</span><span class='line'>Bringing machine <span class="s1">&#39;default&#39;</span> up with <span class="s1">&#39;vmware_fusion&#39;</span> provider...
+</span><span class='line'><span class="o">==</span>&gt; default: Verifying vmnet devices are healthy...
+</span><span class='line'><span class="o">==</span>&gt; default: Preparing network adapters...
+</span><span class='line'><span class="o">==</span>&gt; default: Starting the VMware VM...
+</span><span class='line'>An error occurred <span class="k">while</span> executing <span class="sb">`</span>vmrun<span class="sb">`</span>, a utility <span class="k">for</span> controlling
+</span><span class='line'>VMware machines. The <span class="nb">command </span>and output are below:
+</span><span class='line'>
+</span><span class='line'>Command: <span class="o">[</span><span class="s2">&quot;start&quot;</span>, <span class="s2">&quot;/Users/jarkko/vmware/955a09a5-f7f6-451e-b565-22f41c8fced0/packer-ubuntu-14.04-amd64.vmx&quot;</span>, <span class="s2">&quot;nogui&quot;</span>, <span class="o">{</span>:notify<span class="o">=</span>&gt;<span class="o">[</span>:stdout, :stderr<span class="o">]</span>, :timeout<span class="o">=</span>&gt;45<span class="o">}]</span>
+</span><span class='line'>
+</span><span class='line'>Stdout: 2015-10-26T11:10:45.943<span class="p">|</span> ServiceImpl_Opener: PID 84443
+</span><span class='line'>Error: The operation was canceled
+</span><span class='line'>
+</span><span class='line'>Stderr:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Oh well, that wasn’t very helpful. So I tried the proven trick #1: I killed the VMWare app on OS X and even its menubar daemon just to be certain, and sure enough, it did the trick. The vagrant VM is now back on track.</p>
+</div>
+
+
+
+  
+    
+      <div id="mc_embed_signup" class="row">
+
+  <div class="small-12 large-12 columns">
+    <p>
+    Still use RSS? Go <a href="/theden/atom.xml">grab it</a>. Not? We neither. Pop your email address in the form below and we&#8217;ll post new posts in the series of Ruby articles straight to your mailbox.
+  </p>
+    <form action="//odesign.us6.list-manage.com/subscribe/post?u=a690c5659c8402fec4cd18592&amp;id=66586d7b9e" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+        <div id="mc_embed_signup_scroll">
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-EMAIL">Your Email Address
+          <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL">
+        </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <label for="mce-FNAME">Your First Name (optional)
+          <input type="text" value="" name="FNAME" class="" id="mce-FNAME">
+        </label>
+      </div>
+    </div>
+
+      <div id="mce-responses" class="clear">
+        <div class="response" id="mce-error-response" style="display:none"></div>
+        <div class="response" id="mce-success-response" style="display:none"></div>
+      </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+        <div style="position: absolute; left: -5000px;"><input type="text" name="b_a690c5659c8402fec4cd18592_66586d7b9e" tabindex="-1" value=""></div>
+        <div class="clear">
+          <input type="hidden" name="FORMID" id="FORMID" value="the den /theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew/">
+          <input type="submit" value="Send me those awesome tips" name="subscribe" id="mc-embedded-subscribe" class="button">
+        </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!--End mc_embed_signup-->
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-10-26T11:18:37+02:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:18 am</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/homebrew/'>homebrew</a>, <a class='category' href='/theden/categories/openssl/'>openssl</a>, <a class='category' href='/theden/categories/osx/'>osx</a>, <a class='category' href='/theden/categories/rails/'>rails</a>, <a class='category' href='/theden/categories/ruby/'>ruby</a>, <a class='category' href='/theden/categories/rubygems/'>rubygems</a>, <a class='category' href='/theden/categories/vagrant/'>vagrant</a>, <a class='category' href='/theden/categories/vmware/'>vmware</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/" title="Previous Post: How do I know whether my Rails app is thread-safe or not?">&laquo; How do I know whether my Rails app is thread-safe or not?</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>
