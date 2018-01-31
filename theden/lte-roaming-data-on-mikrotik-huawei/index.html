@@ -1,0 +1,376 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Enable LTE roaming on a Mikrotik router with Huawei ME909u-521 modem - by Erkki of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="MikroTik by default doesn&rsquo;t enable roaming when used with a non-local sim card. This puzzled us as everything seemed to be configured correctly &hellip;">
+  <meta name="keywords" content="networking, mikrotik, huawei">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/lte-roaming-data-on-mikrotik-huawei">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+
+<link rel="author" href="https://plus.google.com//">
+
+    <meta property="og:title"
+    content="Enable LTE roaming on a Mikrotik router with Huawei ME909u-521 modem" />
+    <meta property="og:description"
+    content="" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/lte-roaming-data-on-mikrotik-huawei" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+  <!-- SumoMe -->
+<script src="//load.sumome.com/" data-sumo-site-id="da3bead8ae8720119247146e18eb0c9c2a039fdce74750d07f835ee40d1a5604" async="async"></script>
+<!-- End SumoMe -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Enable LTE Roaming on a Mikrotik Router With Huawei ME909u-521 Modem</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/erkki/" rel="author">Erkki</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2018-01-31T06:00:00+02:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>6:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>MikroTik by default doesn&rsquo;t enable roaming when used with a non-local sim card. This puzzled us as everything seemed to be configured correctly but the LTE interface wasn&rsquo;t getting any ip addresses. This is how to log in to your router and enable roaming.</p>
+
+<p>Log in to the MikroTik box. We&rsquo;re using the command-line interface via ssh but you could use the web UI too.
+If you haven&rsquo;t done this before, check out <a href="https://wiki.mikrotik.com/wiki/Manual:First_time_startup">First_time_startup</a></p>
+
+<blockquote><p>Every router is factory pre-configured with the IP address 192.168.88.1/24 on the ether1 port. The default username is admin with no password.</p></blockquote>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>➜ ssh admin@192.168.88.1
+</span><span class='line'>  MMM      MMM       KKK                          TTTTTTTTTTT      KKK
+</span><span class='line'>  MMMM    MMMM       KKK                          TTTTTTTTTTT      KKK
+</span><span class='line'>  MMM MMMM MMM  III  KKK  KKK  RRRRRR     OOOOOO      TTT     III  KKK  KKK
+</span><span class='line'>  MMM  MM  MMM  III  KKKKK     RRR  RRR  OOO  OOO     TTT     III  KKKKK
+</span><span class='line'>  MMM      MMM  III  KKK KKK   RRRRRR    OOO  OOO     TTT     III  KKK KKK
+</span><span class='line'>  MMM      MMM  III  KKK  KKK  RRR  RRR   OOOOOO      TTT     III  KKK  KKK
+</span><span class='line'>
+</span><span class='line'>  MikroTik RouterOS 6.39.2 <span class="o">(</span>c<span class="o">)</span> 1999-2017       http://www.mikrotik.com/
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>?<span class="o">]</span>             Gives the list of available commands
+</span><span class='line'><span class="nb">command</span> <span class="o">[</span>?<span class="o">]</span>     Gives <span class="nb">help </span>on the <span class="nb">command </span>and list of arguments
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>Tab<span class="o">]</span>           Completes the <span class="nb">command</span>/word. If the input is ambiguous,
+</span><span class='line'>                a second <span class="o">[</span>Tab<span class="o">]</span> gives possible options
+</span><span class='line'>
+</span><span class='line'>/               Move up to base level
+</span><span class='line'>..              Move up one level
+</span><span class='line'>/command        Use <span class="nb">command </span>at the base level
+</span><span class='line'>
+</span><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> &gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We checked the LTE interface and realized it is not joining any networks. If you can&rsquo;t see the LTE interface/modem at all, you need to enable the mini-PCIe interface.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> /interface lte info lte1 once
+</span><span class='line'>     pin-status: no password required
+</span><span class='line'>  functionality: full
+</span><span class='line'>   manufacturer: Huawei Technologies Co., Ltd.
+</span><span class='line'>          model: ME909u-521
+</span><span class='line'>       revision: 12.636.12.01.00
+</span><span class='line'>           imei: &lt;redacted&gt;
+</span><span class='line'>           imsi: &lt;redacted&gt;
+</span><span class='line'>           uicc: &lt;redacted&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With the help of the <a href="http://download-c.huawei.com/download/downloadCenter?downloadId=29741&version=72288&siteCode=">AT Command Interface Specification for the HUAWEI ME906s LTE M.2 Module</a> we can see roaming status is queried and set using the <code>AT^SYSCFGEX</code> command.</p>
+
+<p>To check existing roaming status, we need to look at the third parameter returned. Notice that we&rsquo;re escaping the question mark <code>?</code> with the backslash character <code>\</code>. This is because the command line interface interprets <code>?</code> as the help command.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> &gt; /interface lte at-chat lte1 <span class="nv">input</span><span class="o">=</span><span class="s2">&quot;AT^SYSCFGEX\?&quot;</span>
+</span><span class='line'>  output: ^SYSCFGEX: <span class="s2">&quot;00&quot;</span>,3FFFFFFF,0,1,7FFFFFFFFFFFFFFF
+</span><span class='line'>
+</span><span class='line'>OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<table>
+<thead>
+<tr>
+<th> <code>AT^SYSCFGEX=?</code> </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> Possible Response(s) </td>
+</tr>
+<tr>
+<td> <code>&lt;CR&gt;&lt;LF&gt;^SYSCFGEX</code>: (list of supported <code>&lt;acqorder&gt;</code>s),(list of supported (<code>&lt;band&gt;</code>,<code>&lt;band_name&gt;</code>)s),(list of supported <code>&lt;roam&gt;</code>s),(list of supported <code>&lt;srvdomain&gt;</code>s),(list of supported (<code>&lt;lteband&gt;</code>,<code>&lt;lteband_name&gt;</code>)s)<code>&lt;CR&gt;&lt;LF&gt;&lt;CR&gt;&lt;LF&gt;OK&lt;CR&gt;&lt;LF&gt;</code> </td>
+</tr>
+</tbody>
+</table>
+
+
+<table>
+<thead>
+<tr>
+<th> <code>&lt;roam&gt;</code>: indicates whether roaming is supported. </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> 0 Not supported </td>
+</tr>
+<tr>
+<td> 1 Supported </td>
+</tr>
+<tr>
+<td> 2 No change </td>
+</tr>
+</tbody>
+</table>
+
+
+<p><code>0</code> here means roaming not enabled. Lets set it to <code>1</code> instead (notice that we&rsquo;re keeping all the rest of the parameters unchanged from the output of the previous command).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> &gt; /interface lte at-chat lte1 <span class="nv">input</span><span class="o">=</span><span class="s2">&quot;AT^SYSCFGEX=\&quot;00\&quot;,3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,&quot;</span>
+</span><span class='line'>  output: OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Query the status again.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> &gt; /interface lte at-chat lte1 <span class="nv">input</span><span class="o">=</span><span class="s2">&quot;AT^SYSCFGEX\?&quot;</span>
+</span><span class='line'>  output: ^SYSCFGEX: <span class="s2">&quot;00&quot;</span>,3FFFFFFF,1,1,7FFFFFFFFFFFFFFF
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Boom, roaming enbled. Verify with <code>lte info</code> to make sure we&rsquo;re registered to a network.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> /interface lte info lte1 once
+</span><span class='line'>         pin-status: no password required
+</span><span class='line'>      functionality: full
+</span><span class='line'>       manufacturer: Huawei Technologies Co., Ltd.
+</span><span class='line'>              model: ME909u-521
+</span><span class='line'>           revision: 12.636.12.01.00
+</span><span class='line'>   current-operator: EE Elisa
+</span><span class='line'>                lac: 24
+</span><span class='line'>     current-cellid: 256268822
+</span><span class='line'>  access-technology: Evolved 3G <span class="o">(</span>LTE<span class="o">)</span>
+</span><span class='line'>     session-uptime: 1m10s
+</span><span class='line'>               imei: &lt;redacted&gt;
+</span><span class='line'>               imsi: &lt;redacted&gt;
+</span><span class='line'>               uicc: &lt;redacted&gt;
+</span><span class='line'>               rssi: -80dBm
+</span><span class='line'>               rsrp: -106dBm
+</span><span class='line'>               rsrq: -7dB
+</span><span class='line'>               sinr: 18dB
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/erkki/" rel="author">Erkki</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-01-31T06:00:00+02:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>6:00 am</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/huawei/'>huawei</a>, <a class='category' href='/theden/categories/mikrotik/'>mikrotik</a>, <a class='category' href='/theden/categories/networking/'>networking</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew/" title="Previous Post: Getting Vagrant VMware plugin installed on OS X El Capitan and Homebrew">&laquo; Getting Vagrant VMware plugin installed on OS X El Capitan and Homebrew</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>
