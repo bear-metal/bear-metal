@@ -303,6 +303,22 @@ If you haven&rsquo;t done this before, check out <a href="https://wiki.mikrotik.
 </span><span class='line'>               sinr: 18dB
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>One last thing we need to do is to persist this across (router or modem) reboots. For this we have to set a &lsquo;modem-init&rsquo; that gets excuted every time the modem is started.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/interface lte <span class="nb">set </span>lte1 modem-init<span class="o">=</span><span class="s2">&quot;AT^SYSCFGEX=\&quot;00\&quot;,3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To verify</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>admin@MikroTik<span class="o">]</span> &gt; :put <span class="o">[</span>/interface lte get lte1 modem-init<span class="o">]</span>
+</span><span class='line'>AT^SYSCFGEX<span class="o">=</span><span class="s2">&quot;00&quot;</span>,3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,
+</span></code></pre></td></tr></table></div></figure>
+
 </div>
 
 

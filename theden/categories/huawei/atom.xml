@@ -141,6 +141,17 @@ OK
                rsrq: -7dB
                sinr: 18dB
 </code></pre>
+
+<p>One last thing we need to do is to persist this across (router or modem) reboots. For this we have to set a &lsquo;modem-init&rsquo; that gets excuted every time the modem is started.
+<code>bash
+/interface lte set lte1 modem-init="AT^SYSCFGEX=\"00\",3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,"
+</code></p>
+
+<p>To verify
+<code>bash
+[admin@MikroTik] &gt; :put [/interface lte get lte1 modem-init]
+AT^SYSCFGEX="00",3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,
+</code></p>
 ]]></content>
   </entry>
   
