@@ -114,3 +114,14 @@ Boom, roaming enbled. Verify with ```lte info``` to make sure we're registered t
                rsrq: -7dB
                sinr: 18dB
 ```
+
+One last thing we need to do is to persist this across (router or modem) reboots. For this we have to set a 'modem-init' that gets excuted every time the modem is started.
+```bash
+/interface lte set lte1 modem-init="AT^SYSCFGEX=\"00\",3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,"
+```
+
+To verify
+```bash
+[admin@MikroTik] > :put [/interface lte get lte1 modem-init]
+AT^SYSCFGEX="00",3FFFFFFF,1,1,7FFFFFFFFFFFFFFF,,
+```
