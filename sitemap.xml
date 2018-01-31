@@ -2,158 +2,158 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://bearmetal.eu/theden/lte-roaming-data-on-mikrotik-huawei/</loc>
-    <lastmod>2018-01-31T06:00:00+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:07+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/getting-vagrant-vmware-plugin-installed-on-os-x-el-capitan-and-homebrew/</loc>
-    <lastmod>2015-10-26T11:18:37+02:00</lastmod>
+    <lastmod>2015-10-26T11:25:43+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/how-do-i-know-whether-my-rails-app-is-thread-safe-or-not/</loc>
-    <lastmod>2015-03-13T10:10:58+02:00</lastmod>
+    <lastmod>2015-03-13T21:13:33+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/rails-garbage-collection-tuning-approaches/</loc>
-    <lastmod>2015-02-20T09:19:02+02:00</lastmod>
+    <lastmod>2015-03-13T12:09:58+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/its-not-about-you/</loc>
-    <lastmod>2015-02-12T13:32:39+02:00</lastmod>
+    <lastmod>2015-02-13T14:25:13+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/the-tremendous-scale-of-aws-and-the-hidden-benefit-of-the-cloud/</loc>
-    <lastmod>2015-02-03T15:14:35+02:00</lastmod>
+    <lastmod>2015-02-03T15:48:03+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/of-course-you-may-eat-your-own-food-here/</loc>
-    <lastmod>2015-02-02T16:00:18+02:00</lastmod>
+    <lastmod>2015-02-02T16:53:48+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/help-my-rails-app-is-melting-under-the-launch-day-load/</loc>
-    <lastmod>2015-01-12T13:39:00+02:00</lastmod>
+    <lastmod>2015-01-12T20:14:35+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/</loc>
-    <lastmod>2015-01-06T16:15:00+02:00</lastmod>
+    <lastmod>2015-01-07T08:58:17+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/rails-garbage-collection-age-matters/</loc>
-    <lastmod>2014-12-22T20:26:00+02:00</lastmod>
+    <lastmod>2014-12-23T18:29:08+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/does-rails-scale/</loc>
-    <lastmod>2014-12-19T15:22:00+02:00</lastmod>
+    <lastmod>2015-01-12T17:59:38+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/</loc>
-    <lastmod>2014-12-04T17:27:00+02:00</lastmod>
+    <lastmod>2014-12-19T16:11:38+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/metaprogramming-ruby-for-greater-good/</loc>
-    <lastmod>2014-09-29T11:43:00+03:00</lastmod>
+    <lastmod>2014-09-30T12:07:52+03:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/do-you-know-the-biggest-reason-why-enterprise-software-sucks/</loc>
-    <lastmod>2014-01-15T11:43:00+02:00</lastmod>
+    <lastmod>2014-11-11T10:16:53+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/let-your-data-tell-a-story/</loc>
-    <lastmod>2013-09-24T16:57:00+03:00</lastmod>
+    <lastmod>2014-11-11T10:16:53+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/situation-awareness/</loc>
-    <lastmod>2013-09-03T16:57:00+03:00</lastmod>
+    <lastmod>2015-01-12T17:59:38+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/its-not-about-us-its-about-you/</loc>
-    <lastmod>2013-08-14T15:51:00+03:00</lastmod>
+    <lastmod>2015-01-12T17:59:38+02:00</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/zeromq/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/theden/archives/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/services/ruby-and-rails/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/services/ruby-c-extensions/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/services/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/team/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/team/erkki/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/team/jarkko/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/team/lourens/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://bearmetal.eu/team/tarmo/</loc>
-    <lastmod>2018-01-31T06:53:38+02:00</lastmod>
+    <lastmod>2018-01-31T06:56:33+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
