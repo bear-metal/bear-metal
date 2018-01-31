@@ -12,7 +12,7 @@ published: true
 MikroTik by default doesn't enable roaming when used with a non-local sim card. This puzzled us as everything seemed to be configured correctly but the LTE interface wasn't getting any ip addresses. This is how to log in to your router and enable roaming.
 
 Log in to the MikroTik box. We're using the command-line interface via ssh but you could use the web UI too.
-If you haven't done this before, check out <a href="https://wiki.mikrotik.com/wiki/Manual:First_time_startup">First_time_startup</a>
+If you haven't done this before, check out <a href="https://wiki.mikrotik.com/wiki/Manual:First_time_startup">First time startup</a>
 
 {% blockquote %}
 Every router is factory pre-configured with the IP address 192.168.88.1/24 on the ether1 port. The default username is admin with no password.
