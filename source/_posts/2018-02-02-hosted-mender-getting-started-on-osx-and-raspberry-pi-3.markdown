@@ -167,7 +167,9 @@ Replace `<token from hosted mender>` with your token.
 
 ```bash
 sed -ibak 's/dummy/<token from hosted mender>/' primary/etc/mender/mender.conf
+sed -ibak 's/docker.mender.io/hosted.mender.io/' primary/etc/mender/mender.conf
 sed -ibak 's/dummy/<token from hosted mender>/' secondary/etc/mender/mender.conf
+sed -ibak 's/docker.mender.io/hosted.mender.io/' secondary/etc/mender/mender.conf
 ```
 
 Verify the config file contents
@@ -182,7 +184,7 @@ cat primary/etc/mender/mender.conf
     "RootfsPartA": "/dev/mmcblk0p2",
     "RootfsPartB": "/dev/mmcblk0p3",
     "ServerCertificate": "/etc/mender/server.crt",
-    "ServerURL": "https://docker.mender.io",
+    "ServerURL": "https://hosted.mender.io",
     "TenantToken": "<token from hosted mender>",
     "UpdatePollIntervalSeconds": 5
 }
