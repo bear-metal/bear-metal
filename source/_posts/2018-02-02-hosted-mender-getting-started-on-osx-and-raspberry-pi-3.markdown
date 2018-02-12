@@ -199,6 +199,6 @@ sudo dd if=mender-raspberrypi3_1.3.1.img of=/dev/disk3 bs=1m && sudo sync
 hdiutil detach /dev/disk3
 ```
 
-Boot the RPi and check the mender dashboard, you should see a new authorization request pop up.
+Boot the RPi and check mender dashboard, you should see a new authorization request pop up.
 
 <img src="/images/mender/mender_auth_list.png" />
