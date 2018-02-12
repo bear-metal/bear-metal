@@ -10,7 +10,7 @@
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="MikroTik by default doesn&rsquo;t enable roaming when used with a non-local sim card. This puzzled us as everything seemed to be configured correctly &hellip;">
+  <meta name="description" content="Having various embedded linux devices around (mostly Raspberry Pi&rsquo;s), and a few client projects dealing with software updates to remote devices &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,395 @@ ga('send', 'pageview');
   <section class="row">
 <div class="blog-index small-12 large-8 columns small-centered">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3/">Hosted Mender Getting Started on OSX and Raspberry Pi 3</a></h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/erkki/" rel="author">Erkki</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-12T07:00:00+02:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>7:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Having various embedded linux devices around (mostly Raspberry Pi&rsquo;s), and a few client projects dealing with software updates to remote devices, I&rsquo;ve become interested in fleet management. More specifically, I wanted:</p>
+
+<ul>
+<li>inventory management</li>
+<li><a href="https://source.android.com/devices/tech/ota/ab/">A/B partition updates</a></li>
+<li>integrity checks</li>
+<li>signed updates</li>
+</ul>
+
+
+<p>I&rsquo;ve heard about <a href="https://resin.io/">resin.io</a> before, and while appealing, the control freak in me wanted something with an open server infrastructrure. I&rsquo;m also not sold on having docker in production embedded devices (while surely being useful for prototyping and experimentation).</p>
+
+<p>Then there&rsquo;s the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.</p>
+
+<p>Then I stumbled onto <a href="https://mender.io/">mender</a>. On first glance, it seems perfect. Let&rsquo;s take a look, shall we?</p>
+
+<h1>Burning the initial image</h1>
+
+<p>We&rsquo;re gonna be roughly following along the <a href="https://docs.mender.io/1.3/getting-started">mender getting started guide</a> while keeping things OSX compatible.</p>
+
+<p>Instead of running our own server infrastructure (which is nice to have as an option, but not required for initial experimenting), we&rsquo;ll be using <a href="https://hosted.mender.io/">hosted mender</a>. That means we will have to inject our hosted mender token into the initial disk image what we will boot the RPi3 from.</p>
+
+<p>Download the Raspberry Pi 3 disk image from <a href="https://docs.mender.io/1.3/getting-started/download-test-images">https://docs.mender.io/1.3/getting-started/download-test-images</a> .
+Decompress and change the file extension to make it palatable for <code>hdiutil</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget https://d1b0l86ne08fsf.cloudfront.net/1.3.1/raspberrypi3/mender-raspberrypi3_1.3.1.sdimg.gz
+</span><span class='line'>gunzip mender-raspberrypi3_1.3.1.sdimg.gz
+</span><span class='line'>  mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Verify we have a good image</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hdiutil imageinfo mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Backing Store Information:
+</span><span class='line'>  URL: file:///Users/erkkieilonen/projects/learning/mender/mender-raspberrypi3_1.3.1.img
+</span><span class='line'>  Name: mender-raspberrypi3_1.3.1.img
+</span><span class='line'>  Class Name: CBSDBackingStore
+</span><span class='line'>Class Name: CRawDiskImage
+</span><span class='line'>Checksum Type: none
+</span><span class='line'>Size Information:
+</span><span class='line'>  Total Bytes: 624951296
+</span><span class='line'>  Compressed Ratio: 1
+</span><span class='line'>  Sector Count: 1220608
+</span><span class='line'>  Total Non-Empty Bytes: 624951296
+</span><span class='line'>  Compressed Bytes: 624951296
+</span><span class='line'>  Total Empty Bytes: 0
+</span><span class='line'>Format: RAW*
+</span><span class='line'>Format Description: raw <span class="nb">read</span>/write
+</span><span class='line'>Checksum Value:
+</span><span class='line'>Properties:
+</span><span class='line'>  Encrypted: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Kernel Compatible: <span class="nb">true</span>
+</span><span class='line'><span class="nb"> </span>Checksummed: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Software License Agreement: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Partitioned: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Compressed: no
+</span><span class='line'>Segments:
+</span><span class='line'>  0: /Users/erkkieilonen/projects/learning/mender/mender-raspberrypi3_1.3.1.img
+</span><span class='line'>partitions:
+</span><span class='line'>  partition-scheme: fdisk
+</span><span class='line'>  block-size: 512
+</span><span class='line'>  partitions:
+</span><span class='line'>      0:
+</span><span class='line'>          partition-name: Master Boot Record
+</span><span class='line'>          partition-start: 0
+</span><span class='line'>          partition-synthesized: <span class="nb">true</span>
+</span><span class='line'><span class="nb">         </span>partition-length: 1
+</span><span class='line'>          partition-hint: MBR
+</span><span class='line'>          boot-code: 0xFAB800108ED0BC00B0B800008ED88EC0FBBE007CBF0006B90002F3A4EA21060000BEBE073804750B83C61081FEFE0775F3EB16B402B001BB007CB2808A74018B4C02CD13EA007C0000EBFE0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A31D6D430000
+</span><span class='line'>      1:
+</span><span class='line'>          partition-name:
+</span><span class='line'>          partition-start: 1
+</span><span class='line'>          partition-synthesized: <span class="nb">true</span>
+</span><span class='line'><span class="nb">         </span>partition-length: 24575
+</span><span class='line'>          partition-hint: Apple_Free
+</span><span class='line'>      2:
+</span><span class='line'>          partition-start: 24576
+</span><span class='line'>          partition-number: 1
+</span><span class='line'>          partition-length: 81920
+</span><span class='line'>          partition-hint: Windows_FAT_32
+</span><span class='line'>          partition-filesystems:
+</span><span class='line'>              FAT16: boot
+</span><span class='line'>      3:
+</span><span class='line'>          partition-start: 106496
+</span><span class='line'>          partition-number: 2
+</span><span class='line'>          partition-length: 425984
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>      4:
+</span><span class='line'>          partition-start: 532480
+</span><span class='line'>          partition-number: 3
+</span><span class='line'>          partition-length: 425984
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>      5:
+</span><span class='line'>          partition-start: 958464
+</span><span class='line'>          partition-number: 4
+</span><span class='line'>          partition-length: 262144
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>  burnable: <span class="nb">false</span>
+</span><span class='line'>Resize limits <span class="o">(</span>per hdiutil resize -limits<span class="o">)</span>:
+</span><span class='line'> min   cur     max
+</span><span class='line'>1220608   1220608 1245311712
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see the boot partition, the primary and secondary root partitions and the data partition.
+Since the root partitions are using ext2fs, and we&rsquo;re on OSX, we need to install <a href="https://osxfuse.github.io">FUSE for macOS</a> along with <a href="https://github.com/alperakcan/fuse-ext2">FUSE-Ext2</a> to be able to mount and write to these partitions.</p>
+
+<h2>FUSE for macOS</h2>
+
+<p>Download the OSX package from <a href="https://osxfuse.github.io">https://osxfuse.github.io</a> and follow the instructions to install it. Make sure to tick the checkbox for <code>MacFUSE Compatibility Layer</code>. That&rsquo;s required for <code>FUSE-Ext2</code>  support.</p>
+
+<h2>FUSE-Ext2</h2>
+
+<p>This gets a little more complicated.
+Instead of compiling everything from source, like described <a href="https://github.com/alperakcan/fuse-ext2#mac-os">here</a>, we&rsquo;re using the excellent <a href="https://brew.sh">Homebrew</a> package manager to install the dependencies and just compile <code>FUSE-Ext2</code> itself. (we should probably create a formula for FUSE-Ext2 too &hellip;)</p>
+
+<p>Install the dependencies</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install m4 autoconf automake libtool e2fsprogs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Install <code>FUSE-Ext2</code> itself</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/alperakcan/fuse-ext2.git
+</span><span class='line'><span class="nb">cd </span>fuse-ext2
+</span><span class='line'>./autogen.sh
+</span><span class='line'>./configure
+</span><span class='line'><span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-I /usr/local/include -I $(brew --prefix e2fsprogs)/include&quot;</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/lib -L$(brew --prefix e2fsprogs)/lib&quot;</span> ./configure
+</span><span class='line'>make
+</span><span class='line'>sudo make install
+</span><span class='line'><span class="nb">cd</span> ..
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Attach the original mender image</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hdiutil attach mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/disk2           FDisk_partition_scheme
+</span><span class='line'>/dev/disk2s1          Windows_FAT_32                  /Volumes/boot
+</span><span class='line'>/dev/disk2s2          Linux
+</span><span class='line'>/dev/disk2s3          Linux
+</span><span class='line'>/dev/disk2s4          Linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since <code>/dev/disk1</code> is our OSX boot disk, and we have nothing else mounted, <code>/dev/disk2</code> is the <code>.img</code> file we just attached. Pay attention to use the correct device in case you have more disks attached.</p>
+
+<p>We will have to mount both of the root partitions and edit some files in there.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir <span class="k">$(</span>e2label /dev/disk2s2<span class="k">)</span>
+</span><span class='line'>mkdir <span class="k">$(</span>e2label /dev/disk2s3<span class="k">)</span>
+</span><span class='line'>mount -t fuse-ext2 -o rw /dev/disk2s2 <span class="k">$(</span>e2label /dev/disk2s2<span class="k">)</span>
+</span><span class='line'>mount -t fuse-ext2 -o rw /dev/disk2s3 <span class="k">$(</span>e2label /dev/disk2s3<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab your <a href="https://hosted.mender.io">hosted mender</a> token (  top right menu, under <em>My organization</em>) and inject it to the image.
+Replace <code>&lt;token from hosted mender&gt;</code> with your token.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> primary/etc/mender/mender.conf
+</span><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> secondary/etc/mender/mender.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Verify the config file contents</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat primary/etc/mender/mender.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;InventoryPollIntervalSeconds&quot;</span>: 5,
+</span><span class='line'>    <span class="s2">&quot;RetryPollIntervalSeconds&quot;</span>: 1,
+</span><span class='line'>    <span class="s2">&quot;RootfsPartA&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p2&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;RootfsPartB&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p3&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;ServerCertificate&quot;</span>: <span class="s2">&quot;/etc/mender/server.crt&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;ServerURL&quot;</span>: <span class="s2">&quot;https://docker.mender.io&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;TenantToken&quot;</span>: <span class="s2">&quot;&lt;token from hosted mender&gt;&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;UpdatePollIntervalSeconds&quot;</span>: 5
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unmount and burn the image and we&rsquo;re done. Adjust <code>/dev/disk3</code> to your sdcard device.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>umount primary
+</span><span class='line'>umount secondary
+</span><span class='line'>hdiutil detach /dev/disk2
+</span><span class='line'>sudo dd <span class="k">if</span><span class="o">=</span>mender-raspberrypi3_1.3.1.img <span class="nv">of</span><span class="o">=</span>/dev/disk3 <span class="nv">bs</span><span class="o">=</span>1m <span class="o">&amp;&amp;</span> sudo sync
+</span><span class='line'>hdiutil detach /dev/disk3
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+    <div id="ck_embed_form" class="ck_embed_form row">
+  <div class="small-12 large-6 columns" id="ck_form_content">
+    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
+    <div class="ck_embed_description">
+      <span class="ck_image">
+
+      </span>
+        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
+    </div>
+  </div>
+<div id='ck_success_msg' class='fade' style='display:none;'>
+  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
+</div>
+  <!--  Form starts here  -->
+  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
+    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
+    <p class="ck_errorArea"></p>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_firstNameField">First Name</label>
+      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
+    </div>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_emailField">Email Address</label>
+        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
+    </div>
+    <label class="ck_checkbox">
+      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
+      I&#8217;d like to receive a free 30 day course by email.
+    </label>
+
+    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
+      Claim my spot on the course
+    </button>
+    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
+  </form>
+</div>
+
+<script src="https://convertkit.com/assets/CKJS4.js"></script>
+
+
+
   
   
     <article>
@@ -2696,326 +3085,6 @@ If you haven&rsquo;t done this before, check out <a href="https://wiki.mikrotik.
 
 
 <p><strong>[UPDATE 1, Jan 7]</strong> The original version of this post told you to <code>rm /usr/bin/openssl</code>, based on the link above. As James Tucker pointed out, this is a horrible idea. I fixed the article so that we now fix the <code>$PATH</code> instead.</p>
-</div>
-  
-  
-
-
-    </article>
-    <div id="ck_embed_form" class="ck_embed_form row">
-  <div class="small-12 large-6 columns" id="ck_form_content">
-    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
-    <div class="ck_embed_description">
-      <span class="ck_image">
-
-      </span>
-        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
-    </div>
-  </div>
-<div id='ck_success_msg' class='fade' style='display:none;'>
-  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
-</div>
-  <!--  Form starts here  -->
-  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
-    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
-    <p class="ck_errorArea"></p>
-    <div class="ck_control_group">
-      <label class="ck_label" for="ck_firstNameField">First Name</label>
-      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
-    </div>
-    <div class="ck_control_group">
-      <label class="ck_label" for="ck_emailField">Email Address</label>
-        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
-    </div>
-    <label class="ck_checkbox">
-      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
-      I&#8217;d like to receive a free 30 day course by email.
-    </label>
-
-    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
-      Claim my spot on the course
-    </button>
-    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
-  </form>
-</div>
-
-<script src="https://convertkit.com/assets/CKJS4.js"></script>
-
-
-
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/theden/rails-garbage-collection-age-matters/">Rails Garbage Collection: Age Matters</a></h1>
-    
-    
-      <p class="meta">
-        
-  
-
-<span class="byline author vcard"><span class="fn"><a href="/team/lourens/" rel="author">Lourens</a></span> wrote this on </span>
-
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-22T20:26:00+02:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>22</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>8:26 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In a <a href="https://bearmetal.eu/theden/rails-garbage-collection-naive-defaults/">previous post</a> in the <a href="/theden/categories/rails-performance">Rails Performance</a> series we stated that the default garbage collection settings for <a href="http://www.rubyonrails.org">Ruby on Rails</a> applications are not optimal. In this post we&rsquo;ll explore the basics of object age in RGenGC, Ruby 2.1&rsquo;s new <em>restricted generational garbage collector</em>.</p>
-
-<p>As a prerequisite of this and subsequent posts, basic understanding of a <em>mark and sweep</em><sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> collector is assumed.</p>
-
-<p><img src="/images/gc_mark_sweep.png" alt="" /></p>
-
-<p>A somewhat simplified mark and sweep cycle goes like this:</p>
-
-<ol>
-<li>A mark and sweep collector traverses the object graph.</li>
-<li>It checks which objects are in use (referenced) and which ones are not.</li>
-<li>This is called object marking, aka. the <strong>MARK PHASE</strong>.</li>
-<li>All unused objects are freed, making their memory available.</li>
-<li>This is called sweeping, aka. the <strong>SWEEP PHASE</strong>.</li>
-<li>Nothing changes for used objects.</li>
-</ol>
-
-
-<p>A GC cycle prior to Ruby 2.1 works like that. A typical Rails app boots with 300 000 live objects of which all need to be scanned during the <strong>MARK</strong> phase. That usually yields a smaller set to <strong>SWEEP</strong>.</p>
-
-<p>A large percentage of the graph is going to be traversed over and over again but will never be reclaimed. This is not only CPU intensive during GC cycles, but also incurs memory overhead for accounting and anticipation for future growth.</p>
-
-<h2>Old and young objects</h2>
-
-<p><strong>What generally makes an object old?</strong></p>
-
-<ul>
-<li><em>All new objects are considered to be young</em>.</li>
-<li><em>Old objects survived at least one GC cycle (major or minor)</em> The collector thus reasons that the object will stick around and not become garbage quickly.</li>
-</ul>
-
-
-<p>The idea behind the new generational garbage collector is this:</p>
-
-<blockquote><p><strong>MOST OBJECTS DIE YOUNG.</strong></p></blockquote>
-
-<p>To take advantage of this fact, the new GC classifies objects on the Ruby heap as either <strong>OLD</strong> or <strong>YOUNG</strong>. This segregation now allows the garbage collector to work with two distinct generations, with the <strong>OLD</strong> generation much less likely to yield much improvement towards recovering memory.</p>
-
-<p>For a typical Rails request, some examples of old and new objects would be:</p>
-
-<ul>
-<li><strong>Old:</strong> compiled routes, templates, ActiveRecord connections, cached DB column info, classes, modules etc.</li>
-<li><strong>New:</strong> short lived strings within a partial, a string column value from an ActiveRecord result, a coerced DateTime instance etc.</li>
-</ul>
-
-
-<p>Young objects are more likely to reference old objects than old objects referencing young objects. Old objects also frequently reference other old objects.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="n">u</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">first</span>
-</span><span class='line'>  <span class="c1">#&lt;User id: 1, email: &quot;lourens@something.com&quot;, encrypted_password: &quot;blahblah...&quot;, reset_password_token: nil, reset_password_sent_at: nil, remember_created_at: nil, sign_in_count: 2, current_sign_in_at: &quot;2014-10-31 11:52:30&quot;, last_sign_in_at: &quot;2014-10-29 10:04:01&quot;, current_sign_in_ip: &quot;127.0.0.1&quot;, last_sign_in_ip: &quot;127.0.0.1&quot;, created_at: &quot;2014-10-29 10:04:01&quot;, updated_at: &quot;2014-11-30 14:07:15&quot;, provider: nil, uid: nil, first_name: &quot;dfdsfds&quot;, last_name: &quot;dfdsfds&quot;, confirmation_token: nil, confirmed_at: &quot;2014-10-30 10:11:42&quot;, confirmation_sent_at: nil, unconfirmed_email: nil, onboarded_at: nil&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Notice how the transient attribute keys and names reference the long lived columns here:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">=&gt;</span>
-</span><span class='line'>   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Integer:0x007fbe756d1d30&gt;,</span>
-</span><span class='line'>  <span class="s2">&quot;email&quot;</span><span class="o">=&gt;</span>
-</span><span class='line'>   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
-</span><span class='line'>  <span class="s2">&quot;encrypted_password&quot;</span><span class="o">=&gt;</span>
-</span><span class='line'>   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
-</span><span class='line'>  <span class="s2">&quot;reset_password_token&quot;</span><span class="o">=&gt;</span>
-</span><span class='line'>   <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Identity:0x007fbe756d1718&gt;,</span>
-</span><span class='line'>  <span class="s2">&quot;reset_password_sent_at&quot;</span><span class="o">=&gt;</span>
-</span><span class='line'>   <span class="c1">#&lt;ActiveRecord::AttributeMethods::TimeZoneConversion::Type:0x007fbe741f63c0</span>
-</span><span class='line'>    <span class="vi">@column</span><span class="o">=</span>
-</span><span class='line'>     <span class="c1">#&lt;ActiveRecord::ConnectionAdapters::PostgreSQLAdapter::OID::Timestamp:0x007fbe756d0e58&gt;&gt;,</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Age segregation is also just a classification &ndash; old and young objects aren&rsquo;t stored in distinct memory spaces &ndash; they&rsquo;re just conceptional buckets. The generation of an object refers to the amount of GC cycles it survived:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">00</span><span class="mi">9</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="o">[]</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24c007668</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ARRAY</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b872038</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">length</span><span class="se">\&quot;</span><span class="s2">:0, </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:9, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:8, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">010</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">GC</span><span class="o">.</span><span class="n">count</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="mi">8</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>What the heck is major and minor GC?</h2>
-
-<p>You may have heard, read about or noticed in GC.stat output the terms &ldquo;minor&rdquo; and &ldquo;major&rdquo; GC.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">pp</span> <span class="no">GC</span><span class="o">.</span><span class="n">stat</span>
-</span><span class='line'><span class="p">{</span><span class="ss">:count</span><span class="o">=&gt;</span><span class="mi">32</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_used</span><span class="o">=&gt;</span><span class="mi">1181</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_length</span><span class="o">=&gt;</span><span class="mi">1233</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_increment</span><span class="o">=&gt;</span><span class="mi">50</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_live_slot</span><span class="o">=&gt;</span><span class="mi">325148</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_free_slot</span><span class="o">=&gt;</span><span class="mi">156231</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_final_slot</span><span class="o">=&gt;</span><span class="mi">0</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_swept_slot</span><span class="o">=&gt;</span><span class="mi">163121</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_eden_page_length</span><span class="o">=&gt;</span><span class="mi">1171</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:heap_tomb_page_length</span><span class="o">=&gt;</span><span class="mi">10</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:total_allocated_object</span><span class="o">=&gt;</span><span class="mi">2050551</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:total_freed_object</span><span class="o">=&gt;</span><span class="mi">1725403</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:malloc_increase</span><span class="o">=&gt;</span><span class="mi">1462784</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:malloc_limit</span><span class="o">=&gt;</span><span class="mi">24750208</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:minor_gc_count</span><span class="o">=&gt;</span><span class="mi">26</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:major_gc_count</span><span class="o">=&gt;</span><span class="mi">6</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:remembered_shady_object</span><span class="o">=&gt;</span><span class="mi">3877</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:remembered_shady_object_limit</span><span class="o">=&gt;</span><span class="mi">4042</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:old_object</span><span class="o">=&gt;</span><span class="mi">304270</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:old_object_limit</span><span class="o">=&gt;</span><span class="mi">259974</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:oldmalloc_increase</span><span class="o">=&gt;</span><span class="mi">23639792</span><span class="p">,</span>
-</span><span class='line'> <span class="ss">:oldmalloc_limit</span><span class="o">=&gt;</span><span class="mi">24159190</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Minor GC (or &ldquo;partial marking&rdquo;):</strong> This cycle only traverses the young generation and is very fast. Based on the hypothesis that most objects die young, this GC cycle is thus the most effective at reclaiming back a large ratio of memory in proportion to objects traversed.</p>
-
-<p>It runs quite often - 26 times for the GC dump of a booted Rails app above.</p>
-
-<p><strong>Major GC:</strong> Triggered by out-of-memory conditions - Ruby heap space needs to be expanded (not OOM killer! :-)) Both old and young objects are traversed and it&rsquo;s thus significantly slower than a minor GC round. Generally when there&rsquo;s a significant increase in old objects, a major GC would be triggered. Every major GC cycle that an object survived bumps its current generation.</p>
-
-<p>It runs much less frequently - six times for the stats dump above.</p>
-
-<p>The following diagram represents a minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) that identifies and promotes some objects to old.</p>
-
-<p><img src="/images/gc_first_minor.png" alt="" /></p>
-
-<p>A subsequent minor GC cycle (<strong>MARK</strong> phase completed, <strong>SWEEP</strong> still pending) ignores old objects during the mark phase.</p>
-
-<p><img src="/images/gc_second_minor.png" alt="" /></p>
-
-<p>Most of the reclaiming efforts are thus focussed on the young generation (new objects). Generally 95% of objects are dead by the first GC. The current generation of an object is the number of major GC cycles it has survived.</p>
-
-<h2>RGenGC</h2>
-
-<p>At a very high level C Ruby 2.1&rsquo;s collector has the following properties:</p>
-
-<ul>
-<li>High throughput - it can sustain a high rate of allocations / collections due to faster minor GC cycles and very rare major GC cycles.</li>
-<li>GC pauses are still long (&ldquo;stop the world&rdquo;) for major GC cycles.</li>
-<li>Generational collectors have much shorter mark cycles as they traverse only the young generation, most of the time.</li>
-</ul>
-
-
-<p>This is a marked improvement to the C Ruby GC and serves as a base for implementing other advanced features moving forward. Ruby 2.2 supports incremental GC and object ages beyond just old and new definitions. A major GC cycle in 2.1 still runs in a &ldquo;stop the world&rdquo; manner, whereas a more involved incremental implementation (Ruby 2.2) interleaves short steps of mark and sweep cycles between other VM operations.</p>
-
-<h2>Object references</h2>
-
-<p>In this simple example below we create a String array with three elements.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">001</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="nb">require</span> <span class="s1">&#39;objspace&#39;</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">true</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">002</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">trace_object_allocations_start</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="kp">nil</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">003</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="n">ary</span> <span class="o">=</span> <span class="sx">%w(a b c)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Very much like a river flowing downstream, the array has knowledge of (a reference to) each of its String elements. On the contrary, the strings don&rsquo;t have an awareness of (or references back to) the array container.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b890fd8</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">ARRAY</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b872038</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">length</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">embedded</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">references</span><span class="se">\&quot;</span><span class="s2">:[</span><span class="se">\&quot;</span><span class="s2">0x007fd24b891050</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">0x007fd24b891028</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">0x007fd24b891000</span><span class="se">\&quot;</span><span class="s2">], </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:7, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">004</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">reachable_objects_from</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="nb">Array</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="o">]</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">006</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">reachable_objects_from</span><span class="p">(</span><span class="n">ary</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="o">[</span><span class="nb">String</span><span class="o">]</span>
-</span><span class='line'><span class="n">irb</span><span class="p">(</span><span class="n">main</span><span class="p">):</span><span class="mo">007</span><span class="p">:</span><span class="mi">0</span><span class="o">&gt;</span> <span class="no">ObjectSpace</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ary</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'><span class="o">=&gt;</span> <span class="s2">&quot;{</span><span class="se">\&quot;</span><span class="s2">address</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b891028</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">type</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">STRING</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">class</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">0x007fd24b829658</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">embedded</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">bytesize</span><span class="se">\&quot;</span><span class="s2">:1, </span><span class="se">\&quot;</span><span class="s2">value</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">b</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">encoding</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">UTF-8</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">file</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">(irb)</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">line</span><span class="se">\&quot;</span><span class="s2">:3, </span><span class="se">\&quot;</span><span class="s2">method</span><span class="se">\&quot;</span><span class="s2">:</span><span class="se">\&quot;</span><span class="s2">irb_binding</span><span class="se">\&quot;</span><span class="s2">, </span><span class="se">\&quot;</span><span class="s2">generation</span><span class="se">\&quot;</span><span class="s2">:7, </span><span class="se">\&quot;</span><span class="s2">flags</span><span class="se">\&quot;</span><span class="s2">:{</span><span class="se">\&quot;</span><span class="s2">wb_protected</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">old</span><span class="se">\&quot;</span><span class="s2">:true, </span><span class="se">\&quot;</span><span class="s2">marked</span><span class="se">\&quot;</span><span class="s2">:true}}</span><span class="se">\n</span><span class="s2">&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>We stated earlier that:</p>
-
-<p><strong>Young objects are more likely to reference old objects, than old objects referencing young objects. Old objects also frequently reference other old objects.</strong></p>
-
-<p><em>However</em> it&rsquo;s possible for old objects to reference new objects. What happens when old objects reference new ones?</p>
-
-<p>Old objects with references to new objects are stored in a &ldquo;remembered set&rdquo;. The remembered set is a container of references from old objects to new objects and is a shortcut for preventing heap scans for finding such references.</p>
-
-<h2>Implications for Rails</h2>
-
-<p>As our friend Ezra used to say, &ldquo;no code is faster than no code.&rdquo; The same applies to automatic memory management. Every object allocation also has a variable recycle cost. Allocation generally is low overhead as it happens once, except for the use case where there are no free object slots on the Ruby heap and a major GC is triggered as a result.</p>
-
-<p>A major drawback of this limited segregation of OLD vs YOUNG is that <strong>many transient objects are in fact promoted to old during large contexts such as a Rails request</strong>. These long lived objects eventually become unexpected &ldquo;memory leaks&rdquo;. These transient objects can be conceptually classified as of &ldquo;medium lifetime&rdquo; as they need to stick around for the duration of a request. There&rsquo;s however a large probability that a minor GC would run during request lifetime, promoting young objects to old, effectively increasing their lifetime to well beyond the end of a request. This situation can only be revisited during a major GC which runs infrequently and sweeps both old and young objects.</p>
-
-<p><strong>Each generation can be specifically tweaked, with the older generation being particularly important for balancing total process memory use with maintaining a minimal transient object set (young ones) per request. And subsequent too fast promotion from young to old generation.</strong></p>
-
-<p><em>In our next post we will explore how you&rsquo;d approach tuning the Ruby GC for Rails applications, balancing tradeoffs of speed and memory. Leave your email address below and we&rsquo;ll let you know as soon as it&rsquo;s posted.</em></p>
-<div class="footnotes">
-<hr/>
-<ol>
-<li id="fn:1">
-<p>See the Ruby Hacking Guide&rsquo;s <a href="https://ruby-hacking-guide.github.io/gc.html">GC chapter</a> for further context and nitty gritty details. I&rsquo;d recommended scanning the content below the first few headings, until turned off by C.<a href="#fnref:1" rev="footnote">&#8617;</a></p></li>
-</ol>
-</div>
-
 </div>
   
   

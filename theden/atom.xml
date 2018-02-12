@@ -4,7 +4,7 @@
   <title><![CDATA[Bear Metal]]></title>
   <link href="https://bearmetal.eu/theden/atom.xml" rel="self"/>
   <link href="https://bearmetal.eu/"/>
-  <updated>2018-01-31T11:02:39+02:00</updated>
+  <updated>2018-02-12T09:33:44+02:00</updated>
   <id>https://bearmetal.eu/</id>
   <author>
     <name><![CDATA[Bear Metal OÜ]]></name>
@@ -12,6 +12,329 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Hosted mender getting started on OSX and Raspberry Pi 3]]></title>
+    <link href="https://bearmetal.eu//theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3/"/>
+    <updated>2018-02-12T07:00:00+02:00</updated>
+    <id>https://bearmetal.eu//theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3</id>
+    <content type="html"><![CDATA[<p>Having various embedded linux devices around (mostly Raspberry Pi&rsquo;s), and a few client projects dealing with software updates to remote devices, I&rsquo;ve become interested in fleet management. More specifically, I wanted:</p>
+
+<ul>
+<li>inventory management</li>
+<li><a href="https://source.android.com/devices/tech/ota/ab/">A/B partition updates</a></li>
+<li>integrity checks</li>
+<li>signed updates</li>
+</ul>
+
+
+<p>I&rsquo;ve heard about <a href="https://resin.io/">resin.io</a> before, and while appealing, the control freak in me wanted something with an open server infrastructrure. I&rsquo;m also not sold on having docker in production embedded devices (while surely being useful for prototyping and experimentation).</p>
+
+<p>Then there&rsquo;s the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.</p>
+
+<p>Then I stumbled onto <a href="https://mender.io/">mender</a>. On first glance, it seems perfect. Let&rsquo;s take a look, shall we?</p>
+
+<h1>Burning the initial image</h1>
+
+<p>We&rsquo;re gonna be roughly following along the <a href="https://docs.mender.io/1.3/getting-started">mender getting started guide</a> while keeping things OSX compatible.</p>
+
+<p>Instead of running our own server infrastructure (which is nice to have as an option, but not required for initial experimenting), we&rsquo;ll be using <a href="https://hosted.mender.io/">hosted mender</a>. That means we will have to inject our hosted mender token into the initial disk image what we will boot the RPi3 from.</p>
+
+<p>Download the Raspberry Pi 3 disk image from <a href="https://docs.mender.io/1.3/getting-started/download-test-images">https://docs.mender.io/1.3/getting-started/download-test-images</a> .
+Decompress and change the file extension to make it palatable for <code>hdiutil</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget https://d1b0l86ne08fsf.cloudfront.net/1.3.1/raspberrypi3/mender-raspberrypi3_1.3.1.sdimg.gz
+</span><span class='line'>gunzip mender-raspberrypi3_1.3.1.sdimg.gz
+</span><span class='line'>  mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Verify we have a good image</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hdiutil imageinfo mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Backing Store Information:
+</span><span class='line'>  URL: file:///Users/erkkieilonen/projects/learning/mender/mender-raspberrypi3_1.3.1.img
+</span><span class='line'>  Name: mender-raspberrypi3_1.3.1.img
+</span><span class='line'>  Class Name: CBSDBackingStore
+</span><span class='line'>Class Name: CRawDiskImage
+</span><span class='line'>Checksum Type: none
+</span><span class='line'>Size Information:
+</span><span class='line'>  Total Bytes: 624951296
+</span><span class='line'>  Compressed Ratio: 1
+</span><span class='line'>  Sector Count: 1220608
+</span><span class='line'>  Total Non-Empty Bytes: 624951296
+</span><span class='line'>  Compressed Bytes: 624951296
+</span><span class='line'>  Total Empty Bytes: 0
+</span><span class='line'>Format: RAW*
+</span><span class='line'>Format Description: raw <span class="nb">read</span>/write
+</span><span class='line'>Checksum Value:
+</span><span class='line'>Properties:
+</span><span class='line'>  Encrypted: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Kernel Compatible: <span class="nb">true</span>
+</span><span class='line'><span class="nb"> </span>Checksummed: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Software License Agreement: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Partitioned: <span class="nb">false</span>
+</span><span class='line'><span class="nb"> </span>Compressed: no
+</span><span class='line'>Segments:
+</span><span class='line'>  0: /Users/erkkieilonen/projects/learning/mender/mender-raspberrypi3_1.3.1.img
+</span><span class='line'>partitions:
+</span><span class='line'>  partition-scheme: fdisk
+</span><span class='line'>  block-size: 512
+</span><span class='line'>  partitions:
+</span><span class='line'>      0:
+</span><span class='line'>          partition-name: Master Boot Record
+</span><span class='line'>          partition-start: 0
+</span><span class='line'>          partition-synthesized: <span class="nb">true</span>
+</span><span class='line'><span class="nb">         </span>partition-length: 1
+</span><span class='line'>          partition-hint: MBR
+</span><span class='line'>          boot-code: 0xFAB800108ED0BC00B0B800008ED88EC0FBBE007CBF0006B90002F3A4EA21060000BEBE073804750B83C61081FEFE0775F3EB16B402B001BB007CB2808A74018B4C02CD13EA007C0000EBFE0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000A31D6D430000
+</span><span class='line'>      1:
+</span><span class='line'>          partition-name:
+</span><span class='line'>          partition-start: 1
+</span><span class='line'>          partition-synthesized: <span class="nb">true</span>
+</span><span class='line'><span class="nb">         </span>partition-length: 24575
+</span><span class='line'>          partition-hint: Apple_Free
+</span><span class='line'>      2:
+</span><span class='line'>          partition-start: 24576
+</span><span class='line'>          partition-number: 1
+</span><span class='line'>          partition-length: 81920
+</span><span class='line'>          partition-hint: Windows_FAT_32
+</span><span class='line'>          partition-filesystems:
+</span><span class='line'>              FAT16: boot
+</span><span class='line'>      3:
+</span><span class='line'>          partition-start: 106496
+</span><span class='line'>          partition-number: 2
+</span><span class='line'>          partition-length: 425984
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>      4:
+</span><span class='line'>          partition-start: 532480
+</span><span class='line'>          partition-number: 3
+</span><span class='line'>          partition-length: 425984
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>      5:
+</span><span class='line'>          partition-start: 958464
+</span><span class='line'>          partition-number: 4
+</span><span class='line'>          partition-length: 262144
+</span><span class='line'>          partition-hint: Linux_Ext2FS
+</span><span class='line'>  burnable: <span class="nb">false</span>
+</span><span class='line'>Resize limits <span class="o">(</span>per hdiutil resize -limits<span class="o">)</span>:
+</span><span class='line'> min   cur     max
+</span><span class='line'>1220608   1220608 1245311712
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see the boot partition, the primary and secondary root partitions and the data partition.
+Since the root partitions are using ext2fs, and we&rsquo;re on OSX, we need to install <a href="https://osxfuse.github.io">FUSE for macOS</a> along with <a href="https://github.com/alperakcan/fuse-ext2">FUSE-Ext2</a> to be able to mount and write to these partitions.</p>
+
+<h2>FUSE for macOS</h2>
+
+<p>Download the OSX package from <a href="https://osxfuse.github.io">https://osxfuse.github.io</a> and follow the instructions to install it. Make sure to tick the checkbox for <code>MacFUSE Compatibility Layer</code>. That&rsquo;s required for <code>FUSE-Ext2</code>  support.</p>
+
+<h2>FUSE-Ext2</h2>
+
+<p>This gets a little more complicated.
+Instead of compiling everything from source, like described <a href="https://github.com/alperakcan/fuse-ext2#mac-os">here</a>, we&rsquo;re using the excellent <a href="https://brew.sh">Homebrew</a> package manager to install the dependencies and just compile <code>FUSE-Ext2</code> itself. (we should probably create a formula for FUSE-Ext2 too &hellip;)</p>
+
+<p>Install the dependencies</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>brew install m4 autoconf automake libtool e2fsprogs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Install <code>FUSE-Ext2</code> itself</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/alperakcan/fuse-ext2.git
+</span><span class='line'><span class="nb">cd </span>fuse-ext2
+</span><span class='line'>./autogen.sh
+</span><span class='line'>./configure
+</span><span class='line'><span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-I /usr/local/include -I $(brew --prefix e2fsprogs)/include&quot;</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&quot;-L/usr/local/lib -L$(brew --prefix e2fsprogs)/lib&quot;</span> ./configure
+</span><span class='line'>make
+</span><span class='line'>sudo make install
+</span><span class='line'><span class="nb">cd</span> ..
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Attach the original mender image</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hdiutil attach mender-raspberrypi3_1.3.1.img
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/dev/disk2           FDisk_partition_scheme
+</span><span class='line'>/dev/disk2s1          Windows_FAT_32                  /Volumes/boot
+</span><span class='line'>/dev/disk2s2          Linux
+</span><span class='line'>/dev/disk2s3          Linux
+</span><span class='line'>/dev/disk2s4          Linux
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Since <code>/dev/disk1</code> is our OSX boot disk, and we have nothing else mounted, <code>/dev/disk2</code> is the <code>.img</code> file we just attached. Pay attention to use the correct device in case you have more disks attached.</p>
+
+<p>We will have to mount both of the root partitions and edit some files in there.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir <span class="k">$(</span>e2label /dev/disk2s2<span class="k">)</span>
+</span><span class='line'>mkdir <span class="k">$(</span>e2label /dev/disk2s3<span class="k">)</span>
+</span><span class='line'>mount -t fuse-ext2 -o rw /dev/disk2s2 <span class="k">$(</span>e2label /dev/disk2s2<span class="k">)</span>
+</span><span class='line'>mount -t fuse-ext2 -o rw /dev/disk2s3 <span class="k">$(</span>e2label /dev/disk2s3<span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Grab your <a href="https://hosted.mender.io">hosted mender</a> token (  top right menu, under <em>My organization</em>) and inject it to the image.
+Replace <code>&lt;token from hosted mender&gt;</code> with your token.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> primary/etc/mender/mender.conf
+</span><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> secondary/etc/mender/mender.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Verify the config file contents</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat primary/etc/mender/mender.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;InventoryPollIntervalSeconds&quot;</span>: 5,
+</span><span class='line'>    <span class="s2">&quot;RetryPollIntervalSeconds&quot;</span>: 1,
+</span><span class='line'>    <span class="s2">&quot;RootfsPartA&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p2&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;RootfsPartB&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p3&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;ServerCertificate&quot;</span>: <span class="s2">&quot;/etc/mender/server.crt&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;ServerURL&quot;</span>: <span class="s2">&quot;https://docker.mender.io&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;TenantToken&quot;</span>: <span class="s2">&quot;&lt;token from hosted mender&gt;&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;UpdatePollIntervalSeconds&quot;</span>: 5
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unmount and burn the image and we&rsquo;re done. Adjust <code>/dev/disk3</code> to your sdcard device.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>umount primary
+</span><span class='line'>umount secondary
+</span><span class='line'>hdiutil detach /dev/disk2
+</span><span class='line'>sudo dd <span class="k">if</span><span class="o">=</span>mender-raspberrypi3_1.3.1.img <span class="nv">of</span><span class="o">=</span>/dev/disk3 <span class="nv">bs</span><span class="o">=</span>1m <span class="o">&amp;&amp;</span> sudo sync
+</span><span class='line'>hdiutil detach /dev/disk3
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Enable LTE roaming on a Mikrotik router with Huawei ME909u-521 modem]]></title>
