@@ -379,8 +379,12 @@ Replace <code>&lt;token from hosted mender&gt;</code> with your token.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> primary/etc/mender/mender.conf
+</span><span class='line'>sed -ibak <span class="s1">&#39;s/docker.mender.io/hosted.mender.io/&#39;</span> primary/etc/mender/mender.conf
 </span><span class='line'>sed -ibak <span class="s1">&#39;s/dummy/&lt;token from hosted mender&gt;/&#39;</span> secondary/etc/mender/mender.conf
+</span><span class='line'>sed -ibak <span class="s1">&#39;s/docker.mender.io/hosted.mender.io/&#39;</span> secondary/etc/mender/mender.conf
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -409,7 +413,7 @@ Replace <code>&lt;token from hosted mender&gt;</code> with your token.</p>
 </span><span class='line'>    <span class="s2">&quot;RootfsPartA&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p2&quot;</span>,
 </span><span class='line'>    <span class="s2">&quot;RootfsPartB&quot;</span>: <span class="s2">&quot;/dev/mmcblk0p3&quot;</span>,
 </span><span class='line'>    <span class="s2">&quot;ServerCertificate&quot;</span>: <span class="s2">&quot;/etc/mender/server.crt&quot;</span>,
-</span><span class='line'>    <span class="s2">&quot;ServerURL&quot;</span>: <span class="s2">&quot;https://docker.mender.io&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;ServerURL&quot;</span>: <span class="s2">&quot;https://hosted.mender.io&quot;</span>,
 </span><span class='line'>    <span class="s2">&quot;TenantToken&quot;</span>: <span class="s2">&quot;&lt;token from hosted mender&gt;&quot;</span>,
 </span><span class='line'>    <span class="s2">&quot;UpdatePollIntervalSeconds&quot;</span>: 5
 </span><span class='line'><span class="o">}</span>
