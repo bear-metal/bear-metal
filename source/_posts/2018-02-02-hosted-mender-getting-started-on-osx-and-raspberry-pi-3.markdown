@@ -18,7 +18,7 @@ Having various embedded linux devices around (mostly Raspberry Pi's), and a few 
 
 I've heard about <a href="https://resin.io/">resin.io</a> before, and while appealing, the control freak in me wanted something with an open server infrastructrure. I'm also not sold on having docker in production embedded devices (while surely being useful for prototyping and experimentation).
 
-Then there's the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.
+There's the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.
 
 Then I stumbled onto <a href="https://mender.io/">mender</a>. On first glance, it seems perfect. Let's take a look, shall we?
 
@@ -198,3 +198,7 @@ hdiutil detach /dev/disk2
 sudo dd if=mender-raspberrypi3_1.3.1.img of=/dev/disk3 bs=1m && sudo sync
 hdiutil detach /dev/disk3
 ```
+
+Boot the RPi and check the mender dashboard, you should see a new authorization request pop up.
+
+<img src="/images/mender/mender_auth_list.png" />
