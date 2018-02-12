@@ -32,7 +32,7 @@ Decompress and change the file extension to make it palatable for `hdiutil`.
 ```bash
 wget https://d1b0l86ne08fsf.cloudfront.net/1.3.1/raspberrypi3/mender-raspberrypi3_1.3.1.sdimg.gz
 gunzip mender-raspberrypi3_1.3.1.sdimg.gz
-  mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
+mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
 ```
 
 Verify we have a good image
