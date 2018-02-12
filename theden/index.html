@@ -108,7 +108,7 @@ ga('send', 'pageview');
 
 <p>I&rsquo;ve heard about <a href="https://resin.io/">resin.io</a> before, and while appealing, the control freak in me wanted something with an open server infrastructrure. I&rsquo;m also not sold on having docker in production embedded devices (while surely being useful for prototyping and experimentation).</p>
 
-<p>Then there&rsquo;s the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.</p>
+<p>There&rsquo;s the <a href="https://nerves-project.org">nerves project</a>, mostly focused around the elixir ecosystem. Something I definitely want to check out in more detail, both to learn more about elixir and for simpler embedded projects.</p>
 
 <p>Then I stumbled onto <a href="https://mender.io/">mender</a>. On first glance, it seems perfect. Let&rsquo;s take a look, shall we?</p>
 
@@ -415,6 +415,10 @@ Replace <code>&lt;token from hosted mender&gt;</code> with your token.</p>
 </span><span class='line'>hdiutil detach /dev/disk3
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>Boot the RPi and check the mender dashboard, you should see a new authorization request pop up.</p>
+
+<p><img src="/images/mender/mender_auth_list.png" /></p>
 </div>
   
   
