@@ -45,7 +45,7 @@ Decompress and change the file extension to make it palatable for <code>hdiutil<
 <code>bash
 wget https://d1b0l86ne08fsf.cloudfront.net/1.3.1/raspberrypi3/mender-raspberrypi3_1.3.1.sdimg.gz
 gunzip mender-raspberrypi3_1.3.1.sdimg.gz
-  mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
+mv mender-raspberrypi3_1.3.1.sdimg mender-raspberrypi3_1.3.1.img
 </code></p>
 
 <p>Verify we have a good image
@@ -209,7 +209,7 @@ sudo dd if=mender-raspberrypi3_1.3.1.img of=/dev/disk3 bs=1m &amp;&amp; sudo syn
 hdiutil detach /dev/disk3
 </code></pre>
 
-<p>Boot the RPi and check the mender dashboard, you should see a new authorization request pop up.</p>
+<p>Boot the RPi and check mender dashboard, you should see a new authorization request pop up.</p>
 
 <p><img src="https://bearmetal.eu/images/mender/mender_auth_list.png" /></p>
 ]]></content>
