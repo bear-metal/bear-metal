@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Elixir Nerves project getting started on raspberry pi 3"
-date: 2018-02-18 15:00:00 +0700
+date: 2018-02-22 12:00:00 +0700
 comments: true
 author: Erkki
 keywords: embedded, elixir, nerves, raspberrypi
