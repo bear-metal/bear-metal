@@ -9,7 +9,7 @@ categories: [embedded, elixir, nerves, raspberrypi]
 published: true
 ---
 
-A few weeks ago we checked out <a href="https://mender.io">mender</a> (see [Hosted Mender Getting Started on OSX and Raspberry Pi 3](/theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3)), now it's time to do the same with the <a href="https://nerves-project.org/">nerves project</a>.
+A few weeks ago we checked out <a href="https://mender.io">mender</a> (see [Hosted Mender Getting Started on OSX and Raspberry Pi 3](/theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3)). Now it's time to do the same with the <a href="https://nerves-project.org/">nerves project</a>. This is how the project describes itself:
 
 {% blockquote %}
 Craft and deploy bulletproof embedded software in <a href="https://elixir-lang.org">Elixir</a>
@@ -17,20 +17,21 @@ Craft and deploy bulletproof embedded software in <a href="https://elixir-lang.o
 Pack your whole application into as little as 12MB and have it start in seconds by booting a lean cross-compiled Linux directly to the battle-hardened Erlang VM.
 {% endblockquote %}
 
-Nerves focuses on getting an elixir project running on embedded hardware (or more recently on a generic x86_64 vm -- expect more on this in future). It handles cross-compiling and firmware updates / deployment for you in a nice way.
+Nerves focuses on getting an Elixir project running on embedded hardware (or more recently on a generic x86_64 vm -- expect more on this in the future). It handles cross-compiling, firmware updates, and deployment for you in a nice way.
 
 To get started:
 
  * install nerves & dependencies https://hexdocs.pm/nerves/installation.html
  * although we'll repeat the steps, skim through https://hexdocs.pm/nerves/getting-started.html
 
-Initialize a new nerves project and export `MIX_TARGET`
+Initialize a new nerves project with the `nerves.new` mix task and export the `MIX_TARGET` environment variable as `rpi3`. This will tell nerves that we want to build our code for Raspberry Pi 3.
+
 ```bash
 mix nerves.new hello_nerves
 cd hello_nerves
 export MIX_TARGET=rpi3
 ```
-Lets add some components so we could deploy firmware via ssh and access logs programmatically; I'm lazy and removing the sdcard for each firmware update is way too much work.
+Let's add some components so we can deploy firmware via ssh and access logs programmatically. I'm lazy and removing the sdcard for each firmware update is way too much work.
 
 Add the following dependencies to `mix.exs`. Target hardware specific packages go to `deps(target)` and the rest go to `deps` so we can run them on the host too.
 ```elixir
@@ -86,7 +87,7 @@ config :shoehorn,
 
   For service discovery to work, we need to advertise our ip with mDNS. Perfect opportunity to play with supervisor trees. We'll be using the new `child_spec/1` syntax introduced in Elixir 1.5.
 
-  Lets implement a new module that registers to dhcp callbacks and configures mDNS with the correct ip address.
+  Let's implement a new module that registers to dhcp callbacks and configures mDNS with the correct ip address.
 ```elixir
 defmodule HelloNerves.Application do
   use Application
@@ -144,7 +145,7 @@ mix firmware.burn
 `mix firmware.burn` will try to detect your sdcard automatically, make sure it's the right one. You can use the `-d` parameter to specify a device.
 Boot the RPi3. You should end up at an IEX prompt.
 
-Lets see if we can now push firmware using ssh. If mDNS is working, you should be able to resolve `nerves.local`
+Let's see if we can now push firmware using ssh. If mDNS is working, you should be able to resolve `nerves.local`
 ```bash
 mix firmware.push nerves.local
 ```
