@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Elixir Nerves project getting started on raspberry pi 3"
+title: "Elixir Nerves project getting started on Raspberry Pi 3"
 date: 2018-02-22 12:00:00 +0700
 comments: true
 author: Erkki
@@ -21,6 +21,7 @@ Nerves focuses on getting an Elixir project running on embedded hardware (or mor
 
 To get started:
 
+ * you will need a Raspberry Pi 3 with a SD card. Optionally a screen and a keyboard attached to the RPi3.
  * install nerves & dependencies https://hexdocs.pm/nerves/installation.html
  * although we'll repeat the steps, skim through https://hexdocs.pm/nerves/getting-started.html
 
@@ -31,9 +32,12 @@ mix nerves.new hello_nerves
 cd hello_nerves
 export MIX_TARGET=rpi3
 ```
-Let's add some components so we can deploy firmware via ssh and access logs programmatically. I'm lazy and removing the sdcard for each firmware update is way too much work.
+To get "over-the-air" firmware upgrades we will have to add support for networking and ssh.
+We will also want a way to access logs remotely instead of having to stare at the screen the RPi3 is attached to.
 
-Add the following dependencies to `mix.exs`. Target hardware specific packages go to `deps(target)` and the rest go to `deps` so we can run them on the host too.
+Add the following dependencies to `mix.exs`.
+
+Notice that we have multiple `deps` methods here, with dependencies spread around. This is so that we could run more general code (including `mix test`) on the host side and limit the embedded hardware specific dependencies to the target.
 ```elixir
   # Run "mix help deps" to learn about dependencies.
   defp deps do
@@ -57,12 +61,13 @@ Add the following dependencies to `mix.exs`. Target hardware specific packages g
   end
 ```
 
-- <a href="https://github.com/nerves-project/nerves_network">nerves_network</a> is used to bootstrap networking.
+- <a href="https://github.com/nerves-project/nerves_network">nerves_network</a> is used to add support for networking on the RPi3 side.
 - <a href="https://github.com/nerves-project/nerves_firmware_ssh">nerves_firmware_ssh</a> is used to deploy firmware using ssh. It also provides remote console access for debugging.
-- <a href="https://github.com/NationalAssociationOfRealtors/mdns">mdns</a> because we do not want to remember ip addresses. <a href="https://en.wikipedia.org/wiki/Multicast_DNS">Multicast DNS</a> is great for this.
-- <a href="https://github.com/nerves-project/ring_logger">ring_logger</a> to be able to access logs programmatically via ssh, no need to have the RPi3 attached to a screen
+- <a href="https://github.com/NationalAssociationOfRealtors/mdns">mdns</a> so we could support <a href="https://en.wikipedia.org/wiki/Multicast_DNS">Multicast DNS</a>. This means we can refer to the RPi3 using a host name instead of having to know which ip address it is using.
+- <a href="https://github.com/nerves-project/ring_logger">ring_logger</a> to be able to access logs via ssh, no need to have the RPi3 attached to a screen
 
-Configuration in `config/config.exs`
+Add the following configuration to `config/config.exs`.
+
 ```elixir
 config :logger, level: :debug, backends: [RingLogger]
 config :nerves_network, :default,
@@ -75,7 +80,8 @@ config :nerves_firmware_ssh,
   ]
 ```
 
-I'm using `eth0` and `dhcp`, check out the <a href="https://github.com/nerves-project/nerves_network">docs</a> for more options. For `authorized_keys` I had to use a RSA public key, ed25519 didn't work. Should investigate this more.
+I'm using wired networking on `eth0` and `dhcp` to connect to my network, in case you want to use wireless networking or configure static ip addresses, check out the <a href="https://github.com/nerves-project/nerves_network">documentation</a> for `nerves_network`.
+For `authorized_keys` I had to use a RSA public key, ed25519 didn't work. Should investigate this more.
 
 One more thing, we want to be able to update firmware even if the main app crashes (or we push bad code). In order to do this, we have to configure <a href="https://github.com/nerves-project/shoehorn">shoehorn</a> to start `nerves_network`, `mdns` and `nerves_firmware_ssh` separately from the main app.
 
@@ -85,9 +91,9 @@ config :shoehorn,
   app: Mix.Project.config()[:app]
 ```
 
-  For service discovery to work, we need to advertise our ip with mDNS. Perfect opportunity to play with supervisor trees. We'll be using the new `child_spec/1` syntax introduced in Elixir 1.5.
+For service discovery to work, we need to advertise our ip with mDNS. Perfect opportunity to play with <a href="https://hexdocs.pm/elixir/Supervisor.html">supervisor trees</a>. We'll be using the new `child_spec/1` syntax introduced in Elixir 1.5.
 
-  Let's implement a new module that registers to dhcp callbacks and configures mDNS with the correct ip address.
+Let's implement a new module that registers to dhcp callbacks and configures mDNS with the correct ip address.
 ```elixir
 defmodule HelloNerves.Application do
   use Application
@@ -135,14 +141,14 @@ defmodule HelloNerves.Application do
 end
 ```
 
-At last, time to build the firmware and burn it to the sdcard.
+At last, time to build the firmware and burn it to the SD card.
 ```bash
 mix deps.get
 mix firmware
 mix firmware.burn
 ```
 
-`mix firmware.burn` will try to detect your sdcard automatically, make sure it's the right one. You can use the `-d` parameter to specify a device.
+`mix firmware.burn` will try to detect your SD card automatically, make sure it's the right one. You can use the `-d` parameter to specify a device.
 Boot the RPi3. You should end up at an IEX prompt.
 
 Let's see if we can now push firmware using ssh. If mDNS is working, you should be able to resolve `nerves.local`
@@ -163,7 +169,7 @@ Elapsed time: 6.607s
 Rebooting...
 ```
 
-`nerves_firmware_ssh` exposes Eshell over ssh port 8989. From there we can run an IEX console and check logs, see which processes are running, etc.
+`nerves_firmware_ssh` exposes Eshell over ssh port 8989. From there we can run an IEX console and check the logs, see which processes are running, etc.
 ```bash
 ssh nerves.local -p 8989
 Eshell V9.2  (abort with ^G)
@@ -176,3 +182,5 @@ iex(2)> RingLogger.tail
 00:00:05.946 [info]  Start Network Interface Worker
 <truncated list of logs>
 ```
+
+Code in this post is available at <a href="https://github.com/erkki/hello_nerves">https://github.com/erkki/hello_nerves</a>.
