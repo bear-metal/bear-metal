@@ -6,7 +6,7 @@ comments: true
 author: Erkki
 keywords: embedded, elixir, nerves, raspberrypi
 categories: [embedded, elixir, nerves, raspberrypi]
-published: true
+published: false
 ---
 
 A few weeks ago we checked out <a href="https://mender.io">mender</a> (see [Hosted Mender Getting Started on OSX and Raspberry Pi 3](/theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3)). Now it's time to do the same with the <a href="https://nerves-project.org/">nerves project</a>. This is how the project describes itself:
