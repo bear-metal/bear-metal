@@ -162,6 +162,8 @@ This took me a while to figure out, but became clear after reading more about <a
 This LwM2M object provides the application service data related to a LwM2M Server, eg. Water meter data.
 {% endblockquote %}
 
+This is further specified in <a href="http://www.openmobilealliance.org/release/LwM2M_APPDATA/V1_0-20171205-C/OMA-TS-LWM2M_BinaryAppDataContainer-V1_0-20171205-C.pdf">Lightweight M2M – Binary App Data Container</a>
+
 Things are getting clearer now. For the modem to send out data, it tunnels the data inside object 19 and the server has to subscribe to receiving messages on that object. In `lwm2mserver` there's a command for it:
 
 ```
