@@ -1,3 +1,11 @@
+## Usage
+
+Edit posts in _source.
+
+Preview with bundle exec `rake preview`
+
+Build and deploy with `bundle exec rake generate; bundle exec rake deploy`
+
 ## Octopress 3.0
 
 Note: Octopress 3.0 is in development at https://github.com/octopress/octopress
