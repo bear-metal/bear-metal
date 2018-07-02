@@ -10,7 +10,27 @@
   <meta name="author" content="Bear Metal OÜ">
 
   
-  <meta name="description" content="In a previous post in the Rails Performance series we stated that the default garbage collection settings for Ruby on Rails applications are not &hellip;">
+  <meta name="description" content="When trying to install Ruby 2.2.0 on Yosemite with rbenv and Homebrew, I got a weird error: 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +89,413 @@ ga('send', 'pageview');
   <section class="row">
 <div class="blog-index small-12 large-8 columns small-centered">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/theden/install-ruby-2-dot-2-0-yosemite-openssl-error/">How to Install Ruby 2.2.0 on OS X Yosemite With Homebrew and Rbenv</a></h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/jarkko/" rel="author">Jarkko</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-06T16:15:00+02:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:15 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When trying to install Ruby 2.2.0 on Yosemite with <a href="https://github.com/sstephenson/rbenv">rbenv</a> and <a href="http://brew.sh">Homebrew</a>, I got a weird error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~ ✗ rbenv install 2.2.0
+</span><span class='line'>Downloading ruby-2.2.0.tar.gz...
+</span><span class='line'>-&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
+</span><span class='line'>Installing ruby-2.2.0...
+</span><span class='line'>
+</span><span class='line'>BUILD FAILED (OS X 10.10.1 using ruby-build 20141225)
+</span><span class='line'>
+</span><span class='line'>Inspect or clean up the working tree at /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466
+</span><span class='line'>Results logged to /var/folders/s_/_zh3skrd0qz2933nns5y425r0000gn/T/ruby-build.20150106151200.81466.log
+</span><span class='line'>
+</span><span class='line'>Last 10 log lines:
+</span><span class='line'>make[2]: *** Waiting for unfinished jobs....
+</span><span class='line'>compiling raddrinfo.c
+</span><span class='line'>compiling ifaddr.c
+</span><span class='line'>make[1]: *** [ext/openssl/all] Error 2
+</span><span class='line'>make[1]: *** Waiting for unfinished jobs....
+</span><span class='line'>linking shared-object zlib.bundle
+</span><span class='line'>linking shared-object socket.bundle
+</span><span class='line'>linking shared-object date_core.bundle
+</span><span class='line'>linking shared-object ripper.bundle
+</span><span class='line'>make: *** [build-ext] Error 2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When I opened up the log file mentioned in the output above, I could see the actual cause of the error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ossl_ssl.c:125:5: error: use of undeclared identifier 'TLSv1_2_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_2),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_2_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:126:5: error: use of undeclared identifier 'TLSv1_2_server_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_2_server),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_2_server_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:127:5: error: use of undeclared identifier 'TLSv1_2_client_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_2_client),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_2_client_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:131:5: error: use of undeclared identifier 'TLSv1_1_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_1),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_1_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:132:5: error: use of undeclared identifier 'TLSv1_1_server_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_1_server),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_1_server_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:133:5: error: use of undeclared identifier 'TLSv1_1_client_method'
+</span><span class='line'>    OSSL_SSL_METHOD_ENTRY(TLSv1_1_client),
+</span><span class='line'>    ^
+</span><span class='line'>ossl_ssl.c:119:69: note: expanded from macro 'OSSL_SSL_METHOD_ENTRY'
+</span><span class='line'>#define OSSL_SSL_METHOD_ENTRY(name) { #name, (SSL_METHOD *(*)(void))name##_method }
+</span><span class='line'>                                                                    ^
+</span><span class='line'>&lt;scratch space&gt;:148:1: note: expanded from here
+</span><span class='line'>TLSv1_1_client_method
+</span><span class='line'>^
+</span><span class='line'>ossl_ssl.c:210:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class='line'>    for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
+</span><span class='line'>                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class='line'>ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class='line'>#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class='line'>                                  ^~~~~
+</span><span class='line'>ossl_ssl.c:1127:13: warning: using the result of an assignment as a condition without parentheses [-Wparentheses]
+</span><span class='line'>            if (rc = SSL_shutdown(ssl))
+</span><span class='line'>                ~~~^~~~~~~~~~~~~~~~~~~
+</span><span class='line'>ossl_ssl.c:1127:13: note: place parentheses around the assignment to silence this warning
+</span><span class='line'>            if (rc = SSL_shutdown(ssl))
+</span><span class='line'>                   ^
+</span><span class='line'>                (                     )
+</span><span class='line'>ossl_ssl.c:1127:13: note: use '==' to turn this assignment into an equality comparison
+</span><span class='line'>            if (rc = SSL_shutdown(ssl))
+</span><span class='line'>                   ^
+</span><span class='line'>                   ==
+</span><span class='line'>ossl_ssl.c:2194:23: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class='line'>    ary = rb_ary_new2(numberof(ossl_ssl_method_tab));
+</span><span class='line'>                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class='line'>ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class='line'>#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class='line'>                                  ^~~~~
+</span><span class='line'>ossl_ssl.c:2195:21: error: invalid application of 'sizeof' to an incomplete type 'const struct &lt;anonymous struct at ossl_ssl.c:115:14&gt; []'
+</span><span class='line'>    for (i = 0; i &lt; numberof(ossl_ssl_method_tab); i++) {
+</span><span class='line'>                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+</span><span class='line'>ossl_ssl.c:19:35: note: expanded from macro 'numberof'
+</span><span class='line'>#define numberof(ary) (int)(sizeof(ary)/sizeof((ary)[0]))
+</span><span class='line'>                                  ^~~~~
+</span><span class='line'>1 warning and 9 errors generated.
+</span><span class='line'>make[2]: *** [ossl_ssl.o] Error 1
+</span><span class='line'>make[2]: *** Waiting for unfinished jobs....
+</span><span class='line'>compiling raddrinfo.c
+</span><span class='line'>compiling ifaddr.c
+</span><span class='line'>make[1]: *** [ext/openssl/all] Error 2
+</span><span class='line'>make[1]: *** Waiting for unfinished jobs....
+</span><span class='line'>linking shared-object zlib.bundle
+</span><span class='line'>linking shared-object socket.bundle
+</span><span class='line'>linking shared-object date_core.bundle
+</span><span class='line'>linking shared-object ripper.bundle
+</span><span class='line'>make: *** [build-ext] Error 2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The weird thing here is that I did not get the usual &lsquo;Missing the OpenSSL lib?&rsquo; warning. The lib <em>was</em> found but somehow the headers were fucked up. It also did not happen with older rbenv Rubies.</p>
+
+<p>Thanks to <a href="https://bearmetal.eu/team/tarmo/">Tarmo</a> I found the solution <a href="https://issues.apache.org/jira/browse/THRIFT-2515?focusedCommentId=14012758&amp;page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14012758">here</a>.</p>
+
+<p>What I had to do was this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~  brew update
+</span><span class='line'>➜  ~  brew install openssl
+</span><span class='line'>➜  ~  /usr/local/opt/openssl/bin/c_rehash</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now make sure that your new binary is in your PATH before the system one.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~  ln -s /usr/local/opt/openssl/bin/openssl /usr/local/bin/openssl
+</span><span class='line'>➜  ~ which openssl
+</span><span class='line'>/usr/bin/openssl
+</span><span class='line'>➜  ~ echo $PATH
+</span><span class='line'>/usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&rsquo;s no good. Let&rsquo;s fix our PATH. I&rsquo;m using zsh, so for me it&rsquo;s set in <code>~/.zshrc</code>. Your particular file depends on the shell you&rsquo;re using (for bash it would be <code>~/.bashrc</code> or <code>~/.bash_profile</code>, but see the caveat <a href="http://www.joshstaiger.org/archives/2005/07/bash_profile_vs.html">here</a>).</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~ vim ~/.zshrc
+</span><span class='line'># Change the line that sets PATH so that /usr/local/bin
+</span><span class='line'># comes BEFORE /usr/bin. For me, it looks like this:
+</span><span class='line'># export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Open up a new terminal window and check that the PATH is correct:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~  echo $PATH
+</span><span class='line'>/usr/local/heroku/bin:/Users/jarkko/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+</span><span class='line'>➜  ~  which openssl
+</span><span class='line'>/usr/local/bin/openssl</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Better. Now, let&rsquo;s make sure that homebrew libs symlink to the newer openssl.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~  brew unlink openssl
+</span><span class='line'>➜  ~  brew link --overwrite --force openssl
+</span><span class='line'>➜  ~  openssl version -a
+</span><span class='line'>
+</span><span class='line'>OpenSSL 1.0.1j 15 Oct 2014
+</span><span class='line'>built on: Sun Dec  7 02:14:31 GMT 2014
+</span><span class='line'>platform: darwin64-x86_64-cc
+</span><span class='line'>options:  bn(64,64) rc4(ptr,char) des(idx,cisc,16,int) idea(int) blowfish(idx) 
+</span><span class='line'>compiler: clang -fPIC -fno-common -DOPENSSL_PIC -DZLIB_SHARED -DZLIB -DOPENSSL_THREADS -D_REENTRANT -DDSO_DLFCN -DHAVE_DLFCN_H -arch x86_64 -O3 -DL_ENDIAN -Wall -DOPENSSL_IA32_SSE2 -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_MONT5 -DOPENSSL_BN_ASM_GF2m -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DMD5_ASM -DAES_ASM -DVPAES_ASM -DBSAES_ASM -DWHIRLPOOL_ASM -DGHASH_ASM
+</span><span class='line'>OPENSSLDIR: "/usr/local/etc/openssl"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Splendid.</p>
+
+<p>After that, Ruby 2.2.0 installed cleanly without any specific parameters needed:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>➜  ~  rbenv install 2.2.0
+</span><span class='line'>Downloading ruby-2.2.0.tar.gz...
+</span><span class='line'>-&gt; http://dqw8nmjcqpjn7.cloudfront.net/7671e394abfb5d262fbcd3b27a71bf78737c7e9347fa21c39e58b0bb9c4840fc
+</span><span class='line'>Installing ruby-2.2.0...
+</span><span class='line'>Installed ruby-2.2.0 to /Users/jarkko/.rbenv/versions/2.2.0</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>[UPDATE 1, Jan 7]</strong> The original version of this post told you to <code>rm /usr/bin/openssl</code>, based on the link above. As James Tucker pointed out, this is a horrible idea. I fixed the article so that we now fix the <code>$PATH</code> instead.</p>
+</div>
+  
+  
+
+
+    </article>
+    <div id="ck_embed_form" class="ck_embed_form row">
+  <div class="small-12 large-6 columns" id="ck_form_content">
+    <h3 class="ck_embed_form_title">Get our Secrets of Successful Web Apps email course for free!</h3>
+    <div class="ck_embed_description">
+      <span class="ck_image">
+
+      </span>
+        <p>Sign up to get the lessons we&#8217;ve spent more than a decade learning straight to your inbox. 100% meat, no spam, ever.</p>
+    </div>
+  </div>
+<div id='ck_success_msg' class='fade' style='display:none;'>
+  <p>Thanks! Now check your email, confirm your subscription, and off we go!</p>
+</div>
+  <!--  Form starts here  -->
+  <form id="ck_subscribe_form" class="small-12 large-6 columns" action="https://convertkit.com/app/landing_pages/259/subscribe">
+    <input type="hidden" name="id" value="259" id="landing_page_id"></input>
+    <p class="ck_errorArea"></p>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_firstNameField">First Name</label>
+      <input type="text" name="first_name" class="ck_first_name" id="ck_firstNameField"></input>
+    </div>
+    <div class="ck_control_group">
+      <label class="ck_label" for="ck_emailField">Email Address</label>
+        <input type="email" name="email" class="ck_email_address" id="ck_emailField"></input>
+    </div>
+    <label class="ck_checkbox">
+      <input class="optIn ck_course_opted" type="checkbox" id="optIn" checked />
+      I&#8217;d like to receive a free 30 day course by email.
+    </label>
+
+    <button class="subscribe_button ck_subscribe_button btn fields" id='ck_subscribe_button'>
+      Claim my spot on the course
+    </button>
+    <span class="ck_guarantee">We won&#8217;t send you spam. Unsubscribe at any time.</span>
+  </form>
+</div>
+
+<script src="https://convertkit.com/assets/CKJS4.js"></script>
+
+
+
   
   
     <article>

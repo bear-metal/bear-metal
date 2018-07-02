@@ -1,0 +1,458 @@
+
+
+  
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Sending OMA LwM2M CoAP messages with Quectel BC68 - by Erkki of Bear Metal</title>
+  <meta name="author" content="Bear Metal OÜ">
+
+  
+  <meta name="description" content="One of the projects we&rsquo;re currently working on is a battery powered sensor that needs to send small amounts of data, infrequently, and have a &hellip;">
+  <meta name="keywords" content="lwm2m, coap, quectel, bc68, iot, nb-iot">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://bearmetal.eu/theden/sending-oma-lwm2m-coap-messages-with-quectel-bc68">
+  <link href="/images/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/theden/atom.xml" rel="alternate" title="Bear Metal" type="application/atom+xml">
+
+    <meta property="og:site_name"
+    content="Bear Metal" />
+  
+    
+
+<link rel="author" href="https://plus.google.com//">
+
+    <meta property="og:title"
+    content="Sending OMA LwM2M CoAP messages with Quectel BC68" />
+    <meta property="og:description"
+    content="" />
+    <meta property="og:type"
+    content="article" />
+    <meta property="og:url"
+    content="https://bearmetal.eu/theden/sending-oma-lwm2m-coap-messages-with-quectel-bc68" />
+    <meta property="article:publisher"
+    content="https://www.facebook.com/bearmetaltech" />
+
+    
+
+    
+  
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript" src="//use.typekit.net/mba8ekq.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+<script type="text/javascript">
+  $(document).ready(function($) {
+    $('a.expand').click(function(event) {
+      $(this).parents('.testimonial').find('.the-rest').addClass('visible').slideDown('500');
+      $(this).parents('.read-more').hide();
+      return false;
+    });
+  });
+</script>
+  <!-- Google Analytics -->
+<script  type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-40333336-1', 'auto');
+ga('require', 'linkid', 'linkid.js');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+  <!-- SumoMe -->
+<script src="//load.sumome.com/" data-sumo-site-id="da3bead8ae8720119247146e18eb0c9c2a039fdce74750d07f835ee40d1a5604" async="async"></script>
+<!-- End SumoMe -->
+</head>
+
+<body   >
+  <header role="banner" class="post row">
+  <div class="small-12 large-8 columns small-centered">
+    This is <a href="/theden">The Den</a>, a publication crafted by the friendly cubs at <a href="/">Bear <i><img src="/images/bear.png"></i> Metal</a>.
+  </div>
+</header>
+
+  <div id="main">
+    <div id="content">
+      <div class="row">
+<article class="hentry large-8 small-12 small-centered columns" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Sending OMA LwM2M CoAP Messages With Quectel BC68</h1>
+    
+    
+      <p class="meta">
+        
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/erkki/" rel="author">Erkki</a></span> wrote this on </span>
+
+        
+
+
+
+
+<time class='entry-date' datetime='2018-06-29T17:00:00+03:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>5:00 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>One of the projects we&rsquo;re currently working on is a battery powered sensor that needs to send small amounts of data, infrequently, and have a battery-life measured in years.
+We spent quite a bit of time researching <a href="https://en.wikipedia.org/wiki/LoRa">LoRa</a> for this, but have recently settled on <a href="https://en.wikipedia.org/wiki/Narrowband_IoT">Narrowband IoT (NB-Iot)</a> instead.</p>
+
+<blockquote><p>Narrowband IoT (NB-IoT) is a Low Power Wide Area Network (LPWAN) radio technology standard developed by 3GPP to enable a wide range of cellular devices and services. The specification was frozen in 3GPP Release 13 (LTE Advanced Pro), in June 2016. Other 3GPP IoT technologies include eMTC (enhanced Machine-Type Communication) and EC-GSM-IoT.</p><p>NB-IoT focuses specifically on indoor coverage, low cost, long battery life, and high connection density. NB-IoT uses a subset of the LTE standard, but limits the bandwidth to a single narrow-band of 200kHz. It uses OFDM modulation for downlink communication and SC-FDMA for uplink communications.</p></blockquote>
+
+
+<p>We managed to source a <a href="https://www.quectel.com/product/bc68.htm">Quectel LTE BC68 NB-IoT Module</a> and started to work on data integration, soon realizing that these Neul (which is a company Huawei acquired in 2014) based NB-Iot modems require you to use special <a href="https://en.wikipedia.org/wiki/Hayes_command_set">AT commands</a> to communicate with the outside world (as opposed to &ldquo;normal&rdquo; modems which would require the host to call in using <a href="https://en.wikipedia.org/wiki/Point-to-Point_Protocol">PPP</a>).</p>
+
+<p>Okay, let&rsquo;s scan the <a href="http://www.quectel.com/UploadImage/Downlad/Quectel_BC95-G&BC68_AT_Commands_Manual_V1.1.pdf">Quectel BC95-G&amp;BC68 AT Commands Manual</a>. There&rsquo;s a command for creating UDP sockets, great. Another one for TCP sockets, too. Awesome! And then there&rsquo;s something mysteriously referred to as the &ldquo;Huawei IoT Platform&rdquo;. Wait, what?!?</p>
+
+<p>In TELCO speech it&rsquo;s called a <code>CDP</code> (which stands for Connected Device Platform). It&rsquo;s  a fancy way to describe a gateway that accepts messages from a mobile device and routes them to your application server. There are a few flavours around, such as:</p>
+
+<ul>
+<li><a href="http://developer.huawei.com/ict/en/site-oceanconnect/article/ocean-connect-overview">Huawei OceanConnect</a></li>
+<li><a href="https://networks.nokia.com/solutions/connected-device-platform">Nokia IMPACT/Connected Device Platform</a></li>
+</ul>
+
+
+<p>But what if we want to use our own server? There are a few reasons one would do this, including cost and efficiency, or the fact that the Huawei partner signup website was broken for two weeks. (Actually turns out it just can&rsquo;t accept <code>Ü</code> as a character in the company name. But I digress.) Nokia CDP on the other hand is only available in the U.S.</p>
+
+<p>Scanning the manual further, there are hints as to what the protocol might be. To set the ip address of the <code>CDP</code> platform, there&rsquo;s a specific AT command for it.</p>
+
+<blockquote><p>6.1. AT+NCDP Configure and Query CDP Server Settings<br/>The command is used to set and query the server IP address and port for the CDP server. It is used when there is a HiSilicon CDP or Huawei’s IoT platform acting as gateway to network server applications. The values assigned are persistent across reboots.</p></blockquote>
+
+
+<p>And the default port for it is 5683. That&rsquo;s the port for <a href="https://en.wikipedia.org/wiki/Constrained_Application_Protocol">CoAP</a>:</p>
+
+<blockquote><p>Constrained Application Protocol (CoAP) is a specialized Internet Application Protocol for constrained devices, as defined in RFC 7252. It enables those constrained devices called &#8220;nodes&#8221; to communicate with the wider Internet using similar protocols. CoAP is designed for use between devices on the same constrained network (e.g., low-power, lossy networks), between devices and general nodes on the Internet, and between devices on different constrained networks both joined by an internet. CoAP is also being used via other mechanisms, such as SMS on mobile communication networks.</p></blockquote>
+
+
+<p>Furthermore, another command confirms <a href="https://en.wikipedia.org/wiki/Constrained_Application_Protocol">CoAP</a> and adds <a href="https://en.wikipedia.org/wiki/OMA_LWM2M">OMA LwM2M</a>:</p>
+
+<blockquote><p>6.5. AT+QLWULDATA Send Data<br/>The command is used to send data to Huawei’s IoT platform with LWM2M protocol. It will give an <err> code and description as an intermediate message if the message cannot be sent. Before the module registered to the IoT platform, executing the command will trigger register operation and discard the data. Please refer to Chapter 7 for possible <err> values.</p></blockquote>
+
+
+<p><a href="https://en.wikipedia.org/wiki/OMA_LWM2M">OMA LwM2M</a> is a protocol that builds on top of <a href="https://en.wikipedia.org/wiki/Constrained_Application_Protocol">CoAP</a></p>
+
+<blockquote><p>OMA Lightweight M2M is a protocol from the Open Mobile Alliance for M2M or IoT device management. Lightweight M2M enabler defines the application layer communication protocol between a LWM2M Server and a LWM2M Client, which is located in a LWM2M Device. The OMA Lightweight M2M enabler includes device management and service enablement for LWM2M Devices. The target LWM2M Devices for this enabler are mainly resource constrained devices. Therefore, this enabler makes use of a light and compact protocol as well as an efficient resource data model. It provides a choice for the M2M Service Provider to deploy a M2M system to provide service to the M2M User. It is frequently used with CoAP</p></blockquote>
+
+
+<p>With this we&rsquo;re ready for experimentation. Let&rsquo;s fire up the modem, attach it to the network, make it use our own server as the <code>CDP</code> and connect it to <a href="https://www.eclipse.org/wakaama/">Eclipse Wakaama</a> running on the server.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Boot: Unsigned
+</span><span class='line'>Security B.. Verified
+</span><span class='line'>Protocol A.. Verified
+</span><span class='line'>Apps A...... Verified
+</span><span class='line'>REBOOT_CAUSE_SECURITY_RESET_PIN
+</span><span class='line'>Neul
+</span><span class='line'>OK
+</span><span class='line'>AT+CFUN=0
+</span><span class='line'>OK
+</span><span class='line'>AT+NCDP=198.51.100.1
+</span><span class='line'>OK
+</span><span class='line'>AT+CFUN=1
+</span><span class='line'>OK
+</span><span class='line'>AT+CGDCONT=1,"IP","APN"
+</span><span class='line'>OK
+</span><span class='line'>AT+CSCON=1
+</span><span class='line'>OK
+</span><span class='line'>AT+CEREG=1
+</span><span class='line'>OK
+</span><span class='line'>AT+CGATT=1
+</span><span class='line'>OK
+</span><span class='line'>+CEREG:2
+</span><span class='line'>+CSCON:1
+</span><span class='line'>+CEREG:1
+</span><span class='line'>AT+NPING=198.51.100.1
+</span><span class='line'>OK
+</span><span class='line'>+NPING:198.51.100.1,54,962</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Once the modem boots up, we</p>
+
+<ul>
+<li>disable the radio <code>AT+CFUN=0</code></li>
+<li>set the CDP to our server <code>AT+NCDP=198.51.100.1</code></li>
+<li>re-enable the radio again <code>AT+CFUN=1</code></li>
+<li>configure the APN (value depends on your provider) <code>AT+CGDCONT=1,"IP","APN"</code></li>
+<li>enable <code>AT+CSCON=1</code> and <code>AT+CEREG=1</code> to monitor network connection and registration status</li>
+<li>attach to the network <code>AT+CGATT=1</code></li>
+<li>once we see <code>+CSCON:1</code> and <code>+CEREG:1</code> we can send a test ping with <code>AT+NPING=198.51.100.1</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>AT+QLWSREGIND<span class="o">=</span>0
+</span><span class='line'>OK
+</span><span class='line'>+CSCON:1
+</span><span class='line'>+QLWEVTIND:0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sending <code>AT+QLWSREGIND=0</code> initiates the registration process and receiving <code>+QLWEVTIND:0</code> means registration was successful. We can observe this with <code>tcpdump</code> and <code>lwm2mserver</code> included in <code>wakaama</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>20:32:00.417221 IP 198.51.100.2.19000 &gt; 198.51.100.1.5683: UDP, length 119
+</span><span class='line'>  0x0000:  <span class="m">4500</span> <span class="m">0093</span> <span class="m">0013</span> <span class="m">0000</span> fa11 0c0f 92ff b496  E...............
+</span><span class='line'>  0x0010:  b99e b303 4a38 <span class="m">1633</span> 007f 137c <span class="m">4402</span> <span class="m">2862</span>  ....J8.3...<span class="p">|</span>D.<span class="o">(</span>b
+</span><span class='line'>  0x0020:  <span class="m">2862</span> a813 b272 <span class="m">6411</span> <span class="m">2839</span> 6c77 6d32 6d3d  <span class="o">(</span>b...rd.<span class="o">(</span><span class="nv">9lwm2m</span><span class="o">=</span>
+</span><span class='line'>  0x0030:  312e 300d <span class="m">0565</span> 703d <span class="m">3836</span> <span class="m">3737</span> <span class="m">3233</span> <span class="m">3033</span>  1.0..ep<span class="o">=</span>86772303
+</span><span class='line'>  0x0040:  <span class="m">3030</span> <span class="m">3035</span> <span class="m">3635</span> <span class="m">3503</span> 623d <span class="m">5508</span> 6c74 3d38  0005655.b<span class="o">=</span>U.lt<span class="o">=</span>8
+</span><span class='line'>  0x0050:  <span class="m">3634</span> <span class="m">3030</span> ff3c 2f3e 3b72 743d 226f 6d61  6400.&lt;/&gt;<span class="p">;</span><span class="nv">rt</span><span class="o">=</span><span class="s2">&quot;oma</span>
+</span><span class='line'><span class="s2"> 0x0060:  2e6c 776d 326d 222c 3c2f 312f 303e 2c3c  .lwm2m&quot;</span>,&lt;/1/0&gt;,&lt;
+</span><span class='line'>  0x0070:  2f33 2f30 3e2c 3c2f 342f 303e 2c3c 2f31  /3/0&gt;,&lt;/4/0&gt;,&lt;/1
+</span><span class='line'>  0x0080:  392f 303e 2c3c 2f35 2f30 3e2c 3c2f <span class="m">3230</span>  9/0&gt;,&lt;/5/0&gt;,&lt;/20
+</span><span class='line'>  0x0090:  2f30 3e                                  /0&gt;
+</span><span class='line'>20:32:00.417622 IP 198.51.100.1.5683 &gt; 198.51.100.2.19000: UDP, length 13
+</span><span class='line'>  0x0000:  <span class="m">4500</span> <span class="m">0029</span> 7ae4 <span class="m">4000</span> <span class="m">4011</span> 0ba8 b99e b303  E..<span class="o">)</span>z.@.@.......
+</span><span class='line'>  0x0010:  92ff b496 <span class="m">1633</span> 4a38 <span class="m">0015</span> b45e <span class="m">6441</span> <span class="m">2862</span>  .....3J8...^dA<span class="o">(</span>b
+</span><span class='line'>  0x0020:  <span class="m">2862</span> a813 <span class="m">8272</span> <span class="m">6401</span> <span class="m">30</span>                   <span class="o">(</span>b...rd.0
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>~/wakaama# ./lwm2mserver
+</span><span class='line'><span class="m">119</span> bytes received from <span class="o">[</span>::ffff:198.51.100.2<span class="o">]</span>:19000
+</span><span class='line'><span class="m">44</span> <span class="m">02</span> <span class="m">28</span> <span class="m">62</span>  <span class="m">28</span> <span class="m">62</span> A8 <span class="m">13</span>  B2 <span class="m">72</span> <span class="m">64</span> <span class="m">11</span>  <span class="m">28</span> <span class="m">39</span> 6C <span class="m">77</span>   D.<span class="o">(</span>b<span class="o">(</span>b...rd.<span class="o">(</span>9lw
+</span><span class='line'>6D <span class="m">32</span> 6D 3D  <span class="m">31</span> 2E <span class="m">30</span> 0D  <span class="m">05</span> <span class="m">65</span> <span class="m">70</span> 3D  <span class="m">38</span> <span class="m">36</span> <span class="m">37</span> <span class="m">37</span>   <span class="nv">m2m</span><span class="o">=</span>1.0..ep<span class="o">=</span>8677
+</span><span class='line'><span class="m">32</span> <span class="m">33</span> <span class="m">30</span> <span class="m">33</span>  <span class="m">30</span> <span class="m">30</span> <span class="m">30</span> <span class="m">35</span>  <span class="m">36</span> <span class="m">35</span> <span class="m">35</span> <span class="m">03</span>  <span class="m">62</span> 3D <span class="m">55</span> <span class="m">08</span>   23030005655.b<span class="o">=</span>U.
+</span><span class='line'>6C <span class="m">74</span> 3D <span class="m">38</span>  <span class="m">36</span> <span class="m">34</span> <span class="m">30</span> <span class="m">30</span>  FF 3C 2F 3E  3B <span class="m">72</span> <span class="m">74</span> 3D   <span class="nv">lt</span><span class="o">=</span>86400.&lt;/&gt;<span class="p">;</span><span class="nv">rt</span><span class="o">=</span>
+</span><span class='line'><span class="m">22</span> 6F 6D <span class="m">61</span>  2E 6C <span class="m">77</span> 6D  <span class="m">32</span> 6D <span class="m">22</span> 2C  3C 2F <span class="m">31</span> 2F   <span class="s2">&quot;oma.lwm2m&quot;</span>,&lt;/1/
+</span><span class='line'><span class="m">30</span> 3E 2C 3C  2F <span class="m">33</span> 2F <span class="m">30</span>  3E 2C 3C 2F  <span class="m">34</span> 2F <span class="m">30</span> 3E   0&gt;,&lt;/3/0&gt;,&lt;/4/0&gt;
+</span><span class='line'>2C 3C 2F <span class="m">31</span>  <span class="m">39</span> 2F <span class="m">30</span> 3E  2C 3C 2F <span class="m">35</span>  2F <span class="m">30</span> 3E 2C   ,&lt;/19/0&gt;,&lt;/5/0&gt;,
+</span><span class='line'>3C 2F <span class="m">32</span> <span class="m">30</span>  2F <span class="m">30</span> 3E                                &lt;/20/0&gt;
+</span><span class='line'>
+</span><span class='line'>New client <span class="c">#0 registered.</span>
+</span><span class='line'>Client <span class="c">#0:</span>
+</span><span class='line'>  name: <span class="s2">&quot;867723030005655&quot;</span>
+</span><span class='line'>  binding: <span class="s2">&quot;UDP&quot;</span>
+</span><span class='line'>  lifetime: <span class="m">86400</span> sec
+</span><span class='line'>  objects: /1/0, /3/0, /4/0, /5/0, /19/0, /20/0,
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Great! We&rsquo;ve registered the modem. Let&rsquo;s try sending data with <code>AT+QLWULDATA</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>AT+QLWULDATA<span class="o">=</span>4,DEADBEEF
+</span><span class='line'>ERROR
+</span><span class='line'>+CSCON:1
+</span><span class='line'>+QLWEVTIND:0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is a failure. Not only does it error out, it actually triggers a new registration process. Something is missing. Scanning the docs again, there&rsquo;s a reference to <code>+QLWEVTIND:3</code> being sent when:</p>
+
+<blockquote><p>//IoT platform has observed the data object 19. When the module reports this message, the customer can send data to the IoT platform.</p></blockquote>
+
+
+<p>This took me a while to figure out, but became clear after reading more about <a href="https://en.wikipedia.org/wiki/OMA_LWM2M">OMA LwM2M</a>. More specifically, <code>object 19</code> as specified in <a href="http://www.openmobilealliance.org/wp/OMNA/LwM2M/LwM2MRegistry.html">OMA LightweightM2M (LwM2M) Object and Resource Registry</a> means <code>LwM2M APPDATA</code>:</p>
+
+<blockquote><p>This LwM2M object provides the application service data related to a LwM2M Server, eg. Water meter data.</p></blockquote>
+
+
+<p>This is further specified in <a href="http://www.openmobilealliance.org/release/LwM2M_APPDATA/V1_0-20171205-C/OMA-TS-LWM2M_BinaryAppDataContainer-V1_0-20171205-C.pdf">Lightweight M2M – Binary App Data Container</a>.</p>
+
+<p>Things are getting clearer now. For the modem to send out data, it tunnels the data inside object 19 and the server has to subscribe to receiving messages on that object. In <code>lwm2mserver</code> there&rsquo;s a command for it:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>&gt; observe <span class="m">0</span> /19/0/0
+</span><span class='line'>OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Observe request and ACK in tcpdump:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>20:44:03.122190 IP 198.51.100.1.5683 &gt; 198.51.100.2.61500: UDP, length 19
+</span><span class='line'>  0x0000:  <span class="m">4500</span> 002f b3fa <span class="m">4000</span> <span class="m">4011</span> d289 b99e b303  E../..@.@.......
+</span><span class='line'>  0x0010:  92ff b498 <span class="m">1633</span> f03c 001b b466 <span class="m">4401</span> f4a6  .....3.&lt;...fD...
+</span><span class='line'>  0x0020:  <span class="m">0000</span> <span class="m">0000</span> <span class="m">6052</span> <span class="m">3139</span> <span class="m">0130</span> <span class="m">0130</span> 622d <span class="m">16</span>    ....<span class="sb">`</span>R19.0.0b-.
+</span><span class='line'>20:44:04.232286 IP 198.51.100.2.61500 &gt; 198.51.100.1.5683: UDP, length 10
+</span><span class='line'>  0x0000:  <span class="m">4500</span> <span class="m">0026</span> <span class="m">0016</span> <span class="m">0000</span> fa11 0c77 92ff b498  E..<span class="p">&amp;</span>.......w....
+</span><span class='line'>  0x0010:  b99e b303 f03c <span class="m">1633</span> <span class="m">0012</span> 8bd3 <span class="m">6445</span> f4a6  .....&lt;.3....dE..
+</span><span class='line'>  0x0020:  <span class="m">0000</span> <span class="m">0000</span> <span class="m">6060</span> <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span> <span class="m">0000</span>       ....<span class="sb">``</span>........
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Meanwhile on the modem side, we&rsquo;ve received the <code>+QLWEVTIND:3</code> message and can send data now:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'>+QLWEVTIND:3
+</span><span class='line'>AT+QLWULDATA<span class="o">=</span>3,AA34BB
+</span><span class='line'>OK
+</span><span class='line'>+CSCON:1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On the <code>lwm2mserver</code> side we can see data coming in:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="m">15</span> bytes received from <span class="o">[</span>::ffff:198.51.100.2<span class="o">]</span>:61500
+</span><span class='line'><span class="m">54</span> <span class="m">45</span> <span class="m">28</span> <span class="m">66</span>  <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>  C1 2A FF DE  AD BE EF  TE<span class="o">(</span>f.....*.....
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yay! We can now successfully receive data from the modem. In follow-up posts, we&rsquo;ll try to figure out the differences between <code>AT+QLWULDATA</code> and <code>AT+NMGS</code>, look at receiving data from the server, and maybe write our own LwM2M server to forward data to MQTT.</p>
+</div>
+
+
+
+  
+    
+
+    
+  
+    
+
+    
+  
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard"><span class="fn"><a href="/team/erkki/" rel="author">Erkki</a></span> wrote this on </span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-06-29T17:00:00+03:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>5:00 pm</span></time>
+      in
+      
+
+<span class="categories">
+  
+    <a class='category' href='/theden/categories/iot/'>iot</a>, <a class='category' href='/theden/categories/nb-iot/'>nb-iot</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/theden/hosted-mender-getting-started-on-osx-and-raspberry-pi-3/" title="Previous Post: Hosted mender getting started on OSX and Raspberry Pi 3">&laquo; Hosted mender getting started on OSX and Raspberry Pi 3</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+
+    </div>
+  </div>
+  <script type="text/javascript">
+  var _gauges = _gauges || [];
+  (function() {
+    var t   = document.createElement('script');
+    t.type  = 'text/javascript';
+    t.async = true;
+    t.id    = 'gauges-tracker';
+    t.setAttribute('data-site-id', '51767878108d7b455f000154');
+    t.src = '//secure.gaug.es/track.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(t, s);
+  })();
+</script>
+</body>
+</html>
