@@ -22,14 +22,14 @@ We managed to source a <a href="https://www.quectel.com/product/bc68.htm">Quecte
 
 Okay, let's scan the <a href="http://www.quectel.com/UploadImage/Downlad/Quectel_BC95-G&BC68_AT_Commands_Manual_V1.1.pdf">Quectel BC95-G&BC68 AT Commands Manual</a>. There's a command for creating UDP sockets, great. Another one for TCP sockets, too. Awesome! And then there's something mysteriously referred to as the "Huawei IoT Platform". Wait, what?!?
 
-In TELCO speech it's called a `CDP` (which stands for Connected Device Platform). It's  a fancy way to describe a gateway that accepts messages from a mobile device and routes them to your application server. There's a few flavours around, such as:
+In TELCO speech it's called a `CDP` (which stands for Connected Device Platform). It's  a fancy way to describe a gateway that accepts messages from a mobile device and routes them to your application server. There are a few flavours around, such as:
 
 - <a href="http://developer.huawei.com/ict/en/site-oceanconnect/article/ocean-connect-overview">Huawei OceanConnect</a>
 - <a href="https://networks.nokia.com/solutions/connected-device-platform">Nokia IMPACT/Connected Device Platform</a>
 
-But what if we want to use our own server? For various reasons, including cost and effeciency, or the fact that the Huawei partner signup website was broken for two weeks. (Actually turns out it just can't accept `Ü` as a character in the company name. But I digress.) And Nokia CDP is only available in the U.S.
+But what if we want to use our own server? There are a few reasons one would do this, including cost and efficiency, or the fact that the Huawei partner signup website was broken for two weeks. (Actually turns out it just can't accept `Ü` as a character in the company name. But I digress.) Nokia CDP on the other hand is only available in the U.S.
 
-Scanning the manual further, there's hints as to what the protocol might be. To set the ip address of the `CDP` platform, there's a specific AT command for it.
+Scanning the manual further, there are hints as to what the protocol might be. To set the ip address of the `CDP` platform, there's a specific AT command for it.
 
 {% blockquote %}
 6.1. AT+NCDP Configure and Query CDP Server Settings
@@ -60,7 +60,7 @@ Security B.. Verified
 Protocol A.. Verified
 Apps A...... Verified
 REBOOT_CAUSE_SECURITY_RESET_PIN
-Neul 
+Neul
 OK
 AT+CFUN=0
 OK
@@ -122,7 +122,7 @@ Sending `AT+QLWSREGIND=0` initiates the registration process and receiving `+QLW
 ```
 
 ```
-~/wakaama# ./lwm2mserver 
+~/wakaama# ./lwm2mserver
 119 bytes received from [::ffff:198.51.100.2]:19000
 44 02 28 62  28 62 A8 13  B2 72 64 11  28 39 6C 77   D.(b(b...rd.(9lw
 6D 32 6D 3D  31 2E 30 0D  05 65 70 3D  38 36 37 37   m2m=1.0..ep=8677
@@ -138,7 +138,7 @@ Client #0:
 	name: "867723030005655"
 	binding: "UDP"
 	lifetime: 86400 sec
-	objects: /1/0, /3/0, /4/0, /5/0, /19/0, /20/0, 
+	objects: /1/0, /3/0, /4/0, /5/0, /19/0, /20/0,
 ```
 
 Great! We've registered the modem. Let's try sending data with `AT+QLWULDATA`
@@ -162,7 +162,7 @@ This took me a while to figure out, but became clear after reading more about <a
 This LwM2M object provides the application service data related to a LwM2M Server, eg. Water meter data.
 {% endblockquote %}
 
-This is further specified in <a href="http://www.openmobilealliance.org/release/LwM2M_APPDATA/V1_0-20171205-C/OMA-TS-LWM2M_BinaryAppDataContainer-V1_0-20171205-C.pdf">Lightweight M2M – Binary App Data Container</a>
+This is further specified in <a href="http://www.openmobilealliance.org/release/LwM2M_APPDATA/V1_0-20171205-C/OMA-TS-LWM2M_BinaryAppDataContainer-V1_0-20171205-C.pdf">Lightweight M2M – Binary App Data Container</a>.
 
 Things are getting clearer now. For the modem to send out data, it tunnels the data inside object 19 and the server has to subscribe to receiving messages on that object. In `lwm2mserver` there's a command for it:
 
@@ -192,10 +192,10 @@ OK
 +CSCON:1
 ```
 
-On the `lwm2mserver` side we can see data coming in
+On the `lwm2mserver` side we can see data coming in:
 ```
 15 bytes received from [::ffff:198.51.100.2]:61500
 54 45 28 66  00 00 00 00  C1 2A FF DE  AD BE EF  TE(f.....*.....
 ```
 
-Yay! We can now successfully receive data from the modem. In follow-up posts, let's try to figure out the differences in between `AT+QLWULDATA` and `AT+NMGS`, look at receiving data from the server and maybe write our own LwM2M server to forward data to MQTT.
+Yay! We can now successfully receive data from the modem. In follow-up posts, we'll try to figure out the differences between `AT+QLWULDATA` and `AT+NMGS`, look at receiving data from the server, and maybe write our own LwM2M server to forward data to MQTT.
